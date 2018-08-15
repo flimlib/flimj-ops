@@ -35,7 +35,7 @@ public abstract class AbstractFitRAI<I extends RealType<I>>
 	FitParams params;
 
 	@Parameter
-	private int timeAxis;
+	private int lifetimeAxis;
 
 	@Parameter(required=false)
 	private RealMask roi;
@@ -79,13 +79,13 @@ public abstract class AbstractFitRAI<I extends RealType<I>>
 
 		// prepare subspace dimensions
 		int nD = trans.numDimensions();
-		int[] temporalAxes = new int[] { timeAxis };
-		int[] nontemporalAxes = new int[nD - 1];
+		int[] ltAxes = new int[] { lifetimeAxis };
+		int[] nonltAxes = new int[nD - 1];
 		int[] nonbinningAxes = new int[nD - 1 - binningAxes.length];
 		Arrays.sort(binningAxes);
 		for (int i = 0, j = 0, k = 0; i < nD; i++) {
-			if (i != timeAxis)
-				nontemporalAxes[j + k] = i;
+			if (i != lifetimeAxis)
+				nonltAxes[j + k] = i;
 			else
 				continue;
 			if (j < binningAxes.length && i == binningAxes[j])
@@ -96,25 +96,25 @@ public abstract class AbstractFitRAI<I extends RealType<I>>
 			}
 		}
 		// chop coordinate into 3 parts: 1 time + m binning + n non-binning
-		FinalInterval iTSpace = subspaceBounds(trans, temporalAxes);
-		FinalInterval iNTSpace = subspaceBounds(trans, nontemporalAxes);
+		FinalInterval iTSpace = subspaceBounds(trans, ltAxes);
+		FinalInterval iNTSpace = subspaceBounds(trans, nonltAxes);
 //		FinalInterval iBSpace = subspaceBounds(trans, binningAxes);
 //		FinalInterval iNBSpace = subspaceBounds(trans, nonbinningAxes);
-		// remove the gap at timeAxis in time-free space
+		// remove the gap at lifetimeAxis in time-free space
 		for (int i = 0; i < nonbinningAxes.length; i++)
-			if (nonbinningAxes[i] > timeAxis)
+			if (nonbinningAxes[i] > lifetimeAxis)
 				nonbinningAxes[i]--;
 
 		// each point in this space is a series of transient data
-		IntervalView<RandomAccessible<I>> nontemporalR = Views.interval(Views.hyperSlices(Views.extendZero(trans), temporalAxes), iNTSpace);
-		Cursor<RandomAccessible<I>> ntRCsr = nontemporalR.cursor();
+		IntervalView<RandomAccessible<I>> nonLtR = Views.interval(Views.hyperSlices(Views.extendZero(trans), ltAxes), iNTSpace);
+		Cursor<RandomAccessible<I>> ntRCsr = nonLtR.cursor();
 		// or a series of fitted params
-		IntervalView<RandomAccessible<FloatType>> nontemporalW = Views.interval(Views.hyperSlices(fitted, temporalAxes), iNTSpace);
-		Cursor<RandomAccessible<FloatType>> ntWCsr = nontemporalW.localizingCursor();
+		IntervalView<RandomAccessible<FloatType>> nonLtW = Views.interval(Views.hyperSlices(fitted, ltAxes), iNTSpace);
+		Cursor<RandomAccessible<FloatType>> ntWCsr = nonLtW.localizingCursor();
 
 		Cursor<RandomAccessible<FloatType>> paramRCsr = null;
 		if (params.paramRA != null) {
-			IntervalView<RandomAccessible<FloatType>> paramR = Views.interval(Views.hyperSlices(params.paramRA, temporalAxes), iNTSpace);
+			IntervalView<RandomAccessible<FloatType>> paramR = Views.interval(Views.hyperSlices(params.paramRA, ltAxes), iNTSpace);
 			paramRCsr = paramR.localizingCursor();
 		}
 
@@ -127,7 +127,7 @@ public abstract class AbstractFitRAI<I extends RealType<I>>
 		IterableInterval<I> binnedTrans = null;
 		Cursor<I> binnedTransCsr = null;
 		if (binningKnl != null && binningAxes != null) {
-			ntNbhdsRA = binningKnl.neighborhoodsRandomAccessible(nontemporalR).randomAccess();
+			ntNbhdsRA = binningKnl.neighborhoodsRandomAccessible(nonLtR).randomAccess();
 			cntrCoord = new long[ntRCsr.numDimensions()];
 			nbhdCoord = new long[ntRCsr.numDimensions()];
 			binnedTrans = ops().copy().iterableInterval(Views.interval(ntRCsr.get(), iTSpace));
@@ -160,10 +160,12 @@ public abstract class AbstractFitRAI<I extends RealType<I>>
 //				System.out.println(Arrays.toString(cntrCoord));
 
 				Cursor<RandomAccessible<I>> ntNbhdCsr = ntNbhdsRA.get().localizingCursor();
+
+				int nNbhdMember = 1;
 				while (ntNbhdCsr.hasNext()) {
 					ntNbhdCsr.fwd();
 					ntNbhdCsr.localize(nbhdCoord);
-					// A trans in the same binning-space nbhd should have the same non-binning axis coordinates
+					// A trans in the same binning-space nbhd should have the same non-binning-axis coordinates
 					boolean inNbhd = true;
 					for (int i = 0; i < nonbinningAxes.length; i++) {
 						if (nbhdCoord[nonbinningAxes[i]] != cntrCoord[nonbinningAxes[i]]) {
@@ -182,11 +184,19 @@ public abstract class AbstractFitRAI<I extends RealType<I>>
 						binnedTransCsr.next().add(nbhdTransRA.get());
 					}
 					binnedTransCsr.reset();
+					nNbhdMember++;
 //					for (I i: binnedTrans) {
 //						System.out.print(i + " ");
 //					}
 //					System.out.println();
 				}
+
+				// complete averaging by dividing by the number of pixels in the neighborhood
+				while (binnedTransCsr.hasNext()) {
+					I pix = binnedTransCsr.next();
+					pix.setReal(pix.getRealFloat() / nNbhdMember);
+				}
+				binnedTransCsr.reset();
 			}
 			else
 				binnedTrans = Views.interval(ntRCsr.get(), iTSpace);
@@ -217,7 +227,7 @@ public abstract class AbstractFitRAI<I extends RealType<I>>
 		// get dimensions and replace time axis with decay parameters
 		long[] dimFit = new long[trans.numDimensions()];
 		trans.dimensions(dimFit);
-		dimFit[timeAxis] = params.param.length;
+		dimFit[lifetimeAxis] = params.param.length;
 		return ArrayImgs.floats(dimFit);
 	}
 
@@ -227,45 +237,6 @@ public abstract class AbstractFitRAI<I extends RealType<I>>
 	 */
 	protected abstract FitII<I> createFitII();
 
-//	// populates "src" into "min" and "max" with "pos" value replaced with "pMin" and "pMax"
-//	private static void populate(long[] src, long[] min, long[] max, long pMin, long pMax, int pos) {
-//		for (int i = 0; i <= src.length; i++) {
-//			if (i == pos) {
-//				min[i] = pMin;
-//				max[i] = pMax;
-//			}
-//			else
-//				min[i] = max[i] = i < pos ? src[i] : src[i - 1];
-//		}
-//	}
-//	private static void extractInnerOuter(long[] oriMin, long[] oriMax, int[] innerAxes, int[] outterAxes, long[] iMin, long[] iMax, long[] oMin, long[] oMax) {
-//		Arrays.sort(innerAxes);
-//		for (int i = 0, j = 0, k = 0; i < oriMin.length; i++)
-//			if (j < innerAxes.length && i == innerAxes[j]) {
-//				iMin[j] = oriMin[i];
-//				iMax[j] = oriMax[i];
-//				innerAxes[j] = i;
-//				j++;
-//			}
-//			else {
-//				oMin[k] = oriMin[i];
-//				oMax[k] = oriMax[i];
-//				outterAxes[k] = i;
-//				k++;
-//			}
-//	}
-//	private static void extractInnerOuter(int nD, int[] innerAxes, int[] outterAxes) {
-//		Arrays.sort(innerAxes);
-//		for (int i = 0, j = 0, k = 0; i < nD; i++)
-//			if (j < innerAxes.length && i == innerAxes[j]) {
-//				innerAxes[j] = i;
-//				j++;
-//			}
-//			else {
-//				outterAxes[k] = i;
-//				k++;
-//			}
-//	}
 	private static FinalInterval subspaceBounds(Interval in, int[] axes) {
 		long[] min = new long[axes.length];
 		long[] max = new long[axes.length];

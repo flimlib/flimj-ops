@@ -26,22 +26,22 @@ public class MLAFitWorker<I extends RealType<I>> extends AbstractFitWorker<I> {
 	 * Performs an MLA fit.
 	 */
 	@Override
-	public void do_fit(FitParams params, FitResults results) {
-		System.out.println(transBuffer);
-		System.out.println(params.noise);
-		System.out.println(params.sig);
-		System.out.println(params.param);
-		System.out.println(params.paramFree);
-		System.out.println(params.restrain);
-		System.out.println(params.fitFunc);
-		System.out.println(results.fitted);
-		System.out.println(results.residuals);
-		System.out.println(chisqBuffer);
-		System.out.println(covar);
-		System.out.println(alpha);
-		System.out.println(erraxes);
+	public void doFit(FitParams params, FitResults results) {
+//		System.out.println(transBuffer);
+//		System.out.println(params.noise);
+//		System.out.println(params.sig);
+//		System.out.println(params.param);
+//		System.out.println(params.paramFree);
+//		System.out.println(params.restrain);
+//		System.out.println(params.fitFunc);
+//		System.out.println(results.fitted);
+//		System.out.println(results.residuals);
+//		System.out.println(chisqBuffer[0]);
+//		System.out.println(covar);
+//		System.out.println(alpha);
+//		System.out.println(erraxes);
 		results.retCode = SLIMCurve.GCI_marquardt_fitting_engine(
-				params.xInc, transBuffer, params.fitStart, params.fitEnd,
+				params.xInc, transBuffer, 0, nData - 1,
 				params.instr, params.noise, params.sig, results.param,
 				params.paramFree,
 				params.restrain,
@@ -53,8 +53,8 @@ public class MLAFitWorker<I extends RealType<I>> extends AbstractFitWorker<I> {
 
 	@Override
 	public void postFit(FitParams params, FitResults results) {
-		results.covar = covar.asArray();
-		results.alpha = alpha.asArray();
-		results.errAxes = erraxes.asArray();
+//		results.covar = covar.asArray();
+//		results.alpha = alpha.asArray();
+//		results.errAxes = erraxes.asArray();
 	}
 }

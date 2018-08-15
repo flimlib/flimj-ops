@@ -20,9 +20,9 @@ public class RLDFitWorker<I extends RealType<I>> extends AbstractFitWorker<I> {
 	 * Performs the RLD fit.
 	 */
 	@Override
-	protected void do_fit(FitParams params, FitResults results) {
+	protected void doFit(FitParams params, FitResults results) {
 		results.retCode = SLIMCurve.GCI_triple_integral_fitting_engine(
-				params.xInc, transBuffer, params.fitStart, params.fitEnd,
+				params.xInc, transBuffer, 0, nData - 1,
 				params.instr, params.noise, params.sig, Z, A, tau,
 				results.fitted, results.residuals, chisqBuffer,
 				params.chisq_target

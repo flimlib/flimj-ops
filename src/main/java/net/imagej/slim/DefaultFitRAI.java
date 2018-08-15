@@ -15,11 +15,12 @@ import net.imglib2.type.numeric.RealType;
  * @author Dasong Gao
  */
 public class DefaultFitRAI {
+
 	private DefaultFitRAI() {
 		// NB: Prevent instantiation of utility class.
 	}
 
-	@Plugin(type = SlimFit.FitRAI.class)
+	@Plugin(type = SlimFit.FitRAI.class, name = SlimFit.FitRAI.NAME + ".mla")
 	public static class MLAFitRAI<I extends RealType<I>>
 		extends AbstractFitRAI<I> implements FitRAI<I> {
 
@@ -29,7 +30,7 @@ public class DefaultFitRAI {
 		}
 	}
 
-	@Plugin(type = SlimFit.FitRAI.class)
+	@Plugin(type = SlimFit.FitRAI.class, name = SlimFit.FitRAI.NAME + ".rld")
 	public static class RLDFitRAI<I extends RealType<I>>
 		extends AbstractFitRAI<I> implements FitRAI<I> {
 

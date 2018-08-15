@@ -38,6 +38,7 @@ import org.scijava.Context;
 
 import io.scif.img.ImgOpener;
 import io.scif.lifesci.SDTFormat;
+import io.scif.lifesci.SDTFormat.Metadata;
 import io.scif.lifesci.SDTFormat.Reader;
 import net.imagej.ops.AbstractOpTest;
 import net.imagej.ops.convert.RealTypeConverter;
@@ -69,12 +70,16 @@ public class MLAFitImgTest extends AbstractOpTest {
 
 	private static FitParams param;
 
+	private static long[] min, max;
+
 	@BeforeClass
 	@SuppressWarnings("unchecked")
 	public static void createImages() throws IOException {
 		Reader r = new SDTFormat.Reader();
 		r.setContext(new Context());
 		r.setSource(new File("input.sdt"));
+//		Metadata metadata = r.getMetadata();
+//		io.scif.Metadata metadata2 = new ImgOpener().openImgs(r).get(0).getMetadata();
 		in = (Img<UnsignedShortType>) new ImgOpener().openImgs(r).get(0).getImg();
 		r.close();
 
@@ -86,17 +91,53 @@ public class MLAFitImgTest extends AbstractOpTest {
 		param.fitEnd = 20;
 		param.fitFunc = FitFunc.GCI_MULTIEXP_TAU;
 		param.noise = NoiseType.NOISE_POISSON_FIT;
-		param.param = new float[] { 0, 0, 0 };
+		param.param = new float[3];// { 0, 1059597.1f, 0.2f };
 		param.paramFree = new boolean[] { true, true, true };
 		param.restrain = RestrainType.ECF_RESTRAIN_DEFAULT;
 		param.xInc = 0.195f;
+
+		min = new long[]{ 0, 40, 40, 10  };
+		max = new long[]{ 63, 87, 87, 15 };
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	public void testRLDFitImgDemo() {
-		long[] min = new long[]{ 0, 40, 40, 10  };
-		long[] max = new long[]{ 63, 87, 87, 15 };
+		param.paramRA = null;
+		min[0] = 0;
+		max[0] = 63;
+
+		RealMask roi = null;
+		RectangleShape binningShape = null;
+		int[] binningAxes = null;
+
+		roi = new OpenWritableBox(new double[]{ min[1] - 1, min[2] - 1, min[3] - 1 }, new double[]{ max[1] + 1, max[2] + 1, max[3] + 1 });
+//		binningShape = new RectangleShape(1, true); binningAxes = new int[] { 1, 2 };
+
+//		IntervalView<UnsignedShortType> inView = Views.interval(in, min, max);
+//		inView = Views.permute(inView, 0, 2);
+//		inView = Views.permute(inView, 0, 1);
+//		ImageJFunctions.show( inView );
+		System.out.println("start");
+		long ms = System.currentTimeMillis();
+		out = (Img<FloatType>) ops.run(DefaultFitRAI.RLDFitRAI.class, out, in, param, 0, roi, binningShape, binningAxes);
+		System.out.println(System.currentTimeMillis() - ms);
+//		for (int i = 0; i < 3; i++) {
+//			min[0] = max[0] = i;
+//			IntervalView<FloatType> rsltView = Views.interval(out, min, max);
+//			rsltView = Views.permute(rsltView, 0, 2);
+//			rsltView = Views.permute(rsltView, 0, 1);
+//			ImageJFunctions.show( rsltView );
+//		}
+//		while (true);
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testMLAFitImg() {
+		param.paramRA = out;
+		min[0] = 0;
+		max[0] = 63;
 
 		RealMask roi = null;
 		RectangleShape binningShape = null;
@@ -111,9 +152,9 @@ public class MLAFitImgTest extends AbstractOpTest {
 		ImageJFunctions.show( inView );
 		System.out.println("start");
 		long ms = System.currentTimeMillis();
-		out = (Img<FloatType>) ops.run(DefaultFitRAI.RLDFitRAI.class, out, in, param, 0, roi, binningShape, binningAxes);
-
+		out = (Img<FloatType>) ops.run(DefaultFitRAI.MLAFitRAI.class, out, in, param, 0, roi, binningShape, binningAxes);
 		System.out.println(System.currentTimeMillis() - ms);
+
 		for (int i = 0; i < 3; i++) {
 			min[0] = max[0] = i;
 			IntervalView<FloatType> rsltView = Views.interval(out, min, max);
@@ -121,28 +162,23 @@ public class MLAFitImgTest extends AbstractOpTest {
 			rsltView = Views.permute(rsltView, 0, 1);
 			ImageJFunctions.show( rsltView );
 		}
-		while (true);
-	}
-
-//	@Test
-	public void testMLAFitImg() {
-		param.paramRA = out;
-		//		trans = ImgView.wrap(Views.interval(trans, new long[]{ 0, 60, 60, 12  },
-		//		new long[]{ 63, 67, 67, 14 }), trans.factory());
-		//trans = ImgView.wrap(Views.interval(trans, new long[]{ 0, 0, 0, 12  },
-		//		new long[]{ 63, 127, 127, 12 }), trans.factory());
-		
-		//ImageJFunctions.show(trans);
-		System.out.println("start");
-		long ms = System.currentTimeMillis();
-		//ops.run(DefaultFitRAI.RLDFitRAI.class, null, trans, p, 0, new RectangleShape(1, true), new int[] { 1, 2, 3 });
-		//, new RectangleShape(1, true), new int[] { 1, 2 }
-		Img<FloatType> rslt = (Img<FloatType>) ops.run(DefaultFitRAI.MLAFitRAI.class, out, in, param, 0, new OpenWritableBox(new double[]{ 59, 59, 11  }, new double[]{ 68, 68, 15 }));
-		//, new OpenWritableBox(new double[]{ 59, 59, 11  }, new double[]{ 68, 68, 15 })
-		System.out.println(System.currentTimeMillis() - ms);
-		IntervalView<FloatType> interval = Views.interval(rslt, new long[]{ 0, 60, 60, 12  }, new long[]{ 0, 67, 67, 14 });
-		interval = Views.permute(interval, 0, 2);
-		interval = Views.permute(interval, 0, 1);
-//		ImageJFunctions.show( interval );
+//		while (true);
+//		//		trans = ImgView.wrap(Views.interval(trans, new long[]{ 0, 60, 60, 12  },
+//		//		new long[]{ 63, 67, 67, 14 }), trans.factory());
+//		//trans = ImgView.wrap(Views.interval(trans, new long[]{ 0, 0, 0, 12  },
+//		//		new long[]{ 63, 127, 127, 12 }), trans.factory());
+//		
+//		//ImageJFunctions.show(trans);
+//		System.out.println("start");
+//		long ms = System.currentTimeMillis();
+//		//ops.run(DefaultFitRAI.RLDFitRAI.class, null, trans, p, 0, new RectangleShape(1, true), new int[] { 1, 2, 3 });
+//		//, new RectangleShape(1, true), new int[] { 1, 2 }
+//		Img<FloatType> rslt = (Img<FloatType>) ops.run(DefaultFitRAI.MLAFitRAI.class, out, in, param, 0, new OpenWritableBox(new double[]{ 59, 59, 11  }, new double[]{ 68, 68, 15 }));
+//		//, new OpenWritableBox(new double[]{ 59, 59, 11  }, new double[]{ 68, 68, 15 })
+//		System.out.println(System.currentTimeMillis() - ms);
+//		IntervalView<FloatType> interval = Views.interval(rslt, new long[]{ 0, 60, 60, 12  }, new long[]{ 0, 67, 67, 14 });
+//		interval = Views.permute(interval, 0, 2);
+//		interval = Views.permute(interval, 0, 1);
+////		ImageJFunctions.show( interval );
 	}
 }

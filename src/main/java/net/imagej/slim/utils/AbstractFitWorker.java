@@ -8,8 +8,7 @@ import net.imglib2.type.numeric.RealType;
 
 public abstract class AbstractFitWorker<I extends RealType<I>> implements FitWorker <I> {
 	
-	private int oldNData = -1;
-
+	protected int nData = -1;
 	protected float[] transBuffer;
 	protected float[] chisqBuffer;
 
@@ -26,7 +25,7 @@ public abstract class AbstractFitWorker<I extends RealType<I>> implements FitWor
 	 * @param params - The fitting parameters
 	 * @param results - The fitted results
 	 */
-	protected abstract void do_fit(FitParams params, FitResults results);
+	protected abstract void doFit(FitParams params, FitResults results);
 
 	/**
 	 * A routine called before {@link #do_fit}. Can be used to copy back
@@ -38,16 +37,17 @@ public abstract class AbstractFitWorker<I extends RealType<I>> implements FitWor
 
 	public void fit(IterableInterval<I> trans, FitParams params, FitResults results) {
 		int nParams = params.param.length;
-		int nData = (int) trans.size();
-		if (oldNData != nData) {
+		int newNData = params.fitEnd + 1;
+		if (nData < newNData) {
+			nData = newNData;
 			transBuffer = new float[nData];
-			oldNData = nData;
 		}
 		chisqBuffer = reallocIfWeird(chisqBuffer, 1);
 
 		Cursor<I> cur = trans.cursor();
+		cur.jumpFwd(params.fitStart);
 		// assume the access order of trans is sequential in time
-		for (int i = 0; cur.hasNext(); i++)
+		for (int i = 0; i < nData; i++)
 			transBuffer[i] = cur.next().getRealFloat();
 //		System.out.println(Arrays.toString(transBuffer));
 		//////////////////////
@@ -75,16 +75,15 @@ public abstract class AbstractFitWorker<I extends RealType<I>> implements FitWor
 //		params.fitStart = 46 - 38;
 //		params.fitEnd = 255 - 38;
 		//////////////////////
-		int nFittedData = params.fitEnd;
-		results.fitted = reallocIfWeird(results.fitted, nFittedData);
-		results.residuals = reallocIfWeird(results.residuals, nFittedData);
+		results.fitted = reallocIfWeird(results.fitted, nData);
+		results.residuals = reallocIfWeird(results.residuals, nData);
 		results.param = reallocIfWeird(results.param, nParams);
 		for (int i = 0; i < nParams; i++)
 			results.param[i] = params.param[i];
 
 		preFit(params, results);
 
-		do_fit(params, results);
+		doFit(params, results);
 
 		postFit(params, results);
 		results.chisq = chisqBuffer[0];

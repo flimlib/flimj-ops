@@ -3,6 +3,7 @@ package net.imagej.slim;
 import java.util.Arrays;
 
 import org.scijava.plugin.Parameter;
+
 import net.imagej.ops.special.hybrid.AbstractUnaryHybridCF;
 import net.imagej.slim.SlimFit.FitII;
 import net.imagej.slim.utils.FitParams;

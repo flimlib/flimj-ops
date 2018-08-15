@@ -15,11 +15,12 @@ import net.imglib2.type.numeric.RealType;
  * @author Dasong Gao
  */
 public class DefaultFitII {
+
 	private DefaultFitII() {
 		// NB: Prevent instantiation of utility class.
 	}
 
-	@Plugin(type = SlimFit.FitII.class)
+	@Plugin(type = SlimFit.FitII.class, name = SlimFit.FitII.NAME + ".mla")
 	public static class MLAFitII<I extends RealType<I>>
 		extends AbstractFitII<I> implements FitII<I> {
 
@@ -29,7 +30,7 @@ public class DefaultFitII {
 		}
 	}
 
-	@Plugin(type = SlimFit.FitII.class)
+	@Plugin(type = SlimFit.FitII.class, name = SlimFit.FitII.NAME + ".rld")
 	public static class RLDFitII<I extends RealType<I>>
 		extends AbstractFitII<I> implements FitII<I> {
 
