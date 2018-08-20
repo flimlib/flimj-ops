@@ -120,7 +120,8 @@ public class MLAFitImgTest extends AbstractOpTest {
 //		ImageJFunctions.show( inView );
 		System.out.println("start");
 		long ms = System.currentTimeMillis();
-		out = (Img<FloatType>) ops.run(DefaultFitRAI.RLDFitRAI.class, out, in, param, 0, roi, binningShape, binningAxes);
+		out = (Img<FloatType>) ops.run("slimFitter.mlaFit", out, in, param, 0, roi, binningShape, binningAxes);
+//		out = (Img<FloatType>) ops.run(DefaultFitRAI.RLDFitRAI.class, out, in, param, 0, roi, binningShape, binningAxes);
 		System.out.println(System.currentTimeMillis() - ms);
 //		for (int i = 0; i < 3; i++) {
 //			min[0] = max[0] = i;
