@@ -5,7 +5,7 @@ import java.util.Arrays;
 import org.scijava.plugin.Parameter;
 
 import net.imagej.ops.special.hybrid.AbstractUnaryHybridCF;
-import net.imagej.slim.SlimFit.FitII;
+import net.imagej.slim.SlimOps.FitII;
 import net.imagej.slim.utils.FitParams;
 import net.imagej.slim.utils.FitResults;
 import net.imagej.slim.utils.FitWorker;
@@ -19,8 +19,8 @@ public abstract class AbstractFitII<I extends RealType<I>> extends
 	FitParams params;
 
 	private FitWorker<I> worker;
-	
-	// TODO move to op
+
+	@Override
 	public void setParams(FitParams p) {
 		this.params = p;
 	}

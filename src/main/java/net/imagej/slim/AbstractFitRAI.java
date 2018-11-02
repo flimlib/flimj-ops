@@ -6,8 +6,8 @@ import org.scijava.plugin.Parameter;
 
 import net.imagej.ops.Contingent;
 import net.imagej.ops.special.hybrid.AbstractUnaryHybridCF;
-import net.imagej.slim.SlimFit.FitII;
-import net.imagej.slim.SlimFit.FitRAI;
+import net.imagej.slim.SlimOps.FitII;
+import net.imagej.slim.SlimOps.FitRAI;
 import net.imagej.slim.utils.FitParams;
 import net.imagej.slim.utils.FitResults;
 import net.imagej.slim.utils.FitWorker;
@@ -29,7 +29,8 @@ import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
 public abstract class AbstractFitRAI<I extends RealType<I>>
-		extends AbstractUnaryHybridCF<RandomAccessibleInterval<I>, RandomAccessibleInterval<FloatType>> implements FitRAI<I>, Contingent {
+		extends AbstractUnaryHybridCF<RandomAccessibleInterval<I>, RandomAccessibleInterval<FloatType>>
+		implements FitRAI<I>, Contingent {
 
 	@Parameter
 	FitParams params;
@@ -48,6 +49,7 @@ public abstract class AbstractFitRAI<I extends RealType<I>>
 
 	private FitII<I> fitII;
 
+	@Override
 	public void setParams(FitParams params) {
 		this.params = params;
 	}

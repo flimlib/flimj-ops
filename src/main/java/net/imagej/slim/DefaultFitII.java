@@ -2,7 +2,9 @@ package net.imagej.slim;
 
 import org.scijava.plugin.Plugin;
 
-import net.imagej.slim.SlimFit.FitII;
+import net.imagej.slim.SlimOps.FitII;
+import net.imagej.slim.SlimOps.MLAOp;
+import net.imagej.slim.SlimOps.RLDOp;
 import net.imagej.slim.utils.FitWorker;
 import net.imagej.slim.utils.MLAFitWorker;
 import net.imagej.slim.utils.RLDFitWorker;
@@ -20,9 +22,9 @@ public class DefaultFitII {
 		// NB: Prevent instantiation of utility class.
 	}
 
-	@Plugin(type = SlimFit.FitII.class, name = SlimFit.FitII.NAME + ".mla")
-	public static class MLAFitII<I extends RealType<I>>
-		extends AbstractFitII<I> implements FitII<I> {
+	@Plugin(type = MLAOp.class)
+	public static class MLAFitII<I extends RealType<I>> extends AbstractFitII<I>
+		implements FitII<I> {
 
 		@Override
 		protected FitWorker<I> createWorker() {
@@ -30,9 +32,9 @@ public class DefaultFitII {
 		}
 	}
 
-	@Plugin(type = SlimFit.FitII.class, name = SlimFit.FitII.NAME + ".rld")
-	public static class RLDFitII<I extends RealType<I>>
-		extends AbstractFitII<I> implements FitII<I> {
+	@Plugin(type = RLDOp.class)
+	public static class RLDFitII<I extends RealType<I>> extends AbstractFitII<I>
+		implements FitII<I> {
 
 		@Override
 		protected FitWorker<I> createWorker() {

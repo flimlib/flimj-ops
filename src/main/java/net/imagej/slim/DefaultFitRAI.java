@@ -4,8 +4,10 @@ import org.scijava.plugin.Plugin;
 
 import net.imagej.slim.DefaultFitII.MLAFitII;
 import net.imagej.slim.DefaultFitII.RLDFitII;
-import net.imagej.slim.SlimFit.FitII;
-import net.imagej.slim.SlimFit.FitRAI;
+import net.imagej.slim.SlimOps.FitII;
+import net.imagej.slim.SlimOps.FitRAI;
+import net.imagej.slim.SlimOps.MLAOp;
+import net.imagej.slim.SlimOps.RLDOp;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -20,9 +22,9 @@ public class DefaultFitRAI {
 		// NB: Prevent instantiation of utility class.
 	}
 
-	@Plugin(type = SlimFit.FitRAI.class, name = SlimFit.FitRAI.NAME + ".mla")
-	public static class MLAFitRAI<I extends RealType<I>>
-		extends AbstractFitRAI<I> implements FitRAI<I> {
+	@Plugin(type = MLAOp.class)
+	public static class MLAFitRAI<I extends RealType<I>> extends AbstractFitRAI<I>
+		implements FitRAI<I> {
 
 		@Override
 		protected FitII<I> createFitII() {
@@ -30,9 +32,9 @@ public class DefaultFitRAI {
 		}
 	}
 
-	@Plugin(type = SlimFit.FitRAI.class, name = SlimFit.FitRAI.NAME + ".rld")
-	public static class RLDFitRAI<I extends RealType<I>>
-		extends AbstractFitRAI<I> implements FitRAI<I> {
+	@Plugin(type = RLDOp.class)
+	public static class RLDFitRAI<I extends RealType<I>> extends AbstractFitRAI<I>
+		implements FitRAI<I> {
 
 		@Override
 		protected FitII<I> createFitII() {
