@@ -104,7 +104,7 @@ public class MLAFitImgTest extends AbstractOpTest {
 	@SuppressWarnings("unchecked")
 	public void testRLDFitImgDemo() {
 		//////////////////////////
-		System.out.println(ops.help("slim.mlaFit"));
+		System.out.println(ops.help("slim.fitMLA"));
 		//////////////////////////
 
 		param.paramRA = null;

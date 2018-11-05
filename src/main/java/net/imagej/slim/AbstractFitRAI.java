@@ -75,6 +75,7 @@ public abstract class AbstractFitRAI<I extends RealType<I>>
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public void compute(RandomAccessibleInterval<I> trans, RandomAccessibleInterval<FloatType> fitted) {
 		// reusable buffer for each pixel's fitting results
 		FitResults aSingleResult = new FitResults();
@@ -108,15 +109,21 @@ public abstract class AbstractFitRAI<I extends RealType<I>>
 				nonbinningAxes[i]--;
 
 		// each point in this space is a series of transient data
-		IntervalView<RandomAccessible<I>> nonLtR = Views.interval(Views.hyperSlices(Views.extendZero(trans), ltAxes), iNTSpace);
+		IntervalView<RandomAccessible<I>> nonLtR = Views.interval(
+			(RandomAccessible<RandomAccessible<I>>) Views.hyperSlices(
+				Views.extendZero(trans), ltAxes), iNTSpace);
 		Cursor<RandomAccessible<I>> ntRCsr = nonLtR.cursor();
 		// or a series of fitted params
-		IntervalView<RandomAccessible<FloatType>> nonLtW = Views.interval(Views.hyperSlices(fitted, ltAxes), iNTSpace);
+		IntervalView<RandomAccessible<FloatType>> nonLtW = Views.interval(
+			(RandomAccessible<RandomAccessible<FloatType>>) Views.hyperSlices(
+				fitted, ltAxes), iNTSpace);
 		Cursor<RandomAccessible<FloatType>> ntWCsr = nonLtW.localizingCursor();
 
 		Cursor<RandomAccessible<FloatType>> paramRCsr = null;
 		if (params.paramRA != null) {
-			IntervalView<RandomAccessible<FloatType>> paramR = Views.interval(Views.hyperSlices(params.paramRA, ltAxes), iNTSpace);
+			IntervalView<RandomAccessible<FloatType>> paramR = Views.interval(
+				(RandomAccessible<RandomAccessible<FloatType>>) Views.hyperSlices(
+					params.paramRA, ltAxes), iNTSpace);
 			paramRCsr = paramR.localizingCursor();
 		}
 

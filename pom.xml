@@ -16,17 +16,18 @@
 	<artifactId>slim-curve-ops</artifactId>
 	<version>0.1.0-SNAPSHOT</version>
 
-	<name>slim-plugin</name>
+	<name>slim-curve-ops</name>
 	<description>A slim-curve plugin of ImageJ.</description>
-	<!-- <url>http://mycompany.com/imagej/process-pixels/</url>
-	<inceptionYear>2012</inceptionYear>
+	<url>https://slim-curve.github.io/</url>
+	<inceptionYear>2017</inceptionYear>
 	<organization>
-		<name>My Company</name>
-		<url>http://mycompany.com/</url>
+		<name>SLIM Curve</name>
+		<url>https://github.com/slim-curve</url>
 	</organization>
 	<licenses>
 		<license>
-			<name>Simplified BSD License</name>
+			<name>GNU General Public License v3+</name>
+			<url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
@@ -38,9 +39,17 @@
 			<url>http://imagej.net/User:Rueden</url>
 			<roles>
 				<role>lead</role>
+				<role>reviewer</role>
+				<role>support</role>
+				<role>maintainer</role>
+			</roles>
+		</developer>
+		<developer>
+			<id>Xanthorapedia</id>
+			<name>Dasong Gao</name>
+			<roles>
 				<role>developer</role>
 				<role>debugger</role>
-				<role>reviewer</role>
 				<role>support</role>
 				<role>maintainer</role>
 			</roles>
@@ -48,33 +57,13 @@
 	</developers>
 	<contributors>
 		<contributor>
-			<name>Johannes Schindelin</name>
-			<url>http://imagej.net/User:Schindelin</url>
-			<roles><role>founder</role></roles>
-			<properties><id>dscho</id></properties>
-		</contributor>
-		<contributor>
-			<name>Olivier Burri</name>
-			<url>http://imagej.net/User:Oburri</url>
-			<properties><id>lacan</id></properties>
-		</contributor>
-		<contributor>
-			<name>Mark Hiner</name>
-			<url>http://imagej.net/User:Hinerm</url>
-			<properties><id>hinerm</id></properties>
-		</contributor>
-		<contributor>
-			<name>Jules Maselbas</name>
-		</contributor>
-		<contributor>
-			<name>Kota Miura</name>
-			<url>http://imagej.net/User:Miura</url>
-			<properties><id>cmci</id></properties>
-		</contributor>
-		<contributor>
-			<name>Yili Zhao</name>
-			<url>http://imagej.net/User:Panovr</url>
-			<properties><id>panovr</id></properties>
+			<name>Dasong Gao</name>
+			<roles>
+				<role>developer</role>
+				<role>debugger</role>
+				<role>support</role>
+				<role>maintainer</role>
+			</roles>
 		</contributor>
 	</contributors>
 
@@ -86,26 +75,29 @@
 	</mailingLists>
 
 	<scm>
-		<connection>scm:git:git://github.com/imagej/example-legacy-plugin</connection>
-		<developerConnection>scm:git:git@github.com:imagej/example-legacy-plugin</developerConnection>
+		<connection>scm:git:https://github.com/slim-curve/slim-curve-ops</connection>
+		<developerConnection>scm:git:git@github.com:slim-curve/slim-curve-ops</developerConnection>
 		<tag>HEAD</tag>
-		<url>https://github.com/imagej/example-legacy-plugin</url>
+		<url>https://github.com/slim-curve/slim-curve-ops</url>
 	</scm>
 	<issueManagement>
 		<system>GitHub Issues</system>
-		<url>https://github.com/imagej/example-legacy-plugin/issues</url>
+		<url>https://github.com/imagej/slim-curve/slim-curve-ops/issues</url>
 	</issueManagement>
 	<ciManagement>
-		<system>None</system>
-	</ciManagement> -->
+		<system>Travis CI</system>
+		<url>https://travis-ci.org/slim-curve/slim-curve-ops</url>
+	</ciManagement>
 
 	<properties>
 		<package-name>net.imagej.slim</package-name>
 		<main-class>net.imagej.slim.Slim</main-class>
 		<license.licenseName>bsd_2</license.licenseName>
+		<license.copyrightOwners>Board of Regents of the University of Wisconsin-Madison.</license.copyrightOwners>
 		<!-- <license.copyrightOwners>My Company, Inc.</license.copyrightOwners> -->
-
-		<enforcer.skip>true</enforcer.skip>
+		<!-- NB: Deploy releases to the ImageJ Maven repository. -->
+		<releaseProfiles>deploy-to-imagej</releaseProfiles>
+		<!-- <enforcer.skip>true</enforcer.skip> -->
 	</properties>
 	<repositories>
 		<repository>
