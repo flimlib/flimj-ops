@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+		http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.scijava</groupId>
+		<artifactId>pom-scijava</artifactId>
+		<version>23.1.1</version>
+		<relativePath />
+	</parent>
+
+	<groupId>net.imagej</groupId>
+	<artifactId>slim-curve-ops</artifactId>
+	<version>0.1.0-SNAPSHOT</version>
+
+	<name>slim-curve-ops</name>
+	<description>A slim-curve plugin of ImageJ.</description>
+	<url>https://slim-curve.github.io/</url>
+	<inceptionYear>2017</inceptionYear>
+	<organization>
+		<name>SLIM Curve</name>
+		<url>https://github.com/slim-curve</url>
+	</organization>
+	<licenses>
+		<license>
+			<name>GNU General Public License v3+</name>
+			<url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>ctrueden</id>
+			<name>Curtis Rueden</name>
+			<url>http://imagej.net/User:Rueden</url>
+			<roles>
+				<role>lead</role>
+				<role>reviewer</role>
+				<role>support</role>
+				<role>maintainer</role>
+			</roles>
+		</developer>
+		<developer>
+			<id>Xanthorapedia</id>
+			<name>Dasong Gao</name>
+			<roles>
+				<role>developer</role>
+				<role>debugger</role>
+				<role>support</role>
+				<role>maintainer</role>
+			</roles>
+		</developer>
+	</developers>
+	<contributors>
+		<contributor>
+			<name>Dasong Gao</name>
+			<roles>
+				<role>developer</role>
+				<role>debugger</role>
+				<role>support</role>
+				<role>maintainer</role>
+			</roles>
+		</contributor>
+	</contributors>
+
+	<mailingLists>
+		<mailingList>
+			<name>ImageJ Forum</name>
+			<archive>http://forum.imagej.net/</archive>
+		</mailingList>
+	</mailingLists>
+
+	<scm>
+		<connection>scm:git:https://github.com/slim-curve/slim-curve-ops</connection>
+		<developerConnection>scm:git:git@github.com:slim-curve/slim-curve-ops</developerConnection>
+		<tag>HEAD</tag>
+		<url>https://github.com/slim-curve/slim-curve-ops</url>
+	</scm>
+	<issueManagement>
+		<system>GitHub Issues</system>
+		<url>https://github.com/imagej/slim-curve/slim-curve-ops/issues</url>
+	</issueManagement>
+	<ciManagement>
+		<system>Travis CI</system>
+		<url>https://travis-ci.org/slim-curve/slim-curve-ops</url>
+	</ciManagement>
+
+	<properties>
+		<package-name>net.imagej.slim</package-name>
+		<main-class>net.imagej.slim.Slim</main-class>
+		<license.licenseName>bsd_2</license.licenseName>
+		<license.copyrightOwners>Board of Regents of the University of Wisconsin-Madison.</license.copyrightOwners>
+		<!-- NB: Deploy releases to the ImageJ Maven repository. -->
+		<releaseProfiles>deploy-to-imagej</releaseProfiles>
+
+		<slim-curve.version>1.0.0-rc-3</slim-curve.version>
+	</properties>
+	<repositories>
+		<repository>
+			<id>imagej.public</id>
+			<url>https://maven.imagej.net/content/groups/public</url>
+		</repository>
+	</repositories>
+	<dependencies>
+		<dependency>
+		    <groupId>net.imagej</groupId>
+		    <artifactId>imagej-ops</artifactId>
+		</dependency>
+		<dependency>
+            <groupId>net.imagej</groupId>
+            <artifactId>imagej-ops</artifactId>
+            <version>${imagej-ops.version}</version>
+            <classifier>tests</classifier>
+            <scope>test</scope>
+        </dependency>
+		<dependency>
+		    <groupId>net.imglib2</groupId>
+		    <artifactId>imglib2-ij</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>net.imagej</groupId>
+		    <artifactId>ij</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>slim-curve</groupId>
+			<artifactId>slim-curve</artifactId>
+			<version>${slim-curve.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>slim-curve</groupId>
+			<artifactId>slim-curve</artifactId>
+			<version>${slim-curve.version}</version>
+			<classifier>${slim-curve.natives}</classifier>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.scif</groupId>
+			<artifactId>scifio</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.scif</groupId>
+			<artifactId>scifio-lifesci</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.scijava</groupId>
+			<artifactId>native-lib-loader</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+	</dependencies>
+	<profiles>
+		<!-- Os name (for naming the artifact and the os-specific directory in it) -->
+		<profile>
+			<id>slim-natives-win</id>
+			<activation>
+				<os>
+					<family>windows</family>
+				</os>
+			</activation>
+			<properties>
+				<slim-curve.natives>natives-windows_64</slim-curve.natives>
+			</properties>
+		</profile>
+		<profile>
+			<id>slim-natives-osx</id>
+			<activation>
+				<os>
+					<family>mac</family>
+				</os>
+			</activation>
+			<properties>
+				<slim-curve.natives>natives-osx_64</slim-curve.natives>
+			</properties>
+		</profile>
+		<profile>
+			<id>slim-natives-linux</id>
+			<activation>
+				<os>
+					<family>unix</family>
+					<name>Linux</name>
+				</os>
+			</activation>
+			<properties>
+				<slim-curve.natives>natives-linux_64</slim-curve.natives>
+			</properties>
+		</profile>
+	</profiles>
+</project>
