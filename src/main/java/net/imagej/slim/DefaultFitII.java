@@ -4,9 +4,11 @@ import org.scijava.plugin.Plugin;
 
 import net.imagej.slim.SlimOps.FitII;
 import net.imagej.slim.SlimOps.MLAOp;
+import net.imagej.slim.SlimOps.PhasorOp;
 import net.imagej.slim.SlimOps.RLDOp;
 import net.imagej.slim.utils.FitWorker;
 import net.imagej.slim.utils.MLAFitWorker;
+import net.imagej.slim.utils.PhasorFitWorker;
 import net.imagej.slim.utils.RLDFitWorker;
 import net.imglib2.type.numeric.RealType;
 
@@ -39,6 +41,16 @@ public class DefaultFitII {
 		@Override
 		protected FitWorker<I> createWorker() {
 			return new RLDFitWorker<I>();
+		}
+	}
+
+	@Plugin(type = PhasorOp.class)
+	public static class PhasorFitII<I extends RealType<I>> extends AbstractFitII<I>
+		implements FitII<I> {
+
+		@Override
+		protected FitWorker<I> createWorker() {
+			return new PhasorFitWorker<I>();
 		}
 	}
 }

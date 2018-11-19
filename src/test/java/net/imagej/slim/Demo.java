@@ -62,7 +62,7 @@ import slim.RestrainType;
  * 
  * @author Dasong Gao
  */
-public class MLAFitImgTest extends AbstractOpTest {
+public class Demo extends AbstractOpTest {
 
 	private static Img<UnsignedShortType> in;
 

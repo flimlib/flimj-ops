@@ -41,7 +41,7 @@ public class MLAFitWorker<I extends RealType<I>> extends AbstractFitWorker<I> {
 //		System.out.println(alpha);
 //		System.out.println(erraxes);
 		results.retCode = SLIMCurve.GCI_marquardt_fitting_engine(
-				params.xInc, transBuffer, 0, nData - 1,
+				params.xInc, transBuffer, 0, params.fitEnd,
 				params.instr, params.noise, params.sig, results.param,
 				params.paramFree,
 				params.restrain,

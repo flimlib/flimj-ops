@@ -5,6 +5,12 @@ import org.scijava.plugin.Plugin;
 import net.imagej.ops.AbstractNamespace;
 import net.imagej.ops.Namespace;
 import net.imagej.ops.OpMethod;
+import net.imagej.slim.DefaultFitII.MLAFitII;
+import net.imagej.slim.DefaultFitII.PhasorFitII;
+import net.imagej.slim.DefaultFitII.RLDFitII;
+import net.imagej.slim.DefaultFitRAI.MLAFitRAI;
+import net.imagej.slim.DefaultFitRAI.PhasorFitRAI;
+import net.imagej.slim.DefaultFitRAI.RLDFitRAI;
 import net.imagej.slim.utils.FitParams;
 import net.imagej.slim.utils.FitResults;
 import net.imglib2.IterableInterval;
@@ -15,115 +21,164 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.FloatType;
 
 @Plugin(type = Namespace.class)
-public class SlimNamespace extends AbstractNamespace {
+@SuppressWarnings("unchecked")
+public class SlimNamespace<I extends RealType<I>> extends AbstractNamespace {
 
 	private static final String NS_NAME = "slim";
+
 	@Override
 	public String getName() {
 		return NS_NAME;
 	}
 
-	@OpMethod(op = net.imagej.slim.DefaultFitII.RLDFitII.class)
-	public <I extends RealType<I>> FitResults fitRLD(final IterableInterval<I> in, final FitParams params) {
+	@OpMethod(op = RLDFitII.class)
+	public  FitResults fitRLD(final IterableInterval<I> in, final FitParams params) {
 		final FitResults result =
-			(FitResults) ops().run(net.imagej.slim.DefaultFitII.RLDFitII.class, in, params);
+			(FitResults) ops().run(RLDFitII.class, in, params);
 		return result;
 	}
 
-	@OpMethod(op = net.imagej.slim.DefaultFitII.RLDFitII.class)
-	public <I extends RealType<I>> FitResults fitRLD(final FitResults out, final IterableInterval<I> in, final FitParams params) {
+	@OpMethod(op = RLDFitII.class)
+	public  FitResults fitRLD(final FitResults out, final IterableInterval<I> in, final FitParams params) {
 		final FitResults result =
-			(FitResults) ops().run(net.imagej.slim.DefaultFitII.RLDFitII.class, out, in, params);
+			(FitResults) ops().run(RLDFitII.class, out, in, params);
 		return result;
 	}
 
-	@OpMethod(op = net.imagej.slim.DefaultFitII.MLAFitII.class)
-	public <I extends RealType<I>> FitResults fitMLA(final IterableInterval<I> in, final FitParams params) {
+	@OpMethod(op = MLAFitII.class)
+	public  FitResults fitMLA(final IterableInterval<I> in, final FitParams params) {
 		final FitResults result =
-			(FitResults) ops().run(net.imagej.slim.DefaultFitII.MLAFitII.class, in, params);
+			(FitResults) ops().run(MLAFitII.class, in, params);
 		return result;
 	}
 
-	@OpMethod(op = net.imagej.slim.DefaultFitII.MLAFitII.class)
-	public <I extends RealType<I>> FitResults fitMLA(final FitResults out, final IterableInterval<I> in, final FitParams params) {
+	@OpMethod(op = MLAFitII.class)
+	public  FitResults fitMLA(final FitResults out, final IterableInterval<I> in, final FitParams params) {
 		final FitResults result =
-			(FitResults) ops().run(net.imagej.slim.DefaultFitII.MLAFitII.class, out, in, params);
+			(FitResults) ops().run(MLAFitII.class, out, in, params);
 		return result;
 	}
 
-	@OpMethod(op = net.imagej.slim.DefaultFitRAI.RLDFitRAI.class)
-	public <I extends RealType<I>> RandomAccessibleInterval<I> fitRLD(final RandomAccessibleInterval<I> out, final RandomAccessibleInterval<I> in, final FitParams params, final int lifetimeAxis) {
+	@OpMethod(op = RLDFitRAI.class)
+	public  RandomAccessibleInterval<I> fitRLD(final RandomAccessibleInterval<I> out, final RandomAccessibleInterval<I> in, final FitParams params, final int lifetimeAxis) {
 		final RandomAccessibleInterval<I> result =
-			(RandomAccessibleInterval<I>) ops().run(net.imagej.slim.DefaultFitRAI.RLDFitRAI.class, out, in, params, lifetimeAxis);
+			(RandomAccessibleInterval<I>) ops().run(RLDFitRAI.class, out, in, params, lifetimeAxis);
 		return result;
 	}
 
-	@OpMethod(op = net.imagej.slim.DefaultFitRAI.RLDFitRAI.class)
-	public <I extends RealType<I>> RandomAccessibleInterval<I> fitRLD(final RandomAccessibleInterval<I> out, final RandomAccessibleInterval<I> in, final FitParams params, final int lifetimeAxis, final RealMask roi) {
+	@OpMethod(op = RLDFitRAI.class)
+	public  RandomAccessibleInterval<I> fitRLD(final RandomAccessibleInterval<I> out, final RandomAccessibleInterval<I> in, final FitParams params, final int lifetimeAxis, final RealMask roi) {
 		final RandomAccessibleInterval<I> result =
-			(RandomAccessibleInterval<I>) ops().run(net.imagej.slim.DefaultFitRAI.RLDFitRAI.class, out, in, params, lifetimeAxis, roi);
+			(RandomAccessibleInterval<I>) ops().run(RLDFitRAI.class, out, in, params, lifetimeAxis, roi);
 		return result;
 	}
 
-	@OpMethod(op = net.imagej.slim.DefaultFitRAI.RLDFitRAI.class)
-	public <I extends RealType<I>> RandomAccessibleInterval<I> fitRLD(final RandomAccessibleInterval<I> out, final RandomAccessibleInterval<I> in, final FitParams params, final int lifetimeAxis, final RealMask roi, final Shape binningKnl) {
+	@OpMethod(op = RLDFitRAI.class)
+	public  RandomAccessibleInterval<I> fitRLD(final RandomAccessibleInterval<I> out, final RandomAccessibleInterval<I> in, final FitParams params, final int lifetimeAxis, final RealMask roi, final Shape binningKnl) {
 		final RandomAccessibleInterval<I> result =
-			(RandomAccessibleInterval<I>) ops().run(net.imagej.slim.DefaultFitRAI.RLDFitRAI.class, out, in, params, lifetimeAxis, roi, binningKnl);
+			(RandomAccessibleInterval<I>) ops().run(RLDFitRAI.class, out, in, params, lifetimeAxis, roi, binningKnl);
 		return result;
 	}
 
-	@OpMethod(op = net.imagej.slim.DefaultFitRAI.RLDFitRAI.class)
-	public <I extends RealType<I>> RandomAccessibleInterval<I> fitRLD(final RandomAccessibleInterval<I> out, final RandomAccessibleInterval<I> in, final FitParams params, final int lifetimeAxis, final RealMask roi, final Shape binningKnl, final int... binningAxes) {
+	@OpMethod(op = RLDFitRAI.class)
+	public  RandomAccessibleInterval<I> fitRLD(final RandomAccessibleInterval<I> out, final RandomAccessibleInterval<I> in, final FitParams params, final int lifetimeAxis, final RealMask roi, final Shape binningKnl, final int... binningAxes) {
 		final RandomAccessibleInterval<I> result =
-			(RandomAccessibleInterval<I>) ops().run(net.imagej.slim.DefaultFitRAI.RLDFitRAI.class, out, in, params, lifetimeAxis, roi, binningKnl, binningAxes);
+			(RandomAccessibleInterval<I>) ops().run(RLDFitRAI.class, out, in, params, lifetimeAxis, roi, binningKnl, binningAxes);
 		return result;
 	}
 
-	@OpMethod(op = net.imagej.slim.DefaultFitRAI.MLAFitRAI.class)
-	public <I extends RealType<I>> RandomAccessibleInterval<I> fitMLA(final RandomAccessibleInterval<I> in, final FitParams params, final int lifetimeAxis) {
+	@OpMethod(op = MLAFitRAI.class)
+	public  RandomAccessibleInterval<I> fitMLA(final RandomAccessibleInterval<I> in, final FitParams params, final int lifetimeAxis) {
 		final RandomAccessibleInterval<I> result =
-			(RandomAccessibleInterval<I>) ops().run(net.imagej.slim.DefaultFitRAI.MLAFitRAI.class, in, params, lifetimeAxis);
+			(RandomAccessibleInterval<I>) ops().run(MLAFitRAI.class, in, params, lifetimeAxis);
 		return result;
 	}
 
-	@OpMethod(op = net.imagej.slim.DefaultFitRAI.MLAFitRAI.class)
-	public <I extends RealType<I>> RandomAccessibleInterval<I> fitMLA(final RandomAccessibleInterval<I> out, final RandomAccessibleInterval<I> in, final FitParams params, final int lifetimeAxis) {
+	@OpMethod(op = MLAFitRAI.class)
+	public  RandomAccessibleInterval<I> fitMLA(final RandomAccessibleInterval<I> out, final RandomAccessibleInterval<I> in, final FitParams params, final int lifetimeAxis) {
 		final RandomAccessibleInterval<I> result =
-			(RandomAccessibleInterval<I>) ops().run(net.imagej.slim.DefaultFitRAI.MLAFitRAI.class, out, in, params, lifetimeAxis);
+			(RandomAccessibleInterval<I>) ops().run(MLAFitRAI.class, out, in, params, lifetimeAxis);
 		return result;
 	}
 
-	@OpMethod(op = net.imagej.slim.DefaultFitRAI.MLAFitRAI.class)
-	public <I extends RealType<I>> RandomAccessibleInterval<I> fitMLA(final RandomAccessibleInterval<I> out, final RandomAccessibleInterval<I> in, final FitParams params, final int lifetimeAxis, final RealMask roi) {
+	@OpMethod(op = MLAFitRAI.class)
+	public  RandomAccessibleInterval<I> fitMLA(final RandomAccessibleInterval<I> out, final RandomAccessibleInterval<I> in, final FitParams params, final int lifetimeAxis, final RealMask roi) {
 		final RandomAccessibleInterval<I> result =
-			(RandomAccessibleInterval<I>) ops().run(net.imagej.slim.DefaultFitRAI.MLAFitRAI.class, out, in, params, lifetimeAxis, roi);
+			(RandomAccessibleInterval<I>) ops().run(MLAFitRAI.class, out, in, params, lifetimeAxis, roi);
 		return result;
 	}
 
-	@OpMethod(op = net.imagej.slim.DefaultFitRAI.MLAFitRAI.class)
-	public <I extends RealType<I>> RandomAccessibleInterval<I> fitMLA(final RandomAccessibleInterval<I> out, final RandomAccessibleInterval<I> in, final FitParams params, final int lifetimeAxis, final RealMask roi, final Shape binningKnl) {
+	@OpMethod(op = MLAFitRAI.class)
+	public  RandomAccessibleInterval<I> fitMLA(final RandomAccessibleInterval<I> out, final RandomAccessibleInterval<I> in, final FitParams params, final int lifetimeAxis, final RealMask roi, final Shape binningKnl) {
 		final RandomAccessibleInterval<I> result =
-			(RandomAccessibleInterval<I>) ops().run(net.imagej.slim.DefaultFitRAI.MLAFitRAI.class, out, in, params, lifetimeAxis, roi, binningKnl);
+			(RandomAccessibleInterval<I>) ops().run(MLAFitRAI.class, out, in, params, lifetimeAxis, roi, binningKnl);
 		return result;
 	}
 
-	@OpMethod(op = net.imagej.slim.DefaultFitRAI.MLAFitRAI.class)
-	public <I extends RealType<I>> RandomAccessibleInterval<I> fitMLA(final RandomAccessibleInterval<I> out, final RandomAccessibleInterval<I> in, final FitParams params, final int lifetimeAxis, final RealMask roi, final Shape binningKnl, final int... binningAxes) {
+	@OpMethod(op = MLAFitRAI.class)
+	public  RandomAccessibleInterval<I> fitMLA(final RandomAccessibleInterval<I> out, final RandomAccessibleInterval<I> in, final FitParams params, final int lifetimeAxis, final RealMask roi, final Shape binningKnl, final int... binningAxes) {
 		final RandomAccessibleInterval<I> result =
-			(RandomAccessibleInterval<I>) ops().run(net.imagej.slim.DefaultFitRAI.MLAFitRAI.class, out, in, params, lifetimeAxis, roi, binningKnl, binningAxes);
+			(RandomAccessibleInterval<I>) ops().run(MLAFitRAI.class, out, in, params, lifetimeAxis, roi, binningKnl, binningAxes);
 		return result;
 	}
 
-	@OpMethod(op = net.imagej.slim.DefaultFitRAI.RLDFitRAI.class)
-	public <I extends RealType<I>> RandomAccessibleInterval<I> fitRLD(final RandomAccessibleInterval<I> in, final FitParams params, final int lifetimeAxis) {
+	@OpMethod(op = RLDFitRAI.class)
+	public  RandomAccessibleInterval<I> fitRLD(final RandomAccessibleInterval<I> in, final FitParams params, final int lifetimeAxis) {
 		final RandomAccessibleInterval<I> result =
-			(RandomAccessibleInterval<I>) ops().run(net.imagej.slim.DefaultFitRAI.RLDFitRAI.class, in, params, lifetimeAxis);
+			(RandomAccessibleInterval<I>) ops().run(RLDFitRAI.class, in, params, lifetimeAxis);
 		return result;
 	}
 
-	@SuppressWarnings("unchecked")
 	@OpMethod(op = DefaultFitRAI.MLAFitRAI.class)
-	public <I extends RealType<I>> RandomAccessibleInterval<FloatType> mlaFit(RandomAccessibleInterval<I> in, FitParams param, int lifetimeAxis) {
+	public  RandomAccessibleInterval<FloatType> mlaFit(RandomAccessibleInterval<I> in, FitParams param, int lifetimeAxis) {
 		return (RandomAccessibleInterval<FloatType>) ops().run(DefaultFitRAI.MLAFitRAI.class, null, in, param, lifetimeAxis, null, null, null);
+	}
+
+	@OpMethod(op = PhasorFitII.class)
+	public  FitResults fitPhasor(final IterableInterval<I> in, final FitParams params) {
+		final FitResults result =
+			(FitResults) ops().run(PhasorFitII.class, in, params);
+		return result;
+	}
+
+	@OpMethod(op = PhasorFitII.class)
+	public  FitResults fitPhasor(final FitResults out, final IterableInterval<I> in, final FitParams params) {
+		final FitResults result =
+			(FitResults) ops().run(PhasorFitII.class, out, in, params);
+		return result;
+	}
+	@OpMethod(op = PhasorFitRAI.class)
+	public  RandomAccessibleInterval<I> fitPhasor(final RandomAccessibleInterval<I> in, final FitParams params, final int lifetimeAxis) {
+		final RandomAccessibleInterval<I> result =
+			(RandomAccessibleInterval<I>) ops().run(PhasorFitRAI.class, in, params, lifetimeAxis);
+		return result;
+	}
+
+	@OpMethod(op = PhasorFitRAI.class)
+	public RandomAccessibleInterval<I> fitPhasor(final RandomAccessibleInterval<I> out, final RandomAccessibleInterval<I> in, final FitParams params, final int lifetimeAxis) {
+		final RandomAccessibleInterval<I> result =
+			(RandomAccessibleInterval<I>) ops().run(PhasorFitRAI.class, out, in, params, lifetimeAxis);
+		return result;
+	}
+
+	@OpMethod(op = PhasorFitRAI.class)
+	public RandomAccessibleInterval<I> fitPhasor(final RandomAccessibleInterval<I> out, final RandomAccessibleInterval<I> in, final FitParams params, final int lifetimeAxis, final RealMask roi) {
+		final RandomAccessibleInterval<I> result =
+			(RandomAccessibleInterval<I>) ops().run(PhasorFitRAI.class, out, in, params, lifetimeAxis, roi);
+		return result;
+	}
+
+	@OpMethod(op = PhasorFitRAI.class)
+	public RandomAccessibleInterval<I> fitPhasor(final RandomAccessibleInterval<I> out, final RandomAccessibleInterval<I> in, final FitParams params, final int lifetimeAxis, final RealMask roi, final Shape binningKnl) {
+		final RandomAccessibleInterval<I> result =
+			(RandomAccessibleInterval<I>) ops().run(PhasorFitRAI.class, out, in, params, lifetimeAxis, roi, binningKnl);
+		return result;
+	}
+
+	@OpMethod(op = PhasorFitRAI.class)
+	public RandomAccessibleInterval<I> fitPhasor(final RandomAccessibleInterval<I> out, final RandomAccessibleInterval<I> in, final FitParams params, final int lifetimeAxis, final RealMask roi, final Shape binningKnl, final int... binningAxes) {
+		final RandomAccessibleInterval<I> result =
+			(RandomAccessibleInterval<I>) ops().run(PhasorFitRAI.class, out, in, params, lifetimeAxis, roi, binningKnl, binningAxes);
+		return result;
 	}
 }
