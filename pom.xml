@@ -94,10 +94,10 @@
 		<main-class>net.imagej.slim.Slim</main-class>
 		<license.licenseName>bsd_2</license.licenseName>
 		<license.copyrightOwners>Board of Regents of the University of Wisconsin-Madison.</license.copyrightOwners>
-		<!-- <license.copyrightOwners>My Company, Inc.</license.copyrightOwners> -->
 		<!-- NB: Deploy releases to the ImageJ Maven repository. -->
 		<releaseProfiles>deploy-to-imagej</releaseProfiles>
-		<!-- <enforcer.skip>true</enforcer.skip> -->
+
+		<slim-curve.version>1.0.0-rc-3</slim-curve.version>
 	</properties>
 	<repositories>
 		<repository>
@@ -128,12 +128,12 @@
 		<dependency>
 			<groupId>slim-curve</groupId>
 			<artifactId>slim-curve</artifactId>
-			<version>1.0.0-rc-1</version>
+			<version>${slim-curve.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>slim-curve</groupId>
 			<artifactId>slim-curve</artifactId>
-			<version>1.0.0-rc-1</version>
+			<version>${slim-curve.version}</version>
 			<classifier>${slim-curve.natives}</classifier>
 			<scope>runtime</scope>
 		</dependency>
@@ -145,21 +145,6 @@
 			<groupId>io.scif</groupId>
 			<artifactId>scifio-lifesci</artifactId>
 		</dependency>
-		<!-- 
-		<dependency>
-			<groupId>io.scif</groupId>
-			<artifactId>scifio-bf-compat</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>ome</groupId>
-			<artifactId>formats-bsd</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>ome</groupId>
-			<artifactId>formats-gpl</artifactId>
-			<scope>runtime</scope>
-		</dependency> -->
 		<dependency>
 			<groupId>org.scijava</groupId>
 			<artifactId>native-lib-loader</artifactId>
