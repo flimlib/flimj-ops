@@ -32,7 +32,15 @@ package net.imagej.slim;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Random;
 
+import net.imglib2.Cursor;
+import net.imglib2.Interval;
+import net.imglib2.IterableInterval;
+import net.imglib2.RandomAccess;
+import net.imglib2.type.NativeType;
+import net.imglib2.type.numeric.RealType;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.scijava.Context;
@@ -58,29 +66,37 @@ import slim.NoiseType;
 import slim.RestrainType;
 
 /**
- * Tests {@link ConvertIIs} + {@link RealTypeConverter} ops.
+ * Regression tests for {@link RealTypeConverter} ops.
  * 
  * @author Dasong Gao
  */
 public class FitTest extends AbstractOpTest {
 
-	private static Img<UnsignedShortType> in;
+	static Img<UnsignedShortType> in;
 
-	private static FitParams param;
+	static FitParams param;
 
-	private static int lifetimeAxis;
+	static int lifetimeAxis;
 
-	private static long[] min, max;
+	static long[] min, max, vMin, vMax;
 
-	private static RealMask roi;
+	static RealMask roi;
 
-	private static RectangleShape binningShape;
+	static RectangleShape binningShape;
 
-	private static int[] binningAxes;
+	static int[] binningAxes;
+
+	private static final long SEED = 0x1226;
+
+	private static final Random rng = new Random(SEED);
+
+	private static final int NSAMPLE = 5;
+
+	private static final float TOLERANCE = 1e-5f;
 
 	@BeforeClass
 	@SuppressWarnings("unchecked")
-	public static void createImages() throws IOException {
+	public static void init() throws IOException {
 		Reader r = new SDTFormat.Reader();
 		r.setContext(new Context());
 		r.setSource(new File("input.sdt"));
@@ -102,8 +118,11 @@ public class FitTest extends AbstractOpTest {
 		param.restrain = RestrainType.ECF_RESTRAIN_DEFAULT;
 		param.xInc = 0.195f;
 
-		min = new long[]{ 0, 40, 40, 10  };
+		// input and output boundaries
+		min = new long[]{  0, 40, 40, 10 };
 		max = new long[]{ 63, 87, 87, 15 };
+		vMin = min.clone();
+		vMax = max.clone();
 
 		// +/- 1 because those dimensions are the closure of the box
 		roi = new OpenWritableBox(
@@ -113,78 +132,74 @@ public class FitTest extends AbstractOpTest {
 		// radius one, without center
 		binningShape = new RectangleShape(1, true);
 		binningAxes = new int[] { 1, 2 };
-
-//		IntervalView<UnsignedShortType> inView = Views.interval(in, min, max);
-//		inView = Views.permute(inView, 0, 2);
-//		inView = Views.permute(inView, 0, 1);
-//		ImageJFunctions.show( inView );
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void testRLDFitImgDemo() {
-		System.out.println("start");
+	public void testRLDFitImg() {
 		long ms = System.currentTimeMillis();
-		Img<FloatType> out = null;
-		out = (Img<FloatType>) ops.run("slim.fitRLD", out, in,
+		Img<FloatType> out = (Img<FloatType>) ops.run("slim.fitRLD", null, in,
 				param, lifetimeAxis, roi, binningShape, binningAxes);
-		System.out.println(System.currentTimeMillis() - ms);
+		System.out.println("RLD finished in " + (System.currentTimeMillis() - ms) + " ms");
 		param.paramRA = out;
 
-//		long[] vMin = FitTest.min.clone();
-//		long[] vMax = FitTest.max.clone();
-//		for (int i = 0; i < 3; i++) {
-//			vMin[0] = vMax[0] = i;
-//			IntervalView<FloatType> rsltView = Views.interval(out, vMin, vMax);
-//			rsltView = Views.permute(rsltView, 0, 2);
-//			rsltView = Views.permute(rsltView, 0, 1);
-//			ImageJFunctions.show( rsltView );
-//		}
+		// 3 parameter layers
+		vMax[0] = 3;
+		float[] act = getRandPos(Views.interval(out, vMin, vMax), NSAMPLE);
+		float[] exp = { 0.1399244f, 1.784222f, 0.22872002f, 912.638f, 0.2821034f };
+		Assert.assertArrayEquals(exp, act, TOLERANCE);
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	public void testMLAFitImg() {
-		System.out.println("start");
+		// prerequisite
+		if (param.paramRA == null) {
+			param.paramRA = (Img<FloatType>) ops.run("slim.fitRLD", null, in,
+					param, lifetimeAxis, roi, binningShape, binningAxes);
+		}
+
 		long ms = System.currentTimeMillis();
-		Img<FloatType> out = null;
-		out = (Img<FloatType>) ops.run("slim.fitMLA", out, in,
+		Img<FloatType> out = (Img<FloatType>) ops.run("slim.fitMLA", null, in,
 				param, lifetimeAxis, roi, binningShape, binningAxes);
-		System.out.println(System.currentTimeMillis() - ms);
+		System.out.println("MLA finished in " + (System.currentTimeMillis() - ms) + " ms");
 		param.paramRA = null;
 
-//		long[] vMin = FitTest.min.clone();
-//		long[] vMax = FitTest.max.clone();
-//		for (int i = 0; i < 3; i++) {
-//			vMin[0] = vMax[0] = i;
-//			IntervalView<FloatType> rsltView = Views.interval(out, vMin, vMax);
-//			rsltView = Views.permute(rsltView, 0, 2);
-//			rsltView = Views.permute(rsltView, 0, 1);
-//			ImageJFunctions.show( rsltView );
-//		}
+		// 3 parameter layers
+		vMax[0] = 3;
+		float[] act = getRandPos(Views.interval(out, vMin, vMax), NSAMPLE);
+		float[] exp = { 0.59168506f, 2.6430013f, 0.16300254f, 799.6821f, 0.20999064f };
+		Assert.assertArrayEquals(exp, act, TOLERANCE);
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	public void testPhasorFitImg() {
 		long ms = System.currentTimeMillis();
-		Img<FloatType> out = null;
-		out = (Img<FloatType>) ops.run("slim.fitPhasor", out, in,
+		Img<FloatType> out = (Img<FloatType>) ops.run("slim.fitPhasor", null, in,
 				param, lifetimeAxis, roi, binningShape, binningAxes);
-		System.out.println(System.currentTimeMillis() - ms);
+		System.out.println("Phasor finished in " + (System.currentTimeMillis() - ms) + " ms");
 
-//		long[] vMin = FitTest.min.clone();
-//		long[] vMax = FitTest.max.clone();
-//		long[] dim = new long[10];
-//		out.dimensions(dim);
-//		System.out.println(Arrays.toString(dim));
-//		for (int i = 0; i < 6; i++) {
-//			vMin[0] = vMax[0] = i;
-//			IntervalView<FloatType> rsltView = Views.interval(out, vMin, vMax);
-//			rsltView = Views.permute(rsltView, 0, 2);
-//			rsltView = Views.permute(rsltView, 0, 1);
-//			ImageJFunctions.show( rsltView );
-//		}
-//		while (true);
+		// 5 parameter layers
+		vMax[0] = 5;
+		float[] act = getRandPos(Views.interval(out, vMin, vMax), NSAMPLE);
+		float[] exp = { 0.0f, 0.21051976f, 0.4112079f, 0.41977262f, 0.32243326f };
+		Assert.assertArrayEquals(exp, act, TOLERANCE);
+	}
+
+
+	private static <T extends RealType<T>> float[] getRandPos(IterableInterval<T> ii, int n, long...seed) {
+		float[] arr = new float[n];
+		rng.setSeed(seed.length == 0 ? SEED : seed[0]);
+		int sz = (int) ii.size();
+		Cursor<T> cursor = ii.cursor();
+		long cur = 0;
+		for (int i = 0; i < n; i++) {
+			long next = rng.nextInt(sz);
+			cursor.jumpFwd(next - cur);
+			cur = next;
+			arr[i] = cursor.get().getRealFloat();
+		}
+		return arr;
 	}
 }
