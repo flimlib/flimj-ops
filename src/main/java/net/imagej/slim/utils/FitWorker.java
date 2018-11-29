@@ -11,13 +11,13 @@ public interface FitWorker<I extends RealType<I>> {
 	 * @param params - The fitting parameters
 	 * @param results - The fitted results
 	 */
-	public void fit(IterableInterval<I> trans, FitParams params, FitResults results);
+	void fit(IterableInterval<I> trans, FitParams params, FitResults results);
 
 	/**
 	 * How many parameters should there be in {@code results.param}?
 	 * E.g. 3 for {@link net.imagej.slim.utils.MLAFitWorker} and 5 for
-	 * {@link net.imagej.slim.utils.PhasorWorker}.
-	 * @returns The number of output parameters in the parameter array.
+	 * {@link net.imagej.slim.utils.PhasorFitWorker}.
+	 * @return The number of output parameters in the parameter array.
 	 */
-	public int nParamOut();
+	int nParamOut();
 }

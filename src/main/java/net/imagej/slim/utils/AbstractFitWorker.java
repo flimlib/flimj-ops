@@ -13,15 +13,15 @@ public abstract class AbstractFitWorker<I extends RealType<I>> implements FitWor
 	/**
 	 * How many parameters should there be in {@code results.param}?
 	 * E.g. 3 for {@link net.imagej.slim.utils.MLAFitWorker} and 5 for
-	 * {@link net.imagej.slim.utils.PhasorWorker}.
-	 * @returns The number of output parameters in the parameter array.
+	 * {@link net.imagej.slim.utils.PhasorFitWorker}.
+	 * @return The number of output parameters in the parameter array.
 	 */
 	public int nParamOut() {
 		return DEFAULT_NPARAMOUT;
 	}
 
 	/**
-	 * A routine called before {@link #do_fit}. Can be used to setup
+	 * A routine called before {@link #doFit(FitParams, FitResults)}. Can be used to setup
 	 * parameters.
 	 * @param params - The fitting parameters
 	 * @param results - The fitted results
@@ -36,7 +36,7 @@ public abstract class AbstractFitWorker<I extends RealType<I>> implements FitWor
 	protected abstract void doFit(FitParams params, FitResults results);
 
 	/**
-	 * A routine called before {@link #do_fit}. Can be used to copy back
+	 * A routine called before {@link #doFit(FitParams, FitResults)}. Can be used to copy back
 	 * results from buffers.
 	 * @param params - The fitting parameters
 	 * @param results - The fitted results
@@ -80,8 +80,7 @@ public abstract class AbstractFitWorker<I extends RealType<I>> implements FitWor
 		results.fitted = Utils.reallocIfWeird(results.fitted, nData);
 		results.residuals = Utils.reallocIfWeird(results.residuals, nData);
 		results.param = Utils.reallocIfWeird(results.param, nParamOut());
-		for (int i = 0; i < nParams; i++)
-			results.param[i] = params.param[i];
+		System.arraycopy(params.param, 0, results.param, 0, nParams);
 
 		preFit(params, results);
 
