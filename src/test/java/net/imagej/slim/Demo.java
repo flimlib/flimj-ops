@@ -29,16 +29,15 @@
 
 package net.imagej.slim;
 
+import java.io.IOException;
+
 import net.imagej.ops.convert.RealTypeConverter;
-import net.imagej.ops.convert.imageType.ConvertIIs;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
-
-import java.io.IOException;
 
 /**
  * Demonstrates the uses of {@link RealTypeConverter} ops.
