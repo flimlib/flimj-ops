@@ -134,7 +134,7 @@
 			<groupId>slim-curve</groupId>
 			<artifactId>slim-curve</artifactId>
 			<version>${slim-curve.version}</version>
-			<classifier>${slim-curve.natives}</classifier>
+			<classifier>${scijava.natives.classifier}</classifier>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -151,41 +151,4 @@
 			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
-	<profiles>
-		<!-- Os name (for naming the artifact and the os-specific directory in it) -->
-		<profile>
-			<id>slim-natives-win</id>
-			<activation>
-				<os>
-					<family>windows</family>
-				</os>
-			</activation>
-			<properties>
-				<slim-curve.natives>natives-windows_64</slim-curve.natives>
-			</properties>
-		</profile>
-		<profile>
-			<id>slim-natives-osx</id>
-			<activation>
-				<os>
-					<family>mac</family>
-				</os>
-			</activation>
-			<properties>
-				<slim-curve.natives>natives-osx_64</slim-curve.natives>
-			</properties>
-		</profile>
-		<profile>
-			<id>slim-natives-linux</id>
-			<activation>
-				<os>
-					<family>unix</family>
-					<name>Linux</name>
-				</os>
-			</activation>
-			<properties>
-				<slim-curve.natives>natives-linux_64</slim-curve.natives>
-			</properties>
-		</profile>
-	</profiles>
 </project>
