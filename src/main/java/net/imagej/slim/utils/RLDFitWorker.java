@@ -6,14 +6,14 @@ import slim.SLIMCurve;
 public class RLDFitWorker<I extends RealType<I>> extends AbstractFitWorker<I> {
 
 	// reusable buffers
-	private float[] Z, A, tau;
+	private float[] z, a, tau;
 	
 	@Override
 	protected void preFit(FitParams params, FitResults results) {
 		// nothing more than ensuring the parameter buffers are valid
-		Z = reallocIfWeird(Z, 1);
-		A = reallocIfWeird(A, 1);
-		tau = reallocIfWeird(tau, 1);
+		z = Utils.reallocIfWeird(z, 1);
+		a = Utils.reallocIfWeird(a, 1);
+		tau = Utils.reallocIfWeird(tau, 1);
 	}
 
 	/**
@@ -22,8 +22,8 @@ public class RLDFitWorker<I extends RealType<I>> extends AbstractFitWorker<I> {
 	@Override
 	protected void doFit(FitParams params, FitResults results) {
 		results.retCode = SLIMCurve.GCI_triple_integral_fitting_engine(
-				params.xInc, transBuffer, 0, nData - 1,
-				params.instr, params.noise, params.sig, Z, A, tau,
+				params.xInc, transBuffer, 0, params.fitEnd,
+				params.instr, params.noise, params.sig, z, a, tau,
 				results.fitted, results.residuals, chisqBuffer,
 				params.chisq_target
 		);
@@ -32,8 +32,8 @@ public class RLDFitWorker<I extends RealType<I>> extends AbstractFitWorker<I> {
 	@Override
 	protected void postFit(FitParams params, FitResults results) {
 		// and copies back
-		results.param[0] = Z[0];
-		results.param[1] = A[0];
+		results.param[0] = z[0];
+		results.param[1] = a[0];
 		results.param[2] = tau[0];
 	}
 }
