@@ -25,14 +25,15 @@ public class SlimOps {
 	}
 
 	public interface PhasorOp extends Op {
-		String NAME = "slim.phasor";
+		String NAME = "slim.fitPhasor";
 	}
 
 	// for grouping ops on the same data type
 	interface FitII<I extends RealType<I>>
 		extends UnaryHybridCF<IterableInterval<I>, FitResults> {
-	
+
 		void setParams(FitParams params);
+		int getOutputSize();
 	}
 
 	interface FitRAI<I extends RealType<I>>

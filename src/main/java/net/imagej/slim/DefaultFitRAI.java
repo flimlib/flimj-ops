@@ -3,10 +3,12 @@ package net.imagej.slim;
 import org.scijava.plugin.Plugin;
 
 import net.imagej.slim.DefaultFitII.MLAFitII;
+import net.imagej.slim.DefaultFitII.PhasorFitII;
 import net.imagej.slim.DefaultFitII.RLDFitII;
 import net.imagej.slim.SlimOps.FitII;
 import net.imagej.slim.SlimOps.FitRAI;
 import net.imagej.slim.SlimOps.MLAOp;
+import net.imagej.slim.SlimOps.PhasorOp;
 import net.imagej.slim.SlimOps.RLDOp;
 import net.imglib2.type.numeric.RealType;
 
@@ -39,6 +41,16 @@ public class DefaultFitRAI {
 		@Override
 		protected FitII<I> createFitII() {
 			return new RLDFitII<I>();
+		}
+	}
+
+	@Plugin(type = PhasorOp.class)
+	public static class PhasorFitRAI<I extends RealType<I>> extends AbstractFitRAI<I>
+		implements FitRAI<I> {
+
+		@Override
+		protected FitII<I> createFitII() {
+			return new PhasorFitII<I>();
 		}
 	}
 }

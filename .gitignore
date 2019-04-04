@@ -1,4 +1,5 @@
 .classpath
+.idea
 .project
 .settings
 notebooks/.ipynb_checkpoints

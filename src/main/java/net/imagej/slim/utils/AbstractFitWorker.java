@@ -1,19 +1,27 @@
 package net.imagej.slim.utils;
 
-import java.util.Arrays;
-
-import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.type.numeric.RealType;
 
 public abstract class AbstractFitWorker<I extends RealType<I>> implements FitWorker <I> {
-	
-	protected int nData = -1;
+
 	protected float[] transBuffer;
 	protected float[] chisqBuffer;
 
+	protected static final int DEFAULT_NPARAMOUT = 3;
+
 	/**
-	 * A routine called before {@link #do_fit}. Can be used to setup
+	 * How many parameters should there be in {@code results.param}?
+	 * E.g. 3 for {@link net.imagej.slim.utils.MLAFitWorker} and 5 for
+	 * {@link net.imagej.slim.utils.PhasorFitWorker}.
+	 * @return The number of output parameters in the parameter array.
+	 */
+	public int nParamOut() {
+		return DEFAULT_NPARAMOUT;
+	}
+
+	/**
+	 * A routine called before {@link #doFit(FitParams, FitResults)}. Can be used to setup
 	 * parameters.
 	 * @param params - The fitting parameters
 	 * @param results - The fitted results
@@ -28,7 +36,7 @@ public abstract class AbstractFitWorker<I extends RealType<I>> implements FitWor
 	protected abstract void doFit(FitParams params, FitResults results);
 
 	/**
-	 * A routine called before {@link #do_fit}. Can be used to copy back
+	 * A routine called before {@link #doFit(FitParams, FitResults)}. Can be used to copy back
 	 * results from buffers.
 	 * @param params - The fitting parameters
 	 * @param results - The fitted results
@@ -37,18 +45,12 @@ public abstract class AbstractFitWorker<I extends RealType<I>> implements FitWor
 
 	public void fit(IterableInterval<I> trans, FitParams params, FitResults results) {
 		int nParams = params.param.length;
-		int newNData = params.fitEnd + 1;
-		if (nData < newNData) {
-			nData = newNData;
-			transBuffer = new float[nData];
-		}
-		chisqBuffer = reallocIfWeird(chisqBuffer, 1);
+		int nData = params.fitEnd + 1;
 
-		Cursor<I> cur = trans.cursor();
-		cur.jumpFwd(params.fitStart);
-		// assume the access order of trans is sequential in time
-		for (int i = 0; i < nData; i++)
-			transBuffer[i] = cur.next().getRealFloat();
+		chisqBuffer = Utils.reallocIfWeird(chisqBuffer, 1);
+
+		transBuffer = Utils.ii2FloatArr(trans, params.fitStart, nData, transBuffer);
+
 //		System.out.println(Arrays.toString(transBuffer));
 		//////////////////////
 //		final float y[] = {
@@ -75,11 +77,10 @@ public abstract class AbstractFitWorker<I extends RealType<I>> implements FitWor
 //		params.fitStart = 46 - 38;
 //		params.fitEnd = 255 - 38;
 		//////////////////////
-		results.fitted = reallocIfWeird(results.fitted, nData);
-		results.residuals = reallocIfWeird(results.residuals, nData);
-		results.param = reallocIfWeird(results.param, nParams);
-		for (int i = 0; i < nParams; i++)
-			results.param[i] = params.param[i];
+		results.fitted = Utils.reallocIfWeird(results.fitted, nData);
+		results.residuals = Utils.reallocIfWeird(results.residuals, nData);
+		results.param = Utils.reallocIfWeird(results.param, nParamOut());
+		System.arraycopy(params.param, 0, results.param, 0, nParams);
 
 		preFit(params, results);
 
@@ -87,10 +88,5 @@ public abstract class AbstractFitWorker<I extends RealType<I>> implements FitWor
 
 		postFit(params, results);
 		results.chisq = chisqBuffer[0];
-	}
-
-	// allocates space for an array if null or incorrect size
-	protected static float[] reallocIfWeird(float[] arr, int len) {
-		return (arr == null || arr.length < len) ? new float[len] : arr;
 	}
 }

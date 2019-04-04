@@ -64,7 +64,10 @@ public abstract class AbstractFitRAI<I extends RealType<I>>
 	@Override
 	public void initialize() {
 		super.initialize();
-		fitII = createFitII();
+		if (fitII == null) {
+			fitII = createFitII();
+			fitII.initialize();
+		}
 		fitII.setParams(params);
 
 		if (binningAxes == null)
@@ -236,7 +239,7 @@ public abstract class AbstractFitRAI<I extends RealType<I>>
 		// get dimensions and replace time axis with decay parameters
 		long[] dimFit = new long[trans.numDimensions()];
 		trans.dimensions(dimFit);
-		dimFit[lifetimeAxis] = params.param.length;
+		dimFit[lifetimeAxis] = fitII.getOutputSize();
 		return ArrayImgs.floats(dimFit);
 	}
 

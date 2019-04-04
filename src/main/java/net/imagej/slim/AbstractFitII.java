@@ -1,7 +1,5 @@
 package net.imagej.slim;
 
-import java.util.Arrays;
-
 import org.scijava.plugin.Parameter;
 
 import net.imagej.ops.special.hybrid.AbstractUnaryHybridCF;
@@ -26,20 +24,31 @@ public abstract class AbstractFitII<I extends RealType<I>> extends
 	}
 
 	@Override
-	public void compute(IterableInterval<I> trans, FitResults results) {
+	public void initialize() {
+		super.initialize();
 		if (worker == null)
 			worker = createWorker();
+	}
+
+	@Override
+	public void compute(IterableInterval<I> trans, FitResults results) {
 		worker.fit(trans, params, results);
 	}
 
 	@Override
 	public FitResults createOutput(IterableInterval<I> trans) {
 		FitResults results = new FitResults();
-		int nData = (int) trans.size();
-		results.param = Arrays.copyOf(params.param, params.param.length);
-		results.fitted = new float[nData];
-		results.residuals = new float[nData];
+		int nIn  = (int) trans.size();
+		int nOut = worker.nParamOut();
+		results.param     = new float[nOut];
+		results.fitted    = new float[nIn];
+		results.residuals = new float[nIn];
 		return results;
+	}
+
+	@Override
+	public int getOutputSize() {
+		return worker.nParamOut();
 	}
 
 	/**
