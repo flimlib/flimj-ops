@@ -10,6 +10,10 @@ public class Utils {
 		return (arr == null || arr.length < len) ? new float[len] : arr;
 	}
 
+	public static int[] reallocIfWeird(int[] arr, int len) {
+		return (arr == null || arr.length < len) ? new int[len] : arr;
+	}
+
 	public static <I extends RealType<I>> float[] ii2FloatArr(IterableInterval<I> trans, int start, int len, float[] transBuffer) {
 		transBuffer = reallocIfWeird(transBuffer, len);
 		Cursor<I> cur = null;

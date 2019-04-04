@@ -1,10 +1,12 @@
-package net.imagej.slim.utils;
+package net.imagej.slim.fitworker;
 
+import net.imagej.slim.utils.FitParams;
+import net.imagej.slim.utils.FitResults;
+import net.imagej.slim.utils.Utils;
 import net.imglib2.type.numeric.RealType;
 import slim.SLIMCurve;
 
-public class RLDFitWorker<I extends RealType<I>> extends AbstractFitWorker<I> {
-
+public class RLDFitWorker<I extends RealType<I>> extends AbstractSingleFitWorker<I> {
 	// reusable buffers
 	private float[] z, a, tau;
 	
@@ -22,7 +24,7 @@ public class RLDFitWorker<I extends RealType<I>> extends AbstractFitWorker<I> {
 	@Override
 	protected void doFit(FitParams params, FitResults results) {
 		results.retCode = SLIMCurve.GCI_triple_integral_fitting_engine(
-				params.xInc, transBuffer, 0, params.fitEnd,
+				params.xInc, transBuffer, 0, params.fitEnd - params.fitStart,
 				params.instr, params.noise, params.sig, z, a, tau,
 				results.fitted, results.residuals, chisqBuffer,
 				params.chisq_target

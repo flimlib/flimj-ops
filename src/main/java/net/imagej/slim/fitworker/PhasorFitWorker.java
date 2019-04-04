@@ -1,9 +1,12 @@
-package net.imagej.slim.utils;
+package net.imagej.slim.fitworker;
 
+import net.imagej.slim.utils.FitParams;
+import net.imagej.slim.utils.FitResults;
+import net.imagej.slim.utils.Utils;
 import net.imglib2.type.numeric.RealType;
 import slim.SLIMCurve;
 
-public class PhasorFitWorker<I extends RealType<I>> extends AbstractFitWorker<I> {
+public class PhasorFitWorker<I extends RealType<I>> extends AbstractSingleFitWorker<I> {
 
 	private static final int NPARAMOUT = 6;
 	// reusable buffers
@@ -23,7 +26,7 @@ public class PhasorFitWorker<I extends RealType<I>> extends AbstractFitWorker<I>
 	@Override
 	protected void doFit(FitParams params, FitResults results) {
 		results.retCode = SLIMCurve.GCI_Phasor(
-				params.xInc, transBuffer, 0, params.fitEnd,
+				params.xInc, transBuffer, 0, params.fitEnd - params.fitStart,
 				z, u, v, tauPhi, tauMod, tau,
 				results.fitted, results.residuals, chisqBuffer
 		);

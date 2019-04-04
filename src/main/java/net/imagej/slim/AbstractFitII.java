@@ -2,16 +2,15 @@ package net.imagej.slim;
 
 import org.scijava.plugin.Parameter;
 
-import net.imagej.ops.special.hybrid.AbstractUnaryHybridCF;
 import net.imagej.slim.SlimOps.FitII;
 import net.imagej.slim.utils.FitParams;
 import net.imagej.slim.utils.FitResults;
-import net.imagej.slim.utils.FitWorker;
+import net.imagej.slim.utils.Utils;
+import net.imagej.slim.fitworker.*;
 import net.imglib2.IterableInterval;
 import net.imglib2.type.numeric.RealType;
 
-public abstract class AbstractFitII<I extends RealType<I>> extends
-	AbstractUnaryHybridCF<IterableInterval<I>, FitResults> implements FitII<I> {
+public abstract class AbstractFitII<I extends RealType<I>> extends FitII<I> {
 
 	@Parameter
 	FitParams params;
@@ -32,7 +31,8 @@ public abstract class AbstractFitII<I extends RealType<I>> extends
 
 	@Override
 	public void compute(IterableInterval<I> trans, FitResults results) {
-		worker.fit(trans, params, results);
+		float[] transBuffer = Utils.ii2FloatArr(trans, params.fitStart, params.fitEnd + 1, null);
+		worker.fitSingle(transBuffer, params, results);
 	}
 
 	@Override
@@ -50,10 +50,4 @@ public abstract class AbstractFitII<I extends RealType<I>> extends
 	public int getOutputSize() {
 		return worker.nParamOut();
 	}
-
-	/**
-	 * Generates a worker for the actual fit.
-	 * @return A {@link FitWorker}.
-	 */
-	protected abstract FitWorker<I> createWorker();
 }
