@@ -158,9 +158,7 @@ public class FitTest extends AbstractOpTest {
 	@SuppressWarnings("unchecked")
 	public void testMLAFitImg() {
 		// prerequisite
-		if (param.paramRA == null) {
-			param.paramRA = (Img<FloatType>) ops.run("slim.fitRLD", null, in, param, lifetimeAxis);
-		}
+		param.paramRA = (Img<FloatType>) ops.run("slim.fitRLD", null, in, param, lifetimeAxis);
 
 		long ms = System.currentTimeMillis();
 		Img<FloatType> out = (Img<FloatType>) ops.run("slim.fitMLA", null, in, param, lifetimeAxis);
