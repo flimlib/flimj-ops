@@ -1,18 +1,17 @@
 package net.imagej.slim;
 
 import net.imagej.ops.Op;
+import net.imagej.ops.special.function.AbstractUnaryFunctionOp;
 import net.imagej.ops.special.hybrid.AbstractUnaryHybridCF;
-import net.imagej.slim.utils.FitParams;
-import net.imagej.slim.utils.FitResults;
+import net.imagej.slim.FitParams;
+import net.imagej.slim.FitResults;
 import net.imagej.slim.fitworker.*;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
-import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
-import net.imglib2.type.numeric.real.FloatType;
 
 public class SlimOps {
 
@@ -58,13 +57,14 @@ public class SlimOps {
 
 	interface FitOps<I extends RealType<I>> {
 
-		void setParams(FitParams params);
-		
 		/**
 		 * Generates a worker for the actual fit.
+		 * 
+		 * @param params The {@link FitParams} associated with this worker.
+		 * @param results The {@link FitResults} associated with this worker.
 		 * @return A {@link FitWorker}.
 		 */
-		FitWorker<I>  createWorker();
+		FitWorker<I>  createWorker(FitParams<I> params, FitResults results);
 	}
 	
 	// for grouping ops on the same data type
@@ -75,7 +75,7 @@ public class SlimOps {
 	}
 
 	static abstract class FitRAI<I extends RealType<I>>
-		extends AbstractUnaryHybridCF<RandomAccessibleInterval<I>, RandomAccessibleInterval<FloatType>> implements FitOps<I> {
+		extends AbstractUnaryFunctionOp<FitParams<I>, FitResults> implements FitOps<I> {
 	
 	}
 }

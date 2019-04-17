@@ -6,6 +6,8 @@ import net.imagej.slim.SlimOps.MLAOp;
 import net.imagej.slim.SlimOps.PhasorOp;
 import net.imagej.slim.SlimOps.RLDOp;
 import net.imagej.slim.fitworker.*;
+import net.imagej.slim.FitParams;
+import net.imagej.slim.FitResults;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -24,8 +26,8 @@ public class DefaultFitII {
 	public static class MLAFitII<I extends RealType<I>> extends AbstractFitII<I> {
 
 		@Override
-		public FitWorker<I> createWorker() {
-			return new MLAFitWorker<I>();
+		public FitWorker<I> createWorker(FitParams<I> params, FitResults results) {
+			return new MLAFitWorker<I>(params, results, ops());
 		}
 	}
 
@@ -33,8 +35,8 @@ public class DefaultFitII {
 	public static class RLDFitII<I extends RealType<I>> extends AbstractFitII<I> {
 
 		@Override
-		public FitWorker<I> createWorker() {
-			return new RLDFitWorker<I>();
+		public FitWorker<I> createWorker(FitParams<I> params, FitResults results) {
+			return new RLDFitWorker<I>(params, results, ops());
 		}
 	}
 
@@ -42,8 +44,8 @@ public class DefaultFitII {
 	public static class PhasorFitII<I extends RealType<I>> extends AbstractFitII<I> {
 
 		@Override
-		public FitWorker<I> createWorker() {
-			return new PhasorFitWorker<I>();
+		public FitWorker<I> createWorker(FitParams<I> params, FitResults results) {
+			return new PhasorFitWorker<I>(params, results, ops());
 		}
 	}
 }

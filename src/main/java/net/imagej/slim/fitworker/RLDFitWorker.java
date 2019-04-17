@@ -1,41 +1,46 @@
 package net.imagej.slim.fitworker;
 
-import net.imagej.slim.utils.FitParams;
-import net.imagej.slim.utils.FitResults;
-import net.imagej.slim.utils.Utils;
+import net.imagej.ops.OpEnvironment;
+import net.imagej.slim.FitParams;
+import net.imagej.slim.FitResults;
 import net.imglib2.type.numeric.RealType;
 import slim.SLIMCurve;
 
 public class RLDFitWorker<I extends RealType<I>> extends AbstractSingleFitWorker<I> {
-	// reusable buffers
+	// RLD's own buffers
 	private float[] z, a, tau;
-	
-	@Override
-	protected void preFit(FitParams params, FitResults results) {
-		// nothing more than ensuring the parameter buffers are valid
-		z = Utils.reallocIfWeird(z, 1);
-		a = Utils.reallocIfWeird(a, 1);
-		tau = Utils.reallocIfWeird(tau, 1);
+
+	public RLDFitWorker(FitParams<I> params, FitResults results, OpEnvironment ops) {
+		super(params, results, ops);
+		z = new float[1];
+		a = new float[1];
+		tau = new float[1];
 	}
 
 	/**
 	 * Performs the RLD fit.
 	 */
 	@Override
-	protected void doFit(FitParams params, FitResults results) {
+	protected void doFit() {
 		results.retCode = SLIMCurve.GCI_triple_integral_fitting_engine(
-				params.xInc, transBuffer, 0, params.fitEnd - params.fitStart,
+				params.xInc, transBuffer, 0, nData,
 				params.instr, params.noise, params.sig, z, a, tau,
-				results.fitted, results.residuals, chisqBuffer,
+				fittedBuffer, residualBuffer, chisqBuffer,
 				params.chisq_target
 		);
 	}
 
 	@Override
-	protected void postFit(FitParams params, FitResults results) {
+	protected void postFit() {
 		// and copies back
-		results.param[0] = z[0];
-		results.param[1] = a[0];
-		results.param[2] = tau[0];
+		paramBuffer[0] = z[0];
+		paramBuffer[1] = a[0];
+		paramBuffer[2] = tau[0];
+		super.postFit();
+	}
+
+	@Override
+	protected AbstractSingleFitWorker<I> duplicate(FitParams<I> params, FitResults rslts) {
+		return new RLDFitWorker<>(params, rslts, ops);
 	}
 }

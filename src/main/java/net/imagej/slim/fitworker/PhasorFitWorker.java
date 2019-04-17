@@ -1,51 +1,55 @@
 package net.imagej.slim.fitworker;
 
-import net.imagej.slim.utils.FitParams;
-import net.imagej.slim.utils.FitResults;
-import net.imagej.slim.utils.Utils;
+import net.imagej.ops.OpEnvironment;
+import net.imagej.slim.FitParams;
+import net.imagej.slim.FitResults;
 import net.imglib2.type.numeric.RealType;
 import slim.SLIMCurve;
 
 public class PhasorFitWorker<I extends RealType<I>> extends AbstractSingleFitWorker<I> {
 
 	private static final int NPARAMOUT = 6;
-	// reusable buffers
-	private float[] z, u, v, tau, tauPhi, tauMod;
+	// Phasor's own buffers
+	private final float[] z, u, v, tau, tauPhi, tauMod;
 
-	@Override
-	protected void preFit(FitParams params, FitResults results) {
-		// nothing more than ensuring the parameter buffers are valid
-		z = Utils.reallocIfWeird(z, 1);
-		u = Utils.reallocIfWeird(u, 1);
-		v = Utils.reallocIfWeird(v, 1);
-		tauPhi = Utils.reallocIfWeird(tauPhi, 1);
-		tauMod = Utils.reallocIfWeird(tauMod, 1);
-		tau = Utils.reallocIfWeird(tau, 1);
+	public PhasorFitWorker(FitParams<I> params, FitResults results, OpEnvironment ops) {
+		super(params, results, ops);
+		z = new float[1];
+		u = new float[1];
+		v = new float[1];
+		tauPhi = new float[1];
+		tauMod = new float[1];
+		tau = new float[1];
 	}
 
 	@Override
-	protected void doFit(FitParams params, FitResults results) {
+	protected void doFit() {
 		results.retCode = SLIMCurve.GCI_Phasor(
-				params.xInc, transBuffer, 0, params.fitEnd - params.fitStart,
+				params.xInc, transBuffer, 0, nData,
 				z, u, v, tauPhi, tauMod, tau,
-				results.fitted, results.residuals, chisqBuffer
+				fittedBuffer, residualBuffer, chisqBuffer
 		);
 	}
 
 	@Override
-	protected void postFit(FitParams params, FitResults results) {
-		results.param = Utils.reallocIfWeird(results.param, 6);
+	protected void postFit() {
 		// and copies back
-		results.param[0] = z[0];
-		results.param[1] = u[0];
-		results.param[2] = v[0];
-		results.param[3] = tauPhi[0];
-		results.param[4] = tauMod[0];
-		results.param[5] = tau[0];
+		paramBuffer[0] = z[0];
+		paramBuffer[1] = u[0];
+		paramBuffer[2] = v[0];
+		paramBuffer[3] = tauPhi[0];
+		paramBuffer[4] = tauMod[0];
+		paramBuffer[5] = tau[0];
+		super.postFit();
 	}
 
 	@Override
 	public int nParamOut() {
 		return NPARAMOUT;
+	}
+
+	@Override
+	protected AbstractSingleFitWorker<I> duplicate(FitParams<I> params, FitResults rslts) {
+		return new PhasorFitWorker<>(params, rslts, ops);
 	}
 }

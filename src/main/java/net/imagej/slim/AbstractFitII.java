@@ -3,9 +3,8 @@ package net.imagej.slim;
 import org.scijava.plugin.Parameter;
 
 import net.imagej.slim.SlimOps.FitII;
-import net.imagej.slim.utils.FitParams;
-import net.imagej.slim.utils.FitResults;
-import net.imagej.slim.utils.Utils;
+import net.imagej.slim.FitParams;
+import net.imagej.slim.FitResults;
 import net.imagej.slim.fitworker.*;
 import net.imglib2.IterableInterval;
 import net.imglib2.type.numeric.RealType;
@@ -13,26 +12,22 @@ import net.imglib2.type.numeric.RealType;
 public abstract class AbstractFitII<I extends RealType<I>> extends FitII<I> {
 
 	@Parameter
-	FitParams params;
+	FitParams<I> params;
 
 	private FitWorker<I> worker;
-
-	@Override
-	public void setParams(FitParams p) {
-		this.params = p;
-	}
 
 	@Override
 	public void initialize() {
 		super.initialize();
 		if (worker == null)
-			worker = createWorker();
+			worker = createWorker(params, out());
 	}
 
 	@Override
 	public void compute(IterableInterval<I> trans, FitResults results) {
-		float[] transBuffer = Utils.ii2FloatArr(trans, params.fitStart, params.fitEnd + 1, null);
-		worker.fitSingle(transBuffer, params, results);
+		// float[] transBuffer = Utils.ii2FloatArr(trans, params.fitStart, params.fitEnd + 1, null);
+		// TODO copy transBuffer to params.trans
+		// worker.fitSingle(params, results);
 	}
 
 	@Override
