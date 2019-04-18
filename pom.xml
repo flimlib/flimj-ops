@@ -97,7 +97,7 @@
 		<!-- NB: Deploy releases to the ImageJ Maven repository. -->
 		<releaseProfiles>deploy-to-imagej</releaseProfiles>
 
-		<slim-curve.version>1.0.0-rc-3</slim-curve.version>
+		<slim-curve.version>1.1.0</slim-curve.version>
 	</properties>
 	<repositories>
 		<repository>

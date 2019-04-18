@@ -2,5 +2,6 @@
 .idea
 .project
 .settings
+.vscode
 notebooks/.ipynb_checkpoints
 target
