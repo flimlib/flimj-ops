@@ -1,261 +1,138 @@
 package net.imagej.slim;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.scijava.plugin.Parameter;
 
 import net.imagej.ops.Contingent;
-import net.imagej.ops.special.hybrid.AbstractUnaryHybridCF;
-import net.imagej.slim.SlimOps.FitII;
 import net.imagej.slim.SlimOps.FitRAI;
-import net.imagej.slim.utils.FitParams;
-import net.imagej.slim.utils.FitResults;
-import net.imagej.slim.utils.FitWorker;
+import net.imagej.slim.fitworker.FitWorker;
 import net.imglib2.Cursor;
-import net.imglib2.FinalInterval;
-import net.imglib2.Interval;
-import net.imglib2.IterableInterval;
-import net.imglib2.RandomAccess;
-import net.imglib2.RandomAccessible;
 import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.algorithm.neighborhood.Neighborhood;
-import net.imglib2.algorithm.neighborhood.Shape;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.roi.Masks;
 import net.imglib2.roi.RealMask;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
-public abstract class AbstractFitRAI<I extends RealType<I>>
-		extends AbstractUnaryHybridCF<RandomAccessibleInterval<I>, RandomAccessibleInterval<FloatType>>
-		implements FitRAI<I>, Contingent {
-
-	@Parameter
-	FitParams params;
+public abstract class AbstractFitRAI<I extends RealType<I>> extends FitRAI<I> implements Contingent {
 
 	@Parameter
 	private int lifetimeAxis;
 
-	@Parameter(required=false)
+	@Parameter(required = false)
 	private RealMask roi;
 
-	@Parameter(required=false)
-	private Shape binningKnl;
+	@Parameter(required = false)
+	private RandomAccessibleInterval<I> kernel;
 
-	@Parameter(required=false)
-	private int[] binningAxes;
+	private FitWorker<I> fitWorker;
 
-	private FitII<I> fitII;
-
-	@Override
-	public void setParams(FitParams params) {
-		this.params = params;
-	}
+	private FitResults rslts;
 
 	@Override
 	public boolean conforms() {
-		if (binningKnl == null ^ binningAxes == null)
+		// requires a 3D image
+		if (in().transMap == null || in().transMap.numDimensions() != 3) {
 			return false;
+		}
+
+		// and pissibly a 2D mask
+		if (roi != null && roi.numDimensions() != 2) {
+			return false;
+		}
+
+		// and pissibly a 3D kernel
+		if (kernel != null && kernel.numDimensions() != 3) {
+			return false;
+		}
 		return true;
 	}
 
 	@Override
 	public void initialize() {
 		super.initialize();
-		if (fitII == null) {
-			fitII = createFitII();
-			fitII.initialize();
-		}
-		fitII.setParams(params);
+		rslts = new FitResults();
+		fitWorker = createWorker(in(), rslts);
+		initRslt();
 
-		if (binningAxes == null)
-			binningAxes = new int[0];
 		// dimension doesn't really matter
-		if (roi == null)
+		if (roi == null) {
 			roi = Masks.allRealMask(0);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public void compute(RandomAccessibleInterval<I> trans, RandomAccessibleInterval<FloatType> fitted) {
-		// reusable buffer for each pixel's fitting results
-		FitResults aSingleResult = new FitResults();
-
-		// prepare subspace dimensions
-		int nD = trans.numDimensions();
-		int[] ltAxes = new int[] { lifetimeAxis };
-		int[] nonltAxes = new int[nD - 1];
-		int[] nonbinningAxes = new int[nD - 1 - binningAxes.length];
-		Arrays.sort(binningAxes);
-		for (int i = 0, j = 0, k = 0; i < nD; i++) {
-			if (i != lifetimeAxis)
-				nonltAxes[j + k] = i;
-			else
-				continue;
-			if (j < binningAxes.length && i == binningAxes[j])
-				j++;
-			else {
-				nonbinningAxes[k] = i;
-				k++;
-			}
-		}
-		// chop coordinate into 3 parts: 1 time + m binning + n non-binning
-		FinalInterval iTSpace = subspaceBounds(trans, ltAxes);
-		FinalInterval iNTSpace = subspaceBounds(trans, nonltAxes);
-//		FinalInterval iBSpace = subspaceBounds(trans, binningAxes);
-//		FinalInterval iNBSpace = subspaceBounds(trans, nonbinningAxes);
-		// remove the gap at lifetimeAxis in time-free space
-		for (int i = 0; i < nonbinningAxes.length; i++)
-			if (nonbinningAxes[i] > lifetimeAxis)
-				nonbinningAxes[i]--;
-
-		// each point in this space is a series of transient data
-		IntervalView<RandomAccessible<I>> nonLtR = Views.interval(
-			(RandomAccessible<RandomAccessible<I>>) Views.hyperSlices(
-				Views.extendZero(trans), ltAxes), iNTSpace);
-		Cursor<RandomAccessible<I>> ntRCsr = nonLtR.cursor();
-		// or a series of fitted params
-		IntervalView<RandomAccessible<FloatType>> nonLtW = Views.interval(
-			(RandomAccessible<RandomAccessible<FloatType>>) Views.hyperSlices(
-				fitted, ltAxes), iNTSpace);
-		Cursor<RandomAccessible<FloatType>> ntWCsr = nonLtW.localizingCursor();
-
-		Cursor<RandomAccessible<FloatType>> paramRCsr = null;
-		if (params.paramRA != null) {
-			IntervalView<RandomAccessible<FloatType>> paramR = Views.interval(
-				(RandomAccessible<RandomAccessible<FloatType>>) Views.hyperSlices(
-					params.paramRA, ltAxes), iNTSpace);
-			paramRCsr = paramR.localizingCursor();
 		}
 
-		// binning
-		// RA of neighborhoods in nontemporal space
-		RandomAccess<Neighborhood<RandomAccessible<I>>> ntNbhdsRA = null;
-		// neighborhood center/neighborhood member coordinates
-		long[] cntrCoord = null, nbhdCoord = null;
-		// reusable trans buffer and its cursor
-		IterableInterval<I> binnedTrans = null;
-		Cursor<I> binnedTransCsr = null;
-		if (binningKnl != null && binningAxes != null) {
-			ntNbhdsRA = binningKnl.neighborhoodsRandomAccessible(nonLtR).randomAccess();
-			cntrCoord = new long[ntRCsr.numDimensions()];
-			nbhdCoord = new long[ntRCsr.numDimensions()];
-			binnedTrans = ops().copy().iterableInterval(Views.interval(ntRCsr.get(), iTSpace));
-			binnedTransCsr = binnedTrans.cursor();
-		}
-
-		while (ntRCsr.hasNext()) {
-			ntRCsr.fwd();
-			ntWCsr.fwd();
-			if (paramRCsr != null)
-				paramRCsr.fwd();
-			// not interested
-			if (roi != null && !roi.test(ntRCsr))
-				continue;
-
-			// binning
-			if (ntNbhdsRA != null) {
-				// fetch the transient in question
-				RandomAccess<I> transRA = ntRCsr.get().randomAccess();
-				while (binnedTransCsr.hasNext()) {
-					transRA.setPosition(binnedTransCsr);
-					binnedTransCsr.next().set(transRA.get());
-				}
-				binnedTransCsr.reset();
-//				ntCsr.localize(cntrCoord);
-//				System.out.println(Arrays.toString(cntrCoord));
-				// move neighborhood center to the trans in question
-				ntNbhdsRA.setPosition(ntRCsr);
-				ntRCsr.localize(cntrCoord);
-//				System.out.println(Arrays.toString(cntrCoord));
-
-				Cursor<RandomAccessible<I>> ntNbhdCsr = ntNbhdsRA.get().localizingCursor();
-
-				int nNbhdMember = 1;
-				while (ntNbhdCsr.hasNext()) {
-					ntNbhdCsr.fwd();
-					ntNbhdCsr.localize(nbhdCoord);
-					// A trans in the same binning-space nbhd should have the same non-binning-axis coordinates
-					boolean inNbhd = true;
-					for (int i = 0; i < nonbinningAxes.length; i++) {
-						if (nbhdCoord[nonbinningAxes[i]] != cntrCoord[nonbinningAxes[i]]) {
-							inNbhd = false;
-							break;
-						}
-					}
-					if (!inNbhd)
-						continue;
-					// System.out.print(Arrays.toString(nbhdCoord) + " ");
-
-					// same nbhd, add to trans
-					RandomAccess<I> nbhdTransRA = ntNbhdCsr.get().randomAccess();
-					while (binnedTransCsr.hasNext()) {
-						nbhdTransRA.setPosition(binnedTransCsr);
-						binnedTransCsr.next().add(nbhdTransRA.get());
-					}
-					binnedTransCsr.reset();
-					nNbhdMember++;
-//					for (I i: binnedTrans) {
-//						System.out.print(i + " ");
-//					}
-//					System.out.println();
-				}
-
-				// complete averaging by dividing by the number of pixels in the neighborhood
-				while (binnedTransCsr.hasNext()) {
-					I pix = binnedTransCsr.next();
-					pix.setReal(pix.getRealFloat() / nNbhdMember);
-				}
-				binnedTransCsr.reset();
-			}
-			else
-				binnedTrans = Views.interval(ntRCsr.get(), iTSpace);
-
-			if (paramRCsr != null) {
-				RandomAccess<FloatType> paramRA = paramRCsr.get().randomAccess();
-				for (int i = 0; i < params.param.length; i++) {
-					params.param[i] = paramRA.get().getRealFloat();
-					paramRA.fwd(0);
-				}
-			}
-
-			fitII.compute(binnedTrans, aSingleResult);
-
-			RandomAccess<FloatType> rsltRA = ntWCsr.get().randomAccess();
-			for (float param : aSingleResult.param) {
-				rsltRA.get().set(param);
-				rsltRA.fwd(0);
-			}
-
-//			System.out.println(Arrays.toString(aSingleResult.param));
-//			System.out.println(aSingleResult.chisq);
+		// So that we bin the correct axis
+		if (kernel != null) {
+			kernel = Views.permute(kernel, 2, lifetimeAxis);
 		}
 	}
 
 	@Override
-	public RandomAccessibleInterval<FloatType> createOutput(RandomAccessibleInterval<I> trans) {
-		// get dimensions and replace time axis with decay parameters
-		long[] dimFit = new long[trans.numDimensions()];
-		trans.dimensions(dimFit);
-		dimFit[lifetimeAxis] = fitII.getOutputSize();
-		return ArrayImgs.floats(dimFit);
+	public FitResults calculate(FitParams<I> params) {
+		params = params.copy();
+		// convolve the image if necessary
+		final RandomAccessibleInterval<I> trans = kernel == null ? params.transMap
+				: (RandomAccessibleInterval<I>) ops().filter().convolve(params.transMap, kernel);
+		params.transMap = trans;
+		final List<int[]> interested = new ArrayList<>();
+		final IntervalView<I> xyPlane = Views.hyperSlice(trans, lifetimeAxis, 0);
+		final Cursor<I> xyCursor = xyPlane.localizingCursor();
+
+		// work to do
+		while (xyCursor.hasNext()) {
+			xyCursor.fwd();
+			if (roi.test(xyCursor)) {
+				int[] pos = new int[3];
+				xyCursor.localize(pos);
+				// swap in lifetime axis
+				for (int i = 2; i > lifetimeAxis; i--) {
+					int tmp = pos[i];
+					pos[i] = pos[i - 1];
+					pos[i - 1] = tmp;
+				}
+				pos[lifetimeAxis] = 0;
+				interested.add(pos);
+			}
+		}
+
+		fitWorker.fitBatch(params, rslts, interested, lifetimeAxis);
+
+		return rslts;
 	}
 
 	/**
-	 * Generates a II fitter for fitting each pixels.
+	 * Generates a worker for the actual fit.
+	 * 
 	 * @return A {@link FitWorker}.
 	 */
-	protected abstract FitII<I> createFitII();
+	public abstract FitWorker<I> createWorker(FitParams<I> params, FitResults results);
 
-	private static FinalInterval subspaceBounds(Interval in, int[] axes) {
-		long[] min = new long[axes.length];
-		long[] max = new long[axes.length];
-		for (int i = 0; i < axes.length; i++){
-			min[i] = in.min(axes[i]);
-			max[i] = in.max(axes[i]);
+	private void initRslt() {
+		FitParams<I> params = in();
+		// get dimensions and replace time axis with decay parameters
+		long[] dimFit = new long[params.transMap.numDimensions()];
+		params.transMap.dimensions(dimFit);
+		if (params.getParamMap) {
+			dimFit[lifetimeAxis] = fitWorker.nParamOut();
+			rslts.paramMap = ArrayImgs.floats(dimFit);
 		}
-		return new FinalInterval(min, max);
+		if (params.getFittedMap) {
+			dimFit[lifetimeAxis] = params.trans.length;
+			rslts.fittedMap = ArrayImgs.floats(dimFit);
+		}
+		if (params.getResidualsMap) {
+			dimFit[lifetimeAxis] = params.trans.length;
+			rslts.residualsMap = ArrayImgs.floats(dimFit);
+		}
+		if (params.getReturnCodeMap) {
+			dimFit[lifetimeAxis] = 1;
+			rslts.retCodeMap = ArrayImgs.ints(dimFit);
+		}
+		if (params.getChisqMap) {
+			dimFit[lifetimeAxis] = 1;
+			rslts.residualsMap = ArrayImgs.floats(dimFit);
+		}
 	}
 }

@@ -29,52 +29,63 @@
 
 package net.imagej.slim;
 
-import java.io.IOException;
+import org.junit.Test;
 
-import net.imagej.ops.convert.RealTypeConverter;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
 /**
- * Demonstrates the uses of {@link RealTypeConverter} ops.
+ * Demonstrates the uses of {@link SlimOps} ops.
  * 
  * @author Dasong Gao
  */
 public class Demo extends FitTest {
-	@SuppressWarnings("unchecked")
-	public static void init() throws IOException {
-		FitTest.init();
-	}
 
+	@Test
 	@SuppressWarnings("unchecked")
 	public void RLDFitImgDemo() {
-		Img<FloatType> out = (Img<FloatType>) ops.run("slim.fitRLD", null, in,
-				param, lifetimeAxis, roi, binningShape, binningAxes);
+		Img<FloatType> out = (Img<FloatType>) ops.run("slim.fitRLD", null, in, param, lifetimeAxis, roi);
 		showResults(out);
+		sleep20s();
 	}
 
+	@Test
 	@SuppressWarnings("unchecked")
 	public void MLAFitImgDemo() {
-		Img<FloatType> out = (Img<FloatType>) ops.run("slim.fitMLA", null, in,
-				param, lifetimeAxis, roi, binningShape, binningAxes);
+		Img<FloatType> out = (Img<FloatType>) ops.run("slim.fitMLA", null, in, param, lifetimeAxis, roi);
 		showResults(out);
+		sleep20s();
 	}
 
+	@Test
 	@SuppressWarnings("unchecked")
 	public void PhasorFitImgDemo() {
-		Img<FloatType> out = (Img<FloatType>) ops.run("slim.fitPhasor", null, in,
-				param, lifetimeAxis, roi, binningShape, binningAxes);
+		Img<FloatType> out = (Img<FloatType>) ops.run("slim.fitPhasor", null, in, param, lifetimeAxis, roi);
 		showResults(out);
+		sleep20s();
 	}
 
-	private static void showResults(RandomAccessibleInterval<FloatType> out) {
-		for (int i = 0; i < out.max(lifetimeAxis); i++) {
+	public static void sleep20s() {
+		try {
+			Thread.sleep(20000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static <I extends RealType<I>> void showResults(RandomAccessibleInterval<I> out) {
+		long[] vMin = new long[3];
+		long[] vMax = new long[3];
+		out.min(vMin);
+		out.max(vMax);
+		for (int i = 0; i <= out.max(lifetimeAxis); i++) {
 			vMin[0] = vMax[0] = i;
-			IntervalView<FloatType> rsltView = Views.interval(out, vMin, vMax);
+			IntervalView<I> rsltView = Views.interval(out, vMin, vMax);
 			rsltView = Views.permute(rsltView, 0, 2);
 			rsltView = Views.permute(rsltView, 0, 1);
 			ImageJFunctions.show( rsltView );
