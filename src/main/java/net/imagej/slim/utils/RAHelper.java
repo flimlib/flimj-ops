@@ -73,6 +73,7 @@ public class RAHelper<I extends RealType<I>> {
 	}
 
 	private void fillRA(RandomAccess<FloatType> ra, int[] xytPos, float[] arr) {
+		xytPos[lifetimeAxis] = 0;
 		ra.setPosition(xytPos);
 		for (float f : arr) {
 			ra.get().set(f);

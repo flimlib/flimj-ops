@@ -57,12 +57,18 @@ public abstract class AbstractSingleFitWorker<I extends RealType<I>> implements 
 	}
 
 	/**
+	 * A routine called before {@link #doFit()}. Can be used to throw away the
+	 * left overs from previous runs.
+	 */
+	protected void beforeFit() {}
+
+	/**
 	 * Does the actual implementation-specific fitting routine.
 	 */
 	protected abstract void doFit();
 
 	/**
-	 * A routine called before {@link #doFit()}. Can be used to copy back
+	 * A routine called after {@link #doFit()}. Can be used to copy back
 	 * results from buffers.
 	 */
 	protected void postFit() {
@@ -70,6 +76,8 @@ public abstract class AbstractSingleFitWorker<I extends RealType<I>> implements 
 	}
 
 	public void fitSingle(FitParams<I> params, FitResults results) {
+		beforeFit();
+
 		doFit();
 
 		postFit();

@@ -23,6 +23,18 @@ public class PhasorFitWorker<I extends RealType<I>> extends AbstractSingleFitWor
 	}
 
 	@Override
+	protected void beforeFit() {
+		super.beforeFit();
+		// setup params
+		z[0] =      paramBuffer[0];
+		u[0] = 		paramBuffer[1];
+		v[0] = 		paramBuffer[2];
+		tauPhi[0] = paramBuffer[3];
+		tauMod[0] = paramBuffer[4];
+		tau[0] = 	paramBuffer[5];
+	}
+
+	@Override
 	protected void doFit() {
 		results.retCode = SLIMCurve.GCI_Phasor(
 				params.xInc, transBuffer, 0, nData,

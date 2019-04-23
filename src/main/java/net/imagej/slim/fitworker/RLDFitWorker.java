@@ -17,6 +17,15 @@ public class RLDFitWorker<I extends RealType<I>> extends AbstractSingleFitWorker
 		tau = new float[1];
 	}
 
+	@Override
+	protected void beforeFit() {
+		super.beforeFit();
+		// setup params
+		z[0] =   paramBuffer[0];
+		a[0] =   paramBuffer[1];
+		tau[0] = paramBuffer[2];
+	}
+
 	/**
 	 * Performs the RLD fit.
 	 */
