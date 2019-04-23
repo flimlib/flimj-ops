@@ -55,7 +55,7 @@ public abstract class AbstractFitRAI<I extends RealType<I>> extends FitRAI<I> im
 	public void initialize() {
 		super.initialize();
 		rslts = new FitResults();
-		fitWorker = createWorker(in(), rslts);
+		fitWorker = createWorker(in().copy(), rslts);
 		initRslt();
 
 		// dimension doesn't really matter
@@ -71,33 +71,15 @@ public abstract class AbstractFitRAI<I extends RealType<I>> extends FitRAI<I> im
 
 	@Override
 	public FitResults calculate(FitParams<I> params) {
-		params = params.copy();
 		// convolve the image if necessary
-		final RandomAccessibleInterval<I> trans = kernel == null ? params.transMap
+		params.transMap = kernel == null ? params.transMap
 				: (RandomAccessibleInterval<I>) ops().filter().convolve(params.transMap, kernel);
-		params.transMap = trans;
-		final List<int[]> interested = new ArrayList<>();
-		final IntervalView<I> xyPlane = Views.hyperSlice(trans, lifetimeAxis, 0);
-		final Cursor<I> xyCursor = xyPlane.localizingCursor();
 
-		// work to do
-		while (xyCursor.hasNext()) {
-			xyCursor.fwd();
-			if (roi.test(xyCursor)) {
-				int[] pos = new int[3];
-				xyCursor.localize(pos);
-				// swap in lifetime axis
-				for (int i = 2; i > lifetimeAxis; i--) {
-					int tmp = pos[i];
-					pos[i] = pos[i - 1];
-					pos[i - 1] = tmp;
-				}
-				pos[lifetimeAxis] = 0;
-				interested.add(pos);
-			}
-		}
+		final List<int[]> roiPos = getRoiPositions(params.transMap);
 
 		fitWorker.fitBatch(params, rslts, interested, lifetimeAxis);
+
+		fitWorker.fitBatch(params, rslts, roiPos, lifetimeAxis);
 
 		return rslts;
 	}
@@ -132,7 +114,31 @@ public abstract class AbstractFitRAI<I extends RealType<I>> extends FitRAI<I> im
 		}
 		if (params.getChisqMap) {
 			dimFit[lifetimeAxis] = 1;
-			rslts.residualsMap = ArrayImgs.floats(dimFit);
+			rslts.chisqMap = ArrayImgs.floats(dimFit);
 		}
+	}
+
+	private List<int[]> getRoiPositions(RandomAccessibleInterval<I> trans) {
+		final List<int[]> interested = new ArrayList<>();
+		final IntervalView<I> xyPlane = Views.hyperSlice(trans, lifetimeAxis, 0);
+		final Cursor<I> xyCursor = xyPlane.localizingCursor();
+
+		// work to do
+		while (xyCursor.hasNext()) {
+			xyCursor.fwd();
+			if (roi.test(xyCursor)) {
+				int[] pos = new int[3];
+				xyCursor.localize(pos);
+				// swap in lifetime axis
+				for (int i = 2; i > lifetimeAxis; i--) {
+					int tmp = pos[i];
+					pos[i] = pos[i - 1];
+					pos[i - 1] = tmp;
+				}
+				pos[lifetimeAxis] = 0;
+				interested.add(pos);
+			}
+		}
+		return interested;
 	}
 }

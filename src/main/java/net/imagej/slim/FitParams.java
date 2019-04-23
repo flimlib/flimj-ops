@@ -132,6 +132,7 @@ public class FitParams<I extends RealType<I>> {
 		newParams.instr = instr;
 		newParams.noise = noise;
 		newParams.sig = sig;
+		newParams.nComp = nComp;
 		newParams.param = param;
 		newParams.paramMap = paramMap;
 		newParams.paramFree = paramFree;
