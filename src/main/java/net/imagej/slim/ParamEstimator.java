@@ -9,7 +9,7 @@ import net.imglib2.type.numeric.RealType;
 /**
  * ParamEstimator
  * 
- * @param <FloatType>
+ * @param <I> The type of transient data
  */
 public class ParamEstimator<I extends RealType<I>> {
 
