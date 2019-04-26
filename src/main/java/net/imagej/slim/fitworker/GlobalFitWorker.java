@@ -20,14 +20,14 @@ public class GlobalFitWorker<I extends RealType<I>> implements FitWorker<I> {
 	}
 
 	@Override
-	public void fitBatch(FitParams<I> params, FitResults rslts, List<int[]> pos, int lifetimeAxis) {
+	public void fitBatch(FitParams<I> params, FitResults rslts, List<int[]> pos) {
 		int nTrans = pos.size();
 		int nData = params.fitEnd - params.fitStart;
 
 		// trans data and fitted parameters for each trans
 		final float[][] trans = new float[nTrans][nData];
 		final float[][] param = new float[nTrans][nParamOut()];
-		final RAHelper<I> helper = new RAHelper<>(params, rslts, lifetimeAxis);
+		final RAHelper<I> helper = new RAHelper<>(params, rslts);
 
 		// fetch parameters from RA
 		for (int i = 0; i < nTrans; i++) {

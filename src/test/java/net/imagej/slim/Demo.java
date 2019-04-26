@@ -49,7 +49,7 @@ public class Demo extends FitTest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void RLDFitImgDemo() {
-		Img<FloatType> out = (Img<FloatType>) ops.run("slim.fitRLD", null, in, param, lifetimeAxis, roi);
+		Img<FloatType> out = (Img<FloatType>) ops.run("slim.fitRLD", null, in, param, roi);
 		showResults(out);
 		sleep20s();
 	}
@@ -57,7 +57,7 @@ public class Demo extends FitTest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void MLAFitImgDemo() {
-		Img<FloatType> out = (Img<FloatType>) ops.run("slim.fitMLA", null, in, param, lifetimeAxis, roi);
+		Img<FloatType> out = (Img<FloatType>) ops.run("slim.fitMLA", null, in, param, roi);
 		showResults(out);
 		sleep20s();
 	}
@@ -65,7 +65,7 @@ public class Demo extends FitTest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void PhasorFitImgDemo() {
-		Img<FloatType> out = (Img<FloatType>) ops.run("slim.fitPhasor", null, in, param, lifetimeAxis, roi);
+		Img<FloatType> out = (Img<FloatType>) ops.run("slim.fitPhasor", null, in, param, roi);
 		showResults(out);
 		sleep20s();
 	}
@@ -83,7 +83,7 @@ public class Demo extends FitTest {
 		long[] vMax = new long[3];
 		out.min(vMin);
 		out.max(vMax);
-		for (int i = 0; i <= out.max(lifetimeAxis); i++) {
+		for (int i = 0; i <= out.max(0); i++) {
 			vMin[0] = vMax[0] = i;
 			IntervalView<I> rsltView = Views.interval(out, vMin, vMax);
 			rsltView = Views.permute(rsltView, 0, 2);

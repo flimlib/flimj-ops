@@ -68,8 +68,6 @@ public class FitTest extends AbstractOpTest {
 	static FitParams<UnsignedShortType> param_master;
 	static FitParams<UnsignedShortType> param;
 
-	static int lifetimeAxis;
-
 	static long[] min, max, vMin, vMax;
 
 	static RealMask roi;
@@ -99,14 +97,14 @@ public class FitTest extends AbstractOpTest {
 		in = Views.hyperSlice(in, 3, 12);
 		r.close();
 
-		lifetimeAxis = 0;
-
 		param_master = new FitParams<UnsignedShortType>();
+		param_master.ltAxis = 0;
 		param_master.xInc = 0.195f;
 		param_master.transMap = in;
 		param_master.fitStart = 9;
 		param_master.fitEnd = 20;
 		param_master.paramFree = new boolean[] { true, true, true };
+		param_master.dropBad = false;
 
 		// +/- 1 because those dimensions are the closure of the box
 		roi = new OpenWritableBox(new double[] { min[1] - 1, min[2] - 1 }, new double[] { max[1] + 1, max[2] + 1 });
@@ -120,7 +118,7 @@ public class FitTest extends AbstractOpTest {
 	@Test
 	public void testRLDFitImg() {
 		long ms = System.currentTimeMillis();
-		FitResults out = (FitResults) ops.run("slim.fitRLD", param, lifetimeAxis);
+		FitResults out = (FitResults) ops.run("slim.fitRLD", param);
 		System.out.println("RLD finished in " + (System.currentTimeMillis() - ms) + " ms");
 
 		// 3 parameter layers
@@ -130,13 +128,13 @@ public class FitTest extends AbstractOpTest {
 		float[] exp = { 2.5887516f, 1.3008053f, 0.1802666f, 4.498526f, 0.20362994f };
 		Assert.assertArrayEquals(exp, act, TOLERANCE);
 	}
-
+	
 	@Test
 	public void testBinning() {
 		long ms = System.currentTimeMillis();
-		FitResults out = (FitResults) ops.run("slim.fitRLD", param, lifetimeAxis, roi, SlimOps.SQUARE_KERNEL_3);
+		FitResults out = (FitResults) ops.run("slim.fitRLD", param, roi, SlimOps.SQUARE_KERNEL_3);
 		System.out.println("RLD binning finished in " + (System.currentTimeMillis() - ms) + " ms");
-
+		
 		// 3 parameter layers
 		vMin[0] = 0;
 		vMax[0] = 2;
@@ -144,16 +142,16 @@ public class FitTest extends AbstractOpTest {
 		float[] exp = { 1.7686111f, 3.8147495f, 0.17224349f, 5.990236f, 0.19115955f };
 		Assert.assertArrayEquals(exp, act, TOLERANCE);
 	}
-
+	
 	@Test
 	public void testMLAFitImg() {
 		// estimation using RLD
-		param.paramMap = param.paramMap = ((FitResults) ops.run("slim.fitRLD", param, lifetimeAxis, roi)).paramMap;
-
+		param.paramMap = param.paramMap = ((FitResults) ops.run("slim.fitRLD", param, roi)).paramMap;
+		
 		long ms = System.currentTimeMillis();
-		FitResults out = (FitResults) ops.run("slim.fitMLA", param, lifetimeAxis, roi);
+		FitResults out = (FitResults) ops.run("slim.fitMLA", param, roi);
 		System.out.println("MLA finished in " + (System.currentTimeMillis() - ms) + " ms");
-
+		
 		// 3 parameter layers
 		vMin[0] = 0;
 		vMax[0] = 2;
@@ -165,7 +163,7 @@ public class FitTest extends AbstractOpTest {
 	@Test
 	public void testPhasorFitImg() {
 		long ms = System.currentTimeMillis();
-		FitResults out = (FitResults) ops.run("slim.fitPhasor", param, lifetimeAxis, roi);
+		FitResults out = (FitResults) ops.run("slim.fitPhasor", param, roi);
 		System.out.println("Phasor finished in " + (System.currentTimeMillis() - ms) + " ms");
 
 		// 6 parameter layers
@@ -179,7 +177,7 @@ public class FitTest extends AbstractOpTest {
 	@Test
 	public void testGlobalFitImg() {
 		long ms = System.currentTimeMillis();
-		FitResults out = (FitResults) ops.run("slim.fitGlobal", param, lifetimeAxis, roi);
+		FitResults out = (FitResults) ops.run("slim.fitGlobal", param, roi);
 		System.out.println("Global fit finished in " + (System.currentTimeMillis() - ms) + " ms");
 
 		// 3 parameter layers
@@ -195,7 +193,7 @@ public class FitTest extends AbstractOpTest {
 		param.nComp = 2;
 		param.paramFree = new boolean[] { true, true, true, true, true };
 		long ms = System.currentTimeMillis();
-		FitResults out = (FitResults) ops.run("slim.fitGlobal", param, lifetimeAxis, roi);
+		FitResults out = (FitResults) ops.run("slim.fitGlobal", param, roi);
 		System.out.println("Global fit (Multi) finished in " + (System.currentTimeMillis() - ms) + " ms");
 
 		// 5 parameter layers

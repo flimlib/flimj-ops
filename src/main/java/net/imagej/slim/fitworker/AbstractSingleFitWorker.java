@@ -7,6 +7,7 @@ import net.imagej.ops.thread.chunker.ChunkerOp;
 import net.imagej.ops.thread.chunker.CursorBasedChunk;
 import net.imagej.slim.FitParams;
 import net.imagej.slim.FitResults;
+import net.imagej.slim.ParamEstimator;
 import net.imagej.slim.utils.RAHelper;
 import net.imglib2.type.numeric.RealType;
 
@@ -58,9 +59,11 @@ public abstract class AbstractSingleFitWorker<I extends RealType<I>> implements 
 
 	/**
 	 * A routine called before {@link #doFit()}. Can be used to throw away the
-	 * left overs from previous runs.
+	 * left-overs from the previous run.
 	 */
-	protected void beforeFit() {}
+	protected void beforeFit() {
+		chisqBuffer[0] = -1;
+	}
 
 	/**
 	 * Does the actual implementation-specific fitting routine.
@@ -86,7 +89,7 @@ public abstract class AbstractSingleFitWorker<I extends RealType<I>> implements 
 	protected abstract AbstractSingleFitWorker<I> duplicate(FitParams<I> params, FitResults rslts);
 
 	@Override
-	public void fitBatch(FitParams<I> params, FitResults rslts, List<int[]> pos, int lifetimeAxis) {
+	public void fitBatch(FitParams<I> params, FitResults rslts, List<int[]> pos) {
 		ops.run(ChunkerOp.class, new CursorBasedChunk() {
 
 			@Override
@@ -95,14 +98,23 @@ public abstract class AbstractSingleFitWorker<I extends RealType<I>> implements 
 				final FitParams<I> lParams = params.copy();
 				final FitResults lResults = results.copy();
 				final AbstractSingleFitWorker<I> fitWorker = duplicate(lParams, lResults);
-				final RAHelper<I> helper = new RAHelper<>(params, rslts, lifetimeAxis);
+				final RAHelper<I> helper = new RAHelper<>(params, rslts);
 
 				for (int i = startIndex; i < startIndex + numSteps; i += stepSize) {
 					final int[] xytPos = pos.get(i);
 
-					helper.loadData(fitWorker.transBuffer, fitWorker.paramBuffer, lParams, xytPos);
+					helper.loadData(fitWorker.transBuffer, fitWorker.paramBuffer, params, xytPos);
+
 
 					fitWorker.fitSingle(lParams, lResults);
+
+					// don't write to results if chisq is too big
+					if (lParams.dropBad) {
+						float chisq = fitWorker.chisqBuffer[0];
+						if (chisq < 0 || chisq > 1E5 || Float.isNaN(chisq)) {
+							continue;
+						}
+					}
 
 					helper.commitRslts(lParams, lResults, xytPos);
 				}

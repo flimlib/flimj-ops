@@ -13,6 +13,8 @@ import net.imglib2.type.numeric.real.FloatType;
  * @author Dasong Gao
  */
 public class FitResults {
+	public int ltAxis;
+
 	/** The return code of the fit */
 	public int retCode;
 

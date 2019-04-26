@@ -8,8 +8,10 @@ import net.imagej.slim.FitResults;
 import net.imagej.slim.fitworker.*;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgs;
+import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
@@ -28,7 +30,7 @@ public class SlimOps {
 		}
 		return out;
 	}
-	
+
 	private SlimOps() {
 		// NB: Prevent instantiation of utility class.
 	}
@@ -55,6 +57,10 @@ public class SlimOps {
 	// 	String NAME = "slim.spa";
 	// }
 
+	public interface PseudocolorOp extends Op {
+		String NAME = "slim.showPseudocolor";
+	}
+
 	interface FitOps<I extends RealType<I>> {
 
 		/**
@@ -76,6 +82,11 @@ public class SlimOps {
 
 	static abstract class FitRAI<I extends RealType<I>>
 		extends AbstractUnaryFunctionOp<FitParams<I>, FitResults> implements FitOps<I> {
+	
+	}
+
+	static abstract class DispRslt
+		extends AbstractUnaryFunctionOp<FitResults, RandomAccessibleInterval<ARGBType>> {
 	
 	}
 }
