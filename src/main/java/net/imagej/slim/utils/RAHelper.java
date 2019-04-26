@@ -18,7 +18,7 @@ public class RAHelper<I extends RealType<I>> {
 	final RandomAccess<IntType> retcodeRA;
 	final int lifetimeAxis;
 
-	public RAHelper(FitParams<I> params, FitResults rslts, int lifetimeAxis) {
+	public RAHelper(FitParams<I> params, FitResults rslts) {
 		transRA = params.transMap.randomAccess();
 		initialParamRA = params.paramMap != null ? params.paramMap.randomAccess()    : null;
 		fittedParamRA =  params.getParamMap ?      rslts.paramMap.randomAccess()     : null;
@@ -26,7 +26,7 @@ public class RAHelper<I extends RealType<I>> {
 		residualsRA =    params.getResidualsMap ?  rslts.residualsMap.randomAccess() : null;
 		chisqRA =        params.getChisqMap ?      rslts.chisqMap.randomAccess()     : null;
 		retcodeRA =      params.getReturnCodeMap ? rslts.retCodeMap.randomAccess()   : null;
-		this.lifetimeAxis = lifetimeAxis;
+		this.lifetimeAxis = params.ltAxis;
 	}
 
 	public void loadData(float[] transBuffer, float[] paramBuffer, FitParams<I> params, int[] xytPos) {
@@ -36,7 +36,7 @@ public class RAHelper<I extends RealType<I>> {
 		for (int t = 0; t < transBuffer.length; t++, transRA.fwd(lifetimeAxis)) {
 			transBuffer[t] = transRA.get().getRealFloat();
 		}
-		// fill initial values from params.param
+		// fill initial values from params.paramMap
 		if (initialParamRA != null) {
 			initialParamRA.setPosition(xytPos);
 			for (int p = 0; p < paramBuffer.length; p++, initialParamRA.fwd(lifetimeAxis)) {
@@ -47,6 +47,12 @@ public class RAHelper<I extends RealType<I>> {
 		else if (params.param != null) {
 			for (int p = 0; p < paramBuffer.length; p++) {
 				paramBuffer[p] = params.param[p];
+			}
+		}
+		// or if both local and global settings are not present, set to 0
+		else {
+			for (int p = 0; p < paramBuffer.length; p++) {
+				paramBuffer[p] = 0;
 			}
 		}
 	}

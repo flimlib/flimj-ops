@@ -16,5 +16,5 @@ public interface FitWorker<I extends RealType<I>> {
 	 */
 	int nParamOut();
 
-	void fitBatch(FitParams<I> params, FitResults rslts, List<int[]> pos, int lifetimeAxis);
+	void fitBatch(FitParams<I> params, FitResults rslts, List<int[]> pos);
 }

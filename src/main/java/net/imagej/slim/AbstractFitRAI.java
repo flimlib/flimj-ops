@@ -19,9 +19,6 @@ import net.imglib2.view.Views;
 
 public abstract class AbstractFitRAI<I extends RealType<I>> extends FitRAI<I> implements Contingent {
 
-	@Parameter
-	private int lifetimeAxis;
-
 	@Parameter(required = false)
 	private RealMask roi;
 
@@ -32,6 +29,8 @@ public abstract class AbstractFitRAI<I extends RealType<I>> extends FitRAI<I> im
 
 	private FitResults rslts;
 
+	private int lifetimeAxis;
+
 	@Override
 	public boolean conforms() {
 		// requires a 3D image
@@ -39,6 +38,11 @@ public abstract class AbstractFitRAI<I extends RealType<I>> extends FitRAI<I> im
 			return false;
 		}
 
+		// lifetime axis must be valid
+		if (lifetimeAxis < 0 || lifetimeAxis >= in().transMap.numDimensions()) {
+			return false;
+		}	
+		
 		// and pissibly a 2D mask
 		if (roi != null && roi.numDimensions() != 2) {
 			return false;
@@ -54,6 +58,7 @@ public abstract class AbstractFitRAI<I extends RealType<I>> extends FitRAI<I> im
 	@Override
 	public void initialize() {
 		super.initialize();
+		lifetimeAxis = in().ltAxis;
 		rslts = new FitResults();
 		fitWorker = createWorker(in().copy(), rslts);
 		initRslt();
@@ -71,15 +76,18 @@ public abstract class AbstractFitRAI<I extends RealType<I>> extends FitRAI<I> im
 
 	@Override
 	public FitResults calculate(FitParams<I> params) {
+		params = params.copy();
 		// convolve the image if necessary
 		params.transMap = kernel == null ? params.transMap
 				: (RandomAccessibleInterval<I>) ops().filter().convolve(params.transMap, kernel);
 
 		final List<int[]> roiPos = getRoiPositions(params.transMap);
 
-		fitWorker.fitBatch(params, rslts, interested, lifetimeAxis);
+		ParamEstimator<I> est = new ParamEstimator<I>(params, roiPos);
+		est.estimateStartEnd();
+		est.estimateIThreshold();
 
-		fitWorker.fitBatch(params, rslts, roiPos, lifetimeAxis);
+		fitWorker.fitBatch(params, rslts, roiPos);
 
 		return rslts;
 	}

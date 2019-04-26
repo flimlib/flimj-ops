@@ -9,6 +9,7 @@ import net.imagej.slim.FitParams;
 import net.imagej.slim.FitResults;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.display.ColorTable;
 import net.imglib2.roi.RealMask;
 import net.imglib2.type.numeric.RealType;
 
@@ -23,23 +24,23 @@ public class SlimNamespace<I extends RealType<I>> extends AbstractNamespace {
 	}
 	
 	@OpMethod(op = net.imagej.slim.DefaultFitRAI.MLAGlobalFitRAI.class)
-	public FitResults fitGlobal(final FitParams in, final int lifetimeAxis) {
+	public FitResults fitGlobal(final FitParams in) {
 		final FitResults result =
-			(FitResults) ops().run(net.imagej.slim.DefaultFitRAI.MLAGlobalFitRAI.class, in, lifetimeAxis);
+			(FitResults) ops().run(net.imagej.slim.DefaultFitRAI.MLAGlobalFitRAI.class, in);
 		return result;
 	}
 
 	@OpMethod(op = net.imagej.slim.DefaultFitRAI.MLAGlobalFitRAI.class)
-	public FitResults fitGlobal(final FitParams in, final int lifetimeAxis, final RealMask roi) {
+	public FitResults fitGlobal(final FitParams in, final RealMask roi) {
 		final FitResults result =
-			(FitResults) ops().run(net.imagej.slim.DefaultFitRAI.MLAGlobalFitRAI.class, in, lifetimeAxis, roi);
+			(FitResults) ops().run(net.imagej.slim.DefaultFitRAI.MLAGlobalFitRAI.class, in, roi);
 		return result;
 	}
 
 	@OpMethod(op = net.imagej.slim.DefaultFitRAI.MLAGlobalFitRAI.class)
-	public FitResults fitGlobal(final FitParams in, final int lifetimeAxis, final RealMask roi, final RandomAccessibleInterval kernel) {
+	public FitResults fitGlobal(final FitParams in, final RealMask roi, final RandomAccessibleInterval kernel) {
 		final FitResults result =
-			(FitResults) ops().run(net.imagej.slim.DefaultFitRAI.MLAGlobalFitRAI.class, in, lifetimeAxis, roi, kernel);
+			(FitResults) ops().run(net.imagej.slim.DefaultFitRAI.MLAGlobalFitRAI.class, in, roi, kernel);
 		return result;
 	}
 
@@ -58,23 +59,23 @@ public class SlimNamespace<I extends RealType<I>> extends AbstractNamespace {
 	}
 
 	@OpMethod(op = net.imagej.slim.DefaultFitRAI.MLASingleFitRAI.class)
-	public FitResults fitMLA(final FitParams in, final int lifetimeAxis) {
+	public FitResults fitMLA(final FitParams in) {
 		final FitResults result =
-			(FitResults) ops().run(net.imagej.slim.DefaultFitRAI.MLASingleFitRAI.class, in, lifetimeAxis);
+			(FitResults) ops().run(net.imagej.slim.DefaultFitRAI.MLASingleFitRAI.class);
 		return result;
 	}
 
 	@OpMethod(op = net.imagej.slim.DefaultFitRAI.MLASingleFitRAI.class)
-	public FitResults fitMLA(final FitParams in, final int lifetimeAxis, final RealMask roi) {
+	public FitResults fitMLA(final FitParams in, final RealMask roi) {
 		final FitResults result =
-			(FitResults) ops().run(net.imagej.slim.DefaultFitRAI.MLASingleFitRAI.class, in, lifetimeAxis, roi);
+			(FitResults) ops().run(net.imagej.slim.DefaultFitRAI.MLASingleFitRAI.class, roi);
 		return result;
 	}
 
 	@OpMethod(op = net.imagej.slim.DefaultFitRAI.MLASingleFitRAI.class)
-	public FitResults fitMLA(final FitParams in, final int lifetimeAxis, final RealMask roi, final RandomAccessibleInterval kernel) {
+	public FitResults fitMLA(final FitParams in, final RealMask roi, final RandomAccessibleInterval kernel) {
 		final FitResults result =
-			(FitResults) ops().run(net.imagej.slim.DefaultFitRAI.MLASingleFitRAI.class, in, lifetimeAxis, roi, kernel);
+			(FitResults) ops().run(net.imagej.slim.DefaultFitRAI.MLASingleFitRAI.class, roi, kernel);
 		return result;
 	}
 
@@ -93,23 +94,23 @@ public class SlimNamespace<I extends RealType<I>> extends AbstractNamespace {
 	}
 
 	@OpMethod(op = net.imagej.slim.DefaultFitRAI.PhasorSingleFitRAI.class)
-	public FitResults fitPhasor(final FitParams in, final int lifetimeAxis) {
+	public FitResults fitPhasor(final FitParams in) {
 		final FitResults result =
-			(FitResults) ops().run(net.imagej.slim.DefaultFitRAI.PhasorSingleFitRAI.class, in, lifetimeAxis);
+			(FitResults) ops().run(net.imagej.slim.DefaultFitRAI.PhasorSingleFitRAI.class);
 		return result;
 	}
 
 	@OpMethod(op = net.imagej.slim.DefaultFitRAI.PhasorSingleFitRAI.class)
-	public FitResults fitPhasor(final FitParams in, final int lifetimeAxis, final RealMask roi) {
+	public FitResults fitPhasor(final FitParams in, final RealMask roi) {
 		final FitResults result =
-			(FitResults) ops().run(net.imagej.slim.DefaultFitRAI.PhasorSingleFitRAI.class, in, lifetimeAxis, roi);
+			(FitResults) ops().run(net.imagej.slim.DefaultFitRAI.PhasorSingleFitRAI.class, roi);
 		return result;
 	}
 
 	@OpMethod(op = net.imagej.slim.DefaultFitRAI.PhasorSingleFitRAI.class)
-	public FitResults fitPhasor(final FitParams in, final int lifetimeAxis, final RealMask roi, final RandomAccessibleInterval kernel) {
+	public FitResults fitPhasor(final FitParams in, final RealMask roi, final RandomAccessibleInterval kernel) {
 		final FitResults result =
-			(FitResults) ops().run(net.imagej.slim.DefaultFitRAI.PhasorSingleFitRAI.class, in, lifetimeAxis, roi, kernel);
+			(FitResults) ops().run(net.imagej.slim.DefaultFitRAI.PhasorSingleFitRAI.class, roi, kernel);
 		return result;
 	}
 
@@ -128,23 +129,51 @@ public class SlimNamespace<I extends RealType<I>> extends AbstractNamespace {
 	}
 
 	@OpMethod(op = net.imagej.slim.DefaultFitRAI.RLDSingleFitRAI.class)
-	public FitResults fitRLD(final FitParams in, final int lifetimeAxis) {
+	public FitResults fitRLD(final FitParams in) {
 		final FitResults result =
-			(FitResults) ops().run(net.imagej.slim.DefaultFitRAI.RLDSingleFitRAI.class, in, lifetimeAxis);
+			(FitResults) ops().run(net.imagej.slim.DefaultFitRAI.RLDSingleFitRAI.class);
 		return result;
 	}
 
 	@OpMethod(op = net.imagej.slim.DefaultFitRAI.RLDSingleFitRAI.class)
-	public FitResults fitRLD(final FitParams in, final int lifetimeAxis, final RealMask roi) {
+	public FitResults fitRLD(final FitParams in, final RealMask roi) {
 		final FitResults result =
-			(FitResults) ops().run(net.imagej.slim.DefaultFitRAI.RLDSingleFitRAI.class, in, lifetimeAxis, roi);
+			(FitResults) ops().run(net.imagej.slim.DefaultFitRAI.RLDSingleFitRAI.class, roi);
 		return result;
 	}
 
 	@OpMethod(op = net.imagej.slim.DefaultFitRAI.RLDSingleFitRAI.class)
-	public FitResults fitRLD(final FitParams in, final int lifetimeAxis, final RealMask roi, final RandomAccessibleInterval kernel) {
+	public FitResults fitRLD(final FitParams in, final RealMask roi, final RandomAccessibleInterval kernel) {
 		final FitResults result =
-			(FitResults) ops().run(net.imagej.slim.DefaultFitRAI.RLDSingleFitRAI.class, in, lifetimeAxis, roi, kernel);
+			(FitResults) ops().run(net.imagej.slim.DefaultFitRAI.RLDSingleFitRAI.class, roi, kernel);
+		return result;
+	}
+
+	@OpMethod(op = net.imagej.slim.DefaultDispRslt.Pseudocolor.class)
+	public RandomAccessibleInterval showPseudocolor(final FitResults in) {
+		final RandomAccessibleInterval result =
+			(RandomAccessibleInterval) ops().run(net.imagej.slim.DefaultDispRslt.Pseudocolor.class, in);
+		return result;
+	}
+
+	@OpMethod(op = net.imagej.slim.DefaultDispRslt.Pseudocolor.class)
+	public RandomAccessibleInterval showPseudocolor(final FitResults in, final float...colorRange) {
+		final RandomAccessibleInterval result =
+			(RandomAccessibleInterval) ops().run(net.imagej.slim.DefaultDispRslt.Pseudocolor.class, in, colorRange);
+		return result;
+	}
+
+	@OpMethod(op = net.imagej.slim.DefaultDispRslt.Pseudocolor.class)
+	public RandomAccessibleInterval showPseudocolor(final FitResults in, final float[] colorRange, final float...brightnessRange) {
+		final RandomAccessibleInterval result =
+			(RandomAccessibleInterval) ops().run(net.imagej.slim.DefaultDispRslt.Pseudocolor.class, in, colorRange, brightnessRange);
+		return result;
+	}
+
+	@OpMethod(op = net.imagej.slim.DefaultDispRslt.Pseudocolor.class)
+	public RandomAccessibleInterval showPseudocolor(final FitResults in, final float[] colorRange, final float[] brightnessRange, final ColorTable lut) {
+		final RandomAccessibleInterval result =
+			(RandomAccessibleInterval) ops().run(net.imagej.slim.DefaultDispRslt.Pseudocolor.class, in, colorRange, brightnessRange, lut);
 		return result;
 	}
 }
