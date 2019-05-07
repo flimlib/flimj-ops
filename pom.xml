@@ -48,6 +48,7 @@
 			<id>Xanthorapedia</id>
 			<name>Dasong Gao</name>
 			<roles>
+				<role>lead</role>
 				<role>developer</role>
 				<role>debugger</role>
 				<role>support</role>
@@ -56,14 +57,12 @@
 		</developer>
 	</developers>
 	<contributors>
+		<!--
+		NB: Need at least one element to override the parent.
+		See: https://issues.apache.org/jira/browse/MNG-5220
+		-->
 		<contributor>
-			<name>Dasong Gao</name>
-			<roles>
-				<role>developer</role>
-				<role>debugger</role>
-				<role>support</role>
-				<role>maintainer</role>
-			</roles>
+			<name>None</name>
 		</contributor>
 	</contributors>
 
