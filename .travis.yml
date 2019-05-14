@@ -1,12 +1,10 @@
 language: java
-jdk: openjdk8
 # https://github.com/travis-ci/travis-ci/issues/2316#issuecomment-245829804
 matrix:
   include:
     - os: linux
-      jdk: openjdk8
     - os: osx
-      osx_image: xcode8.3
+      osx_image: xcode9.1
 branches:
   only:
   - master
