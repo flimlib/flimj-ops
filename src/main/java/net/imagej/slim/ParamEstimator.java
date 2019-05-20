@@ -56,6 +56,7 @@ public class ParamEstimator<I extends RealType<I>> {
 	public void estimateIThreshold() {
 		if (params.iThresh < 0) {
 			Arrays.sort(sumOverTime);
+			// TODO
 			// System.out.println(Arrays.toString(sumOverTime));
 		}
 	}

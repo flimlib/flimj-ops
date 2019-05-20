@@ -33,13 +33,13 @@ public abstract class AbstractFitRAI<I extends RealType<I>> extends FitRAI<I> im
 
 	@Override
 	public boolean conforms() {
+		FitParams<I> in = in();
 		// requires a 3D image
-		if (in().transMap == null || in().transMap.numDimensions() != 3) {
+		if (in.transMap == null || in.transMap.numDimensions() != 3) {
 			return false;
 		}
-
 		// lifetime axis must be valid
-		if (lifetimeAxis < 0 || lifetimeAxis >= in().transMap.numDimensions()) {
+		if (lifetimeAxis < 0 || lifetimeAxis >= in.transMap.numDimensions()) {
 			return false;
 		}	
 		
@@ -124,6 +124,7 @@ public abstract class AbstractFitRAI<I extends RealType<I>> extends FitRAI<I> im
 			dimFit[lifetimeAxis] = 1;
 			rslts.chisqMap = ArrayImgs.floats(dimFit);
 		}
+		rslts.ltAxis = lifetimeAxis;
 	}
 
 	private List<int[]> getRoiPositions(RandomAccessibleInterval<I> trans) {

@@ -95,7 +95,8 @@
 		<license.licenseName>bsd_2</license.licenseName>
 		<license.copyrightOwners>Board of Regents of the University of Wisconsin-Madison.</license.copyrightOwners>
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
-		<releaseProfiles>deploy-to-scijava</releaseProfiles>
+		<!-- TODO: go back to scijava -->
+		<releaseProfiles>deploy-to-imagej</releaseProfiles>
 
 		<slim-curve.version>1.1.0</slim-curve.version>
 	</properties>

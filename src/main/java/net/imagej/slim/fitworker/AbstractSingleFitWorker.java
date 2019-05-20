@@ -1,5 +1,6 @@
 package net.imagej.slim.fitworker;
 
+import java.util.Arrays;
 import java.util.List;
 
 import net.imagej.ops.OpEnvironment;
@@ -26,8 +27,6 @@ public abstract class AbstractSingleFitWorker<I extends RealType<I>> implements 
 	protected final float[] fittedBuffer;
 	protected final float[] residualBuffer;
 
-	protected static final int DEFAULT_NPARAMOUT = 3;
-
 	public AbstractSingleFitWorker(FitParams<I> params, FitResults results, OpEnvironment ops) {
 		this.params = params;
 		this.results = results;
@@ -41,10 +40,25 @@ public abstract class AbstractSingleFitWorker<I extends RealType<I>> implements 
 		paramBuffer = results.param = new float[nParam];
 		transBuffer = params.trans = new float[nData];
 
+		// assume free if not specified
+		int fillStart = 0;
+		if (params.paramFree == null) {
+			params.paramFree = new boolean[nParamOut()];
+		}
+		else if (params.paramFree.length < nParamOut()) {
+			fillStart = params.paramFree.length;
+			params.paramFree = Arrays.copyOf(params.paramFree, nParamOut());
+		}
+		for (int i = fillStart; i < params.paramFree.length; i++) {
+			params.paramFree[i] = true;
+		}
+
 		// setup output buffers
 		chisqBuffer = new float[1];
 		fittedBuffer = results.fitted = new float[nData];
 		residualBuffer = results.residuals = new float[nData];
+
+		results.ltAxis = params.ltAxis;
 	}
 
 	/**
@@ -54,7 +68,7 @@ public abstract class AbstractSingleFitWorker<I extends RealType<I>> implements 
 	 * @return The number of output parameters in the parameter array.
 	 */
 	public int nParamOut() {
-		return DEFAULT_NPARAMOUT;
+		return params.nComp * 2 + 1;
 	}
 
 	/**

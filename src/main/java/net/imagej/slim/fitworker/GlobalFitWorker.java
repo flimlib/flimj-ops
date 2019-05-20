@@ -1,5 +1,6 @@
 package net.imagej.slim.fitworker;
 
+import java.util.Arrays;
 import java.util.List;
 
 import net.imagej.ops.OpEnvironment;
@@ -27,6 +28,18 @@ public class GlobalFitWorker<I extends RealType<I>> implements FitWorker<I> {
 		// trans data and fitted parameters for each trans
 		final float[][] trans = new float[nTrans][nData];
 		final float[][] param = new float[nTrans][nParamOut()];
+		// assume free if not specified
+		int fillStart = 0;
+		if (params.paramFree == null) {
+			params.paramFree = new boolean[nParamOut()];
+		}
+		else if (params.paramFree.length < nParamOut()) {
+			fillStart = params.paramFree.length;
+			params.paramFree = Arrays.copyOf(params.paramFree, nParamOut());
+		}
+		for (int i = fillStart; i < params.paramFree.length; i++) {
+			params.paramFree[i] = true;
+		}
 		final RAHelper<I> helper = new RAHelper<>(params, rslts);
 
 		// fetch parameters from RA

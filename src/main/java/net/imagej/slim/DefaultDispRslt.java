@@ -1,6 +1,8 @@
 package net.imagej.slim;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -30,10 +32,17 @@ public class DefaultDispRslt {
 	public static class Pseudocolor extends DispRslt {
 
 		@Parameter(required = false)
-		private float[] colorRange;
+		private Float cMin;
 
 		@Parameter(required = false)
-		private float[] brightnessRange;
+		private Float cMax;
+
+		@Parameter(required = false)
+		private Float bMin;
+
+		@Parameter(required = false)
+		private Float bMax;
+
 
 		@Parameter(required = false)
 		private ColorTable lut = ColorTables.SPECTRUM;
@@ -45,23 +54,40 @@ public class DefaultDispRslt {
 		public void initialize() {
 			super.initialize();
 			final FitResults rslt = in();
-			hRaw = Views.hyperSlice(rslt.paramMap, rslt.ltAxis, 2);
-			bRaw = Views.hyperSlice(rslt.paramMap, rslt.ltAxis, 1);
-			if (colorRange == null) {
-				colorRange = new float[2];
-				IterableInterval<FloatType> hRawII = Views.iterable(hRaw);
-				// System.out.println(ops().stats().max(hRawII));
-				colorRange[0] = ops().stats().percentile(hRawII, 20).getRealFloat();
-				colorRange[1] = ops().stats().percentile(hRawII, 80).getRealFloat();
-				colorRange = new float[] {0.7f, 2.5f};
-				
-				System.out.println(colorRange[0] + ", " + colorRange[1]);
+			List<RandomAccessibleInterval<FloatType>> hRaws = new LinkedList<>();
+			List<RandomAccessibleInterval<FloatType>> bRaws = new LinkedList<>();
+			int nComp = (int) (rslt.paramMap.dimension(rslt.ltAxis) - 1) / 2;
+			for (int c = 0; c < nComp; c++) {
+				hRaws.add(Views.hyperSlice(rslt.paramMap, rslt.ltAxis, c * 2 + 2));
+				bRaws.add(Views.hyperSlice(rslt.paramMap, rslt.ltAxis, c * 2 + 1));
+			}
+			hRaw = ops().transform().stackView(hRaws);
+			bRaw = ops().transform().stackView(bRaws);
+			// min, max = 20%, 80%
+			IterableInterval<FloatType> hRawII = Views.iterable(hRaw);
+			if (cMin == null) {
+				cMin = ops().stats().percentile(hRawII, 20).getRealFloat();
+				System.out.println("color_min automatically set to " + cMin);
+			}
+			if (cMax == null) {
+				cMax = ops().stats().percentile(hRawII, 80).getRealFloat();
+				System.out.println("color_max automatically set to " + cMin);
+			}
+			// min, max = 0%, 99.5%
+			IterableInterval<FloatType> bRawII = Views.iterable(bRaw);
+			if (bMin == null) {
+				bMin = new Float(0);
+				System.out.println("brightness_min automatically set to 0.0");
+			}
+			if (bMax == null) {
+				bMax = ops().stats().percentile(bRawII, 99.5).getRealFloat();
+				System.out.println("brightness_max automatically set to " + bMax);
 			}
 		}
 
 		@Override
 		public RandomAccessibleInterval<ARGBType> calculate(FitResults rslt) {
-			RealLUTConverter<FloatType> hConverter = new RealLUTConverter<>(colorRange[0], colorRange[1], lut);
+			RealLUTConverter<FloatType> hConverter = new RealLUTConverter<>(cMin, cMax, lut);
 			RandomAccessibleInterval<ARGBType> hImg = Converters.convert(hRaw, hConverter, new ARGBType());
 
 			Img<ARGBType> colored = ops().create().img(hImg);
@@ -72,7 +98,7 @@ public class DefaultDispRslt {
 				csr.fwd();
 				bRA.setPosition(csr);
 				hRA.setPosition(csr);
-				float b = Math.min((bRA.get().get() - brightnessRange[0]) / (brightnessRange[1] - brightnessRange[0]), 1);
+				float b = Math.min((bRA.get().get() - bMin) / (bMax - bMin), 1);
 				ARGBType h = hRA.get();
 				h.mul(b);
 

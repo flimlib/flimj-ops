@@ -157,23 +157,37 @@ public class SlimNamespace<I extends RealType<I>> extends AbstractNamespace {
 	}
 
 	@OpMethod(op = net.imagej.slim.DefaultDispRslt.Pseudocolor.class)
-	public RandomAccessibleInterval showPseudocolor(final FitResults in, final float...colorRange) {
-		final RandomAccessibleInterval result =
-			(RandomAccessibleInterval) ops().run(net.imagej.slim.DefaultDispRslt.Pseudocolor.class, in, colorRange);
-		return result;
+	public RandomAccessibleInterval showPseudocolor(final FitResults in, final Float colorMin) {
+			final RandomAccessibleInterval result =
+					(RandomAccessibleInterval) ops().run(net.imagej.slim.DefaultDispRslt.Pseudocolor.class, in, colorMin);
+			return result;
 	}
 
 	@OpMethod(op = net.imagej.slim.DefaultDispRslt.Pseudocolor.class)
-	public RandomAccessibleInterval showPseudocolor(final FitResults in, final float[] colorRange, final float...brightnessRange) {
-		final RandomAccessibleInterval result =
-			(RandomAccessibleInterval) ops().run(net.imagej.slim.DefaultDispRslt.Pseudocolor.class, in, colorRange, brightnessRange);
-		return result;
+	public RandomAccessibleInterval showPseudocolor(final FitResults in, final Float colorMin, final Float colorMax) {
+			final RandomAccessibleInterval result =
+					(RandomAccessibleInterval) ops().run(net.imagej.slim.DefaultDispRslt.Pseudocolor.class, in, colorMin, colorMax);
+			return result;
 	}
 
 	@OpMethod(op = net.imagej.slim.DefaultDispRslt.Pseudocolor.class)
-	public RandomAccessibleInterval showPseudocolor(final FitResults in, final float[] colorRange, final float[] brightnessRange, final ColorTable lut) {
-		final RandomAccessibleInterval result =
-			(RandomAccessibleInterval) ops().run(net.imagej.slim.DefaultDispRslt.Pseudocolor.class, in, colorRange, brightnessRange, lut);
-		return result;
+	public RandomAccessibleInterval showPseudocolor(final FitResults in, final Float colorMin, final Float colorMax, final Float brightnessMin) {
+			final RandomAccessibleInterval result =
+					(RandomAccessibleInterval) ops().run(net.imagej.slim.DefaultDispRslt.Pseudocolor.class, in, colorMin, colorMax, brightnessMin);
+			return result;
+	}
+
+	@OpMethod(op = net.imagej.slim.DefaultDispRslt.Pseudocolor.class)
+	public RandomAccessibleInterval showPseudocolor(final FitResults in, final Float colorMin, final Float colorMax, final Float brightnessMin, final Float brightnessMax) {
+			final RandomAccessibleInterval result =
+					(RandomAccessibleInterval) ops().run(net.imagej.slim.DefaultDispRslt.Pseudocolor.class, in, colorMin, colorMax, brightnessMin, brightnessMax);
+			return result;
+	}
+
+	@OpMethod(op = net.imagej.slim.DefaultDispRslt.Pseudocolor.class)
+	public RandomAccessibleInterval showPseudocolor(final FitResults in, final Float colorMin, final Float colorMax, final Float brightnessMin, final Float brightnessMax, final ColorTable lut) {
+			final RandomAccessibleInterval result =
+					(RandomAccessibleInterval) ops().run(net.imagej.slim.DefaultDispRslt.Pseudocolor.class, in, colorMin, colorMax, brightnessMin, brightnessMax, lut);
+			return result;
 	}
 }
