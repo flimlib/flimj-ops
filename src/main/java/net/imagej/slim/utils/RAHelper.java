@@ -19,14 +19,15 @@ public class RAHelper<I extends RealType<I>> {
 	final int lifetimeAxis;
 
 	public RAHelper(FitParams<I> params, FitResults rslts) {
+		this.lifetimeAxis = params.ltAxis;
 		transRA = params.transMap.randomAccess();
-		initialParamRA = params.paramMap != null ? params.paramMap.randomAccess()    : null;
+		initialParamRA = params.paramMap != null && params.paramMap.dimension(lifetimeAxis) >= params.nComp ?
+		                                           params.paramMap.randomAccess()    : null;
 		fittedParamRA =  params.getParamMap ?      rslts.paramMap.randomAccess()     : null;
 		fittedRA =       params.getFittedMap ?     rslts.fittedMap.randomAccess()    : null;
 		residualsRA =    params.getResidualsMap ?  rslts.residualsMap.randomAccess() : null;
 		chisqRA =        params.getChisqMap ?      rslts.chisqMap.randomAccess()     : null;
 		retcodeRA =      params.getReturnCodeMap ? rslts.retCodeMap.randomAccess()   : null;
-		this.lifetimeAxis = params.ltAxis;
 	}
 
 	public void loadData(float[] transBuffer, float[] paramBuffer, FitParams<I> params, int[] xytPos) {
@@ -49,10 +50,12 @@ public class RAHelper<I extends RealType<I>> {
 				paramBuffer[p] = params.param[p];
 			}
 		}
-		// or if both local and global settings are not present, set to 0
+		// or if both local and global settings are not present, set to 1 to avoid NaN
 		else {
-			for (int p = 0; p < paramBuffer.length; p++) {
-				paramBuffer[p] = 0;
+			// the Z is ideally 0
+			paramBuffer[0] = 0;
+			for (int p = 1; p < paramBuffer.length; p++) {
+				paramBuffer[p] = 1;
 			}
 		}
 	}

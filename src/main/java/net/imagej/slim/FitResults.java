@@ -56,6 +56,7 @@ public class FitResults {
 	 */
 	public FitResults copy() {
 		FitResults newResults = new FitResults();
+		newResults.ltAxis = ltAxis;
 		newResults.retCode = retCode;
 		newResults.retCodeMap = retCodeMap;
 		newResults.param = param;

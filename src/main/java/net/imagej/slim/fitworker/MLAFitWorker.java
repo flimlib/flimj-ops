@@ -36,12 +36,6 @@ public class MLAFitWorker<I extends RealType<I>> extends AbstractSingleFitWorker
 	}
 
 	@Override
-	public int nParamOut() {
-		// Z, A_i, tau_i
-		return params.nComp * 2 + 1;
-	}
-
-	@Override
 	protected AbstractSingleFitWorker<I> duplicate(FitParams<I> params, FitResults rslts) {
 		return new MLAFitWorker<>(params, rslts, ops);
 	}
