@@ -26,7 +26,7 @@ public class SlimOps {
 		Cursor<DoubleType> cursor = out.cursor();
 		while (cursor.hasNext()) {
 			cursor.fwd();
-			cursor.get().set(1.0 / (size * size));
+			cursor.get().set(1.0);
 		}
 		return out;
 	}

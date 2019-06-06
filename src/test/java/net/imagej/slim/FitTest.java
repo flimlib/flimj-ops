@@ -139,7 +139,7 @@ public class FitTest extends AbstractOpTest {
 		vMin[0] = 0;
 		vMax[0] = 2;
 		float[] act = getRandPos(Views.interval(out.paramMap, vMin, vMax), NSAMPLE);
-		float[] exp = { 1.7686111f, 3.8147495f, 0.17224349f, 5.990236f, 0.19115955f };
+		float[] exp = { 15.917448f, 34.33285f, 0.17224349f, 53.912094f, 0.19115955f };
 		Assert.assertArrayEquals(exp, act, TOLERANCE);
 	}
 	
