@@ -123,7 +123,6 @@ public abstract class AbstractSingleFitWorker<I extends RealType<I>> implements 
 
 	@Override
 	public void fitBatch(List<int[]> pos) {
-		// System.out.println(params);
 		ops.run(ChunkerOp.class, new CursorBasedChunk() {
 
 			@Override
@@ -131,6 +130,9 @@ public abstract class AbstractSingleFitWorker<I extends RealType<I>> implements 
 				// thread-local reusable read/write buffers
 				final FitParams<I> lParams = params.copy();
 				final FitResults lResults = results.copy();
+				// grab your own buffer
+				lParams.param = lParams.trans =
+				lResults.param = lResults.fitted = lResults.residuals = null;
 				final AbstractSingleFitWorker<I> fitWorker = duplicate(lParams, lResults);
 				final RAHelper<I> helper = new RAHelper<>(params, results);
 
