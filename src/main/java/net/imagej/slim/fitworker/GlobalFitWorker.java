@@ -15,13 +15,15 @@ import slim.SLIMCurve;
 public class GlobalFitWorker<I extends RealType<I>> implements FitWorker<I> {
 
 	private final FitParams<I> params;
+	private final FitResults results;
 
 	public GlobalFitWorker(FitParams<I> params, FitResults results, OpEnvironment ops) {
 		this.params = params;
+		this.results = results;
 	}
 
 	@Override
-	public void fitBatch(FitParams<I> params, FitResults rslts, List<int[]> pos) {
+	public void fitBatch(List<int[]> pos) {
 		int nTrans = pos.size();
 		int nData = params.fitEnd - params.fitStart;
 
@@ -40,7 +42,7 @@ public class GlobalFitWorker<I extends RealType<I>> implements FitWorker<I> {
 		for (int i = fillStart; i < params.paramFree.length; i++) {
 			params.paramFree[i] = true;
 		}
-		final RAHelper<I> helper = new RAHelper<>(params, rslts);
+		final RAHelper<I> helper = new RAHelper<>(params, results);
 
 		// fetch parameters from RA
 		for (int i = 0; i < nTrans; i++) {
@@ -64,7 +66,7 @@ public class GlobalFitWorker<I extends RealType<I>> implements FitWorker<I> {
 		SLIMCurve.GCI_marquardt_global_exps_instr(params.xInc, transMat, 0, nData,
 			params.instr, params.noise, params.sig, FitType.FIT_GLOBAL_MULTIEXP,
 			paramMat, params.paramFree, params.restrain, params.chisq_delta,
-			fittedMat, residualMat, chisq, chisqGlobal, df, 1);
+			fittedMat, residualMat, chisq, chisqGlobal, df, params.dropBad ? 1 : 0);
 		
 		// fetch fitted stuff from native
 		float[][] fittedParam  = params.getParamMap     ? paramMat.asArray()    : null;
@@ -73,18 +75,23 @@ public class GlobalFitWorker<I extends RealType<I>> implements FitWorker<I> {
 
 		// copy back
 		for (int i = 0; i < nTrans; i++) {
-			rslts.param     = params.getParamMap     ? fittedParam[i] : null;
-			rslts.fitted    = params.getFittedMap    ? fitted[i]      : null;
-			rslts.residuals = params.getResidualsMap ? residual[i]    : null;
-			rslts.chisq = chisq[i];
-			helper.commitRslts(params, rslts, pos.get(i));
+			results.param     = params.getParamMap     ? fittedParam[i] : null;
+			results.fitted    = params.getFittedMap    ? fitted[i]      : null;
+			results.residuals = params.getResidualsMap ? residual[i]    : null;
+			results.chisq = chisq[i];
+			helper.commitRslts(params, results, pos.get(i));
 		}
-		rslts.chisq = chisqGlobal[0];
+		results.chisq = chisqGlobal[0];
 	}
 
 	@Override
 	public int nParamOut() {
 		// Z, A_i, tau_i
 		return params.nComp * 2 + 1;
+	}
+
+	@Override
+	public int nDataOut() {
+		return params.fitEnd - params.fitStart;
 	}
 }

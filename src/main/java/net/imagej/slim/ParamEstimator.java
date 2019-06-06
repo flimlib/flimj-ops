@@ -1,10 +1,17 @@
 package net.imagej.slim;
 
+import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import net.imagej.ops.OpEnvironment;
 import net.imglib2.RandomAccess;
+import net.imglib2.img.Img;
+import net.imglib2.img.array.ArrayImgs;
+import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.real.FloatType;
 
 /**
  * ParamEstimator
@@ -19,13 +26,15 @@ public class ParamEstimator<I extends RealType<I>> {
 
 	private final FitParams<I> params;
 
+	private final Img<FloatType> iMap;
+
 	private final List<int[]> pos;
 	private final int lifetimeAxis;
 
 	private final int nData, nTrans;
 
-	private float[] sumAcrossTrans;
-	private float[] sumOverTime;
+	private final float[] sumAcrossTrans;
+	private final float[] iSmpls;
 
 	public ParamEstimator(FitParams<I> params, List<int[]> pos) {
 		this.params = params;
@@ -34,9 +43,13 @@ public class ParamEstimator<I extends RealType<I>> {
 		nData = (int) params.transMap.dimension(lifetimeAxis);
 		nTrans = pos.size();
 		// don't bother sampling if nothing to estimate
-		if (params.fitStart < 0 || params.iThresh < 0) {
-			getSample((int) (nTrans * SAMPLE_RATE));
-		}
+		// if only percentage is set, calculate the value
+		iSmpls = params.iThresh < 0 && params.iThreshPercent > 0 ? new float[(int) (nTrans * SAMPLE_RATE)] : null;
+		
+		// create intensity image
+		sumAcrossTrans = new float[nData];
+		
+		iMap = calcIMap();
 	}
 
 	public void estimateStartEnd() {
@@ -54,29 +67,44 @@ public class ParamEstimator<I extends RealType<I>> {
 	}
 
 	public void estimateIThreshold() {
-		if (params.iThresh < 0) {
-			Arrays.sort(sumOverTime);
-			// TODO
-			// System.out.println(Arrays.toString(sumOverTime));
+		if (iSmpls != null) {
+			Arrays.sort(iSmpls);
+			params.iThreshPercent = Math.min(params.iThreshPercent, 100);
+			params.iThresh = iSmpls[(int) (params.iThreshPercent / 100.0 * (iSmpls.length - 1))];
 		}
 	}
 
-	private void getSample(int n) {
-		final int nSample = nTrans < n ? nTrans : n;
+	public Img<FloatType> getIntensityMap() {
+		return iMap;
+	}
 
+	private Img<FloatType> calcIMap() {
+		// the intensity image has the same dim as say chisqMap
+		long[] dimFit = new long[params.transMap.numDimensions()];
+		params.transMap.dimensions(dimFit);
+		dimFit[lifetimeAxis] = 1;
+		Img<FloatType> iMap = ArrayImgs.floats(dimFit);
+
+		// calculate the intensity of each interested trans
 		RandomAccess<I> transRA = params.transMap.randomAccess();
-
-		sumAcrossTrans = new float[nData];
-		sumOverTime = new float[nSample];
-
-		// sample equally spaced transients
-		for (int i = 0; i < nSample; i++) {
-			transRA.setPosition(pos.get(i * nTrans / nSample));
-			for (int t = 0; t < sumAcrossTrans.length; t++, transRA.fwd(lifetimeAxis)) {
-				float intensity = transRA.get().getRealFloat();
-				sumAcrossTrans[t] += intensity;
-				sumOverTime[i] += intensity;
+		RandomAccess<FloatType> iMapRA = iMap.randomAccess();
+		int iSmplCnt = 0;
+		for (int i = 0; i < pos.size(); i++) {
+			int[] xytPos = pos.get(i);
+			transRA.setPosition(xytPos);
+			float intensity = 0;
+			for (int t = 0; t < nData; t++, transRA.fwd(lifetimeAxis)) {
+				float count = transRA.get().getRealFloat();
+				intensity += count;
+				sumAcrossTrans[t] += count;
 			}
+			// sample intensity every other nTrans * SAMPLE_RATE
+			if (iSmpls != null && iSmplCnt + 1 <= i * SAMPLE_RATE) {
+				iSmpls[iSmplCnt++] = intensity;
+			}
+			iMapRA.setPosition(xytPos);
+			iMapRA.get().set(intensity);
 		}
+		return iMap;
 	}
 }

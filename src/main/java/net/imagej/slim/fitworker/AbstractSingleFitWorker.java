@@ -8,7 +8,6 @@ import net.imagej.ops.thread.chunker.ChunkerOp;
 import net.imagej.ops.thread.chunker.CursorBasedChunk;
 import net.imagej.slim.FitParams;
 import net.imagej.slim.FitResults;
-import net.imagej.slim.ParamEstimator;
 import net.imagej.slim.utils.RAHelper;
 import net.imglib2.type.numeric.RealType;
 
@@ -37,17 +36,27 @@ public abstract class AbstractSingleFitWorker<I extends RealType<I>> implements 
 		nParam = nParamOut();
 
 		// setup input buffers
-		paramBuffer = results.param = new float[nParam];
-		transBuffer = params.trans = new float[nData];
+		if (results.param == null) {
+			results.param = new float[nParam];
+		}
+		if (params.trans == null) {
+			params.trans = new float[nData];
+		}
+		paramBuffer = results.param;
+		transBuffer = params.trans;
 
-		// assume free if not specified
-		int fillStart = 0;
+		// assume params are free if not specified
+		int fillStart = -1;
 		if (params.paramFree == null) {
 			params.paramFree = new boolean[nParamOut()];
+			fillStart = 0;
 		}
 		else if (params.paramFree.length < nParamOut()) {
-			fillStart = params.paramFree.length;
 			params.paramFree = Arrays.copyOf(params.paramFree, nParamOut());
+			fillStart = params.paramFree.length;
+		}
+		else {
+			fillStart = params.paramFree.length;
 		}
 		for (int i = fillStart; i < params.paramFree.length; i++) {
 			params.paramFree[i] = true;
@@ -55,20 +64,29 @@ public abstract class AbstractSingleFitWorker<I extends RealType<I>> implements 
 
 		// setup output buffers
 		chisqBuffer = new float[1];
-		fittedBuffer = results.fitted = new float[nData];
-		residualBuffer = results.residuals = new float[nData];
+		if (results.fitted == null) {
+			results.fitted = new float[nData];
+		}
+		if (results.residuals == null) {
+			results.residuals = new float[nData];
+		}
+		fittedBuffer = results.fitted;
+		residualBuffer = results.residuals;
 
 		results.ltAxis = params.ltAxis;
+
+		// the target is compared with raw chisq, so multiply by dof first
+		params.chisq_target *= nData - nParam;
 	}
 
-	/**
-	 * How many parameters should there be in {@code results.param}?
-	 * E.g. 3 for {@link MLAFitWorker} and 5 for
-	 * {@link PhasorFitWorker}.
-	 * @return The number of output parameters in the parameter array.
-	 */
+	@Override
 	public int nParamOut() {
 		return params.nComp * 2 + 1;
+	}
+
+	@Override
+	public int nDataOut() {
+		return transBuffer.length;
 	}
 
 	/**
@@ -88,22 +106,24 @@ public abstract class AbstractSingleFitWorker<I extends RealType<I>> implements 
 	 * A routine called after {@link #doFit()}. Can be used to copy back
 	 * results from buffers.
 	 */
-	protected void postFit() {
-		results.chisq = chisqBuffer[0];
+	protected void afterFit() {
+		// reduced by degree of freedom
+		results.chisq = chisqBuffer[0] / (nData - nParam);
 	}
 
-	public void fitSingle(FitParams<I> params, FitResults results) {
+	public void fitSingle() {
 		beforeFit();
 
 		doFit();
 
-		postFit();
+		afterFit();
 	}
 
 	protected abstract AbstractSingleFitWorker<I> duplicate(FitParams<I> params, FitResults rslts);
 
 	@Override
-	public void fitBatch(FitParams<I> params, FitResults rslts, List<int[]> pos) {
+	public void fitBatch(List<int[]> pos) {
+		// System.out.println(params);
 		ops.run(ChunkerOp.class, new CursorBasedChunk() {
 
 			@Override
@@ -112,23 +132,18 @@ public abstract class AbstractSingleFitWorker<I extends RealType<I>> implements 
 				final FitParams<I> lParams = params.copy();
 				final FitResults lResults = results.copy();
 				final AbstractSingleFitWorker<I> fitWorker = duplicate(lParams, lResults);
-				final RAHelper<I> helper = new RAHelper<>(params, rslts);
+				final RAHelper<I> helper = new RAHelper<>(params, results);
 
 				for (int i = startIndex; i < startIndex + numSteps; i += stepSize) {
 					final int[] xytPos = pos.get(i);
 
-					helper.loadData(fitWorker.transBuffer, fitWorker.paramBuffer, params, xytPos);
-
-
-					fitWorker.fitSingle(lParams, lResults);
-
-					// don't write to results if chisq is too big
-					if (lParams.dropBad) {
-						float chisq = fitWorker.chisqBuffer[0];
-						if (chisq < 0 || chisq > 1E5 || Float.isNaN(chisq)) {
-							continue;
-						}
+					// TODO param length check
+					if (!helper.loadData(fitWorker.transBuffer, fitWorker.paramBuffer, params, xytPos)) {
+						continue;
 					}
+
+					fitWorker.fitSingle();
+
 
 					helper.commitRslts(lParams, lResults, xytPos);
 				}

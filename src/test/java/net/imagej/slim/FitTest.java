@@ -156,7 +156,7 @@ public class FitTest extends AbstractOpTest {
 		vMin[0] = 0;
 		vMax[0] = 2;
 		float[] act = getRandPos(Views.interval(out.paramMap, vMin, vMax), NSAMPLE);
-		float[] exp = { 2.8199558f, 2.1738043f, 0.15078613f, 5.6381326f, 0.18440692f };
+		float[] exp = { 2.963042f, 2.1738043f, 0.15078613f, 5.6381326f, 0.18440692f };
 		Assert.assertArrayEquals(exp, act, TOLERANCE);
 	}
 
@@ -184,7 +184,7 @@ public class FitTest extends AbstractOpTest {
 		vMin[0] = 0;
 		vMax[0] = 2;
 		float[] act = getRandPos(Views.interval(out.paramMap, vMin, vMax), NSAMPLE);
-		float[] exp = { 1.2399514f, 0.7768593f, 0.16449152f, 6.9181957f, 0.16449152f };
+		float[] exp = { 1.2399514f, 1.3008053f, 0.16449152f, 4.498526f, 0.16449152f };
 		Assert.assertArrayEquals(exp, act, TOLERANCE);
 	}
 
@@ -200,7 +200,7 @@ public class FitTest extends AbstractOpTest {
 		vMin[0] = 0;
 		vMax[0] = 4;
 		float[] act = getRandPos(Views.interval(out.paramMap, vMin, vMax), NSAMPLE);
-		float[] exp = { 1.7839012f, 0.1503315f, 163.3964f, 0.17790353f, 0.1503315f };
+		float[] exp = { 301.6971f, 0.1503315f, 430.5284f, 0.17790353f, 0.1503315f };
 		Assert.assertArrayEquals(exp, act, TOLERANCE);
 	}
 
