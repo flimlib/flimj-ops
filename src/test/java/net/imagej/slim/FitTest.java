@@ -49,10 +49,13 @@ import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
+import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.roi.RealMask;
 import net.imglib2.roi.geom.real.OpenWritableBox;
+import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
+import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.view.Views;
 
 /**
@@ -112,6 +115,65 @@ public class FitTest extends AbstractOpTest {
 	@Before
 	public void initParam() {
 		param = param_master.copy();
+	}
+
+	@Test
+	public void testVisual() throws IOException {
+		RealMask roi = new OpenWritableBox(new double[] { 49 - 1, 18 - 1 }, new double[] { 57 + 1, 24 + 1 });
+		roi = new OpenWritableBox(new double[] { 55 - 1, 24 - 1 }, new double[] { 57 + 1, 24 + 1 });
+		roi = null;
+		Reader r = new SDTFormat.Reader();
+		// io.scif.formats.ICSFormat.Reader r = new io.scif.formats.ICSFormat.Reader();
+		r.setContext(new Context());
+		r.setSource("src/test/resources/test2.sdt");
+		// r.setSource("src/test/resources/Csarseven.ics");
+		param = new FitParams<UnsignedShortType>();
+		param.ltAxis = 0;
+		param.xInc = 10.006715f / 256;
+		param.transMap = (Img<UnsignedShortType>) new ImgOpener().openImgs(r).get(0).getImg();
+		// param.xInc = 12.5f / 64;
+		// param.transMap = in;
+		// param.getChisqMap = true;
+		// param.getResidualsMap = true;
+		// param.paramFree = new boolean[] { false };
+		// param.param = new float[] { 1.450f, 9.233f, 1.054f, 3.078f, 0.7027f };
+		// param.dropBad = true;
+		// param.iThresh = 90f;
+		param.iThreshPercent = 10;
+		param.nComp = 2;
+		param.chisq_target = 0;
+
+
+		
+		long ms = System.currentTimeMillis();
+		// param.dropBad = false;
+		Img<DoubleType> knl = SlimOps.SQUARE_KERNEL_3;
+		// knl = null;
+		// param.fitStart = 40;
+		// param.param = new float[] { 0f, 25f, 0f };
+		// param.paramMap = ((FitResults) ops.run("slim.fitRLD", param, roi, knl)).paramMap;
+		// param.fitStart = 41;
+		// param.dropBad = true;
+		FitResults out = (FitResults) ops.run("slim.fitMLA", param, roi, knl);
+		System.out.println("Finished in " + (System.currentTimeMillis() - ms) + " ms");
+		// System.out.println(ops.stats().min((IterableInterval)out.retCodeMap));
+		// Demo.showResults(out.paramMap);
+		// ImageJFunctions.show(out.residualsMap);
+		
+		// input
+		// ImageJFunctions.show( (RandomAccessibleInterval<ARGBType>)  ops.run("slim.showPseudocolor", out, 0.2f, 2.5f) );
+		
+		// test2
+		// ImageJFunctions.show( (RandomAccessibleInterval<ARGBType>)  ops.run("slim.showPseudocolor", out, 0.821f, 1.184f) );
+		// ImageJFunctions.show( (RandomAccessibleInterval<ARGBType>)  ops.run("slim.showPseudocolor", out, 0.6f, 1.35f) );
+		// ImageJFunctions.show( (RandomAccessibleInterval<ARGBType>)  ops.run("slim.showPseudocolor", out, 0.6f, 1.5f) );
+		ImageJFunctions.show( (RandomAccessibleInterval<ARGBType>)  ops.run("slim.showPseudocolor", out, 0.0178, 2.695f) );
+		
+		// // test
+		// // ImageJFunctions.show( (RandomAccessibleInterval<ARGBType>)  ops.run("slim.showPseudocolor", out, 0.5f, 2.323f) );
+		while (true) {
+			Demo.sleep20s();
+		}
 	}
 
 	@Test
