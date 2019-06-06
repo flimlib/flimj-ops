@@ -10,6 +10,7 @@ import net.imglib2.type.numeric.real.FloatType;
 public class RAHelper<I extends RealType<I>> {
 
 	final RandomAccess<I> transRA;
+	final RandomAccess<FloatType> intensityRA;
 	final RandomAccess<FloatType> initialParamRA;
 	final RandomAccess<FloatType> fittedParamRA;
 	final RandomAccess<FloatType> fittedRA;
@@ -21,6 +22,7 @@ public class RAHelper<I extends RealType<I>> {
 	public RAHelper(FitParams<I> params, FitResults rslts) {
 		this.lifetimeAxis = params.ltAxis;
 		transRA = params.transMap.randomAccess();
+		intensityRA = rslts.intensityMap.randomAccess();
 		initialParamRA = params.paramMap != null && params.paramMap.dimension(lifetimeAxis) >= params.nComp ?
 		                                           params.paramMap.randomAccess()    : null;
 		fittedParamRA =  params.getParamMap ?      rslts.paramMap.randomAccess()     : null;
@@ -30,13 +32,21 @@ public class RAHelper<I extends RealType<I>> {
 		retcodeRA =      params.getReturnCodeMap ? rslts.retCodeMap.randomAccess()   : null;
 	}
 
-	public void loadData(float[] transBuffer, float[] paramBuffer, FitParams<I> params, int[] xytPos) {
+	public boolean loadData(float[] transBuffer, float[] paramBuffer, FitParams<I> params, int[] xytPos) {
+		// intensity thresholding
+		intensityRA.setPosition(xytPos);
+		intensityRA.setPosition(0, lifetimeAxis);
+		if (intensityRA.get().getRealFloat() < params.iThresh) {
+			return false;
+		}
+
+		// load transient
 		transRA.setPosition(xytPos);
 		transRA.setPosition(params.fitStart, lifetimeAxis);
-		// fill transient buffer
 		for (int t = 0; t < transBuffer.length; t++, transRA.fwd(lifetimeAxis)) {
 			transBuffer[t] = transRA.get().getRealFloat();
 		}
+
 		// fill initial values from params.paramMap
 		if (initialParamRA != null) {
 			initialParamRA.setPosition(xytPos);
@@ -50,17 +60,23 @@ public class RAHelper<I extends RealType<I>> {
 				paramBuffer[p] = params.param[p];
 			}
 		}
-		// or if both local and global settings are not present, set to 1 to avoid NaN
+		// or if both local and global settings are not present, set to +Inf "no estimation"
 		else {
-			// the Z is ideally 0
-			paramBuffer[0] = 0;
-			for (int p = 1; p < paramBuffer.length; p++) {
-				paramBuffer[p] = 1;
+			for (int p = 0; p < paramBuffer.length; p++) {
+				paramBuffer[p] = Float.POSITIVE_INFINITY;
 			}
 		}
+		return true;
 	}
 	
 	public void commitRslts(FitParams<I> params, FitResults rslts, int[] xytPos) {
+		// don't write to results if chisq is too big
+		if (params.dropBad) {
+			float chisq = rslts.chisq;
+			if (chisq < 0 || chisq > 1E5 || Float.isNaN(chisq)) {
+				return;
+			}
+		}
 		// fill in maps on demand
 		if (params.getParamMap) {
 			fillRA(fittedParamRA, xytPos, rslts.param);

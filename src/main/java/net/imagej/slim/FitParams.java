@@ -90,7 +90,11 @@ public class FitParams<I extends RealType<I>> {
 	/** Confidence interval when calculating the error axes (95% by default) */
 	public int chisq_percent = 95;
 
+	/** Intensity threshold value (overrides {@link #iThreshPercent}) */
 	public float iThresh = UNINIT;
+
+	/** Intensity threshold percentage */
+	public float iThreshPercent = UNINIT;
 
 	// FitResults Settings
 
@@ -153,6 +157,7 @@ public class FitParams<I extends RealType<I>> {
 		newParams.chisq_delta = chisq_delta;
 		newParams.chisq_percent = chisq_percent;
 		newParams.iThresh = iThresh;
+		newParams.iThreshPercent = iThreshPercent;
 		newParams.dropBad = dropBad;
 		newParams.getParamMap = getParamMap;
 		newParams.getFittedMap = getFittedMap;
