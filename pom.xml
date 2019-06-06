@@ -15,7 +15,7 @@
 
 	<groupId>net.imagej</groupId>
 	<artifactId>slim-curve-ops</artifactId>
-	<version>0.1.0-SNAPSHOT</version>
+	<version>0.1.0-SNAPSHOT-TEST</version>
 
 	<name>slim-curve-ops</name>
 	<description>A slim-curve plugin of ImageJ.</description>
@@ -129,12 +129,12 @@
 		<dependency>
 			<groupId>slim-curve</groupId>
 			<artifactId>slim-curve</artifactId>
-			<version>${slim-curve.version}</version>
+			<version>1.1.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>slim-curve</groupId>
 			<artifactId>slim-curve</artifactId>
-			<version>${slim-curve.version}</version>
+			<version>1.1.1-SNAPSHOT</version>
 			<classifier>${scijava.natives.classifier}</classifier>
 			<scope>runtime</scope>
 		</dependency>
