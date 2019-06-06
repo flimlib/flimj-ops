@@ -29,7 +29,6 @@
 
 package net.imagej.slim;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
@@ -85,7 +84,7 @@ public class FitTest extends AbstractOpTest {
 	public static void init() throws IOException {
 		Reader r = new SDTFormat.Reader();
 		r.setContext(new Context());
-		r.setSource(new File("input.sdt"));
+		r.setSource("src/test/resources/input.sdt");
 		in = (Img<UnsignedShortType>) new ImgOpener().openImgs(r).get(0).getImg();
 
 		// input and output boundaries
