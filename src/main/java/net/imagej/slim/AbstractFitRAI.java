@@ -97,6 +97,7 @@ public abstract class AbstractFitRAI<I extends RealType<I>> extends FitRAI<I> im
 	 */
 	public abstract FitWorker<I> createWorker(FitParams<I> params, FitResults results);
 
+	@SuppressWarnings("unchecked")
 	private void initParam() {
 		// convolve the image if necessary
 		params.transMap = kernel == null ? params.transMap

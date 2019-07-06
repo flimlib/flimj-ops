@@ -117,7 +117,7 @@ public class FitTest extends AbstractOpTest {
 		param = param_master.copy();
 	}
 
-	@Test
+	// @Test
 	public void testVisual() throws IOException {
 		RealMask roi = new OpenWritableBox(new double[] { 49 - 1, 18 - 1 }, new double[] { 57 + 1, 24 + 1 });
 		roi = new OpenWritableBox(new double[] { 55 - 1, 24 - 1 }, new double[] { 57 + 1, 24 + 1 });

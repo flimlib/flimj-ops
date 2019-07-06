@@ -46,7 +46,7 @@ import net.imglib2.view.Views;
  */
 public class Demo extends FitTest {
 
-	@Test
+	// @Test
 	@SuppressWarnings("unchecked")
 	public void RLDFitImgDemo() {
 		Img<FloatType> out = (Img<FloatType>) ops.run("slim.fitRLD", null, in, param, roi);
@@ -54,7 +54,7 @@ public class Demo extends FitTest {
 		sleep20s();
 	}
 
-	@Test
+	// @Test
 	@SuppressWarnings("unchecked")
 	public void MLAFitImgDemo() {
 		Img<FloatType> out = (Img<FloatType>) ops.run("slim.fitMLA", null, in, param, roi);
@@ -62,7 +62,7 @@ public class Demo extends FitTest {
 		sleep20s();
 	}
 
-	@Test
+	// @Test
 	@SuppressWarnings("unchecked")
 	public void PhasorFitImgDemo() {
 		Img<FloatType> out = (Img<FloatType>) ops.run("slim.fitPhasor", null, in, param, roi);
