@@ -1,7 +1,5 @@
 package net.imagej.slim;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -9,7 +7,6 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.ColorRGB;
 
-import net.imagej.display.ColorTables;
 import net.imagej.slim.SlimOps.DispRslt;
 import net.imagej.slim.SlimOps.PseudocolorOp;
 import net.imglib2.Cursor;
@@ -22,7 +19,6 @@ import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgs;
-import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
@@ -95,7 +91,7 @@ public class DefaultDispRslt {
 		}
 
 		@Override
-		public RandomAccessibleInterval<ARGBType> calculate(FitResults rslt) {
+		public Img<ARGBType> calculate(FitResults rslt) {
 			// RealLUTConverter<FloatType> hConverter = new RealLUTConverter<>(cMax, cMin, lut);
 			RealLUTConverter<FloatType> hConverter = new RealLUTConverter<>(cMin, cMax, lut);
 			RandomAccessibleInterval<ARGBType> hImg = Converters.convert(hRaw, hConverter, new ARGBType());
