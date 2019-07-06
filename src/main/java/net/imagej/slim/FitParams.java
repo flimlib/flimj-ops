@@ -96,6 +96,9 @@ public class FitParams<I extends RealType<I>> {
 	/** Intensity threshold percentage */
 	public float iThreshPercent = UNINIT;
 
+	/** Enable multithread fitting ({@code true} by default) */
+	public boolean multithread = true;
+
 	// FitResults Settings
 
 	public boolean dropBad = true;
@@ -158,6 +161,7 @@ public class FitParams<I extends RealType<I>> {
 		newParams.chisq_percent = chisq_percent;
 		newParams.iThresh = iThresh;
 		newParams.iThreshPercent = iThreshPercent;
+		newParams.multithread = multithread;
 		newParams.dropBad = dropBad;
 		newParams.getParamMap = getParamMap;
 		newParams.getFittedMap = getFittedMap;

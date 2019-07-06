@@ -87,6 +87,14 @@ public abstract class AbstractSingleFitWorker<I extends RealType<I>> extends Abs
 
 			@Override
 			public void execute(int startIndex, int stepSize, int numSteps) {
+				if (!params.multithread) {
+					// let the first fitting thread do all the work
+					if (startIndex != 0) {
+						return;
+					}
+					numSteps = pos.size();
+				}
+
 				// thread-local reusable read/write buffers
 				final FitParams<I> lParams = params.copy();
 				final FitResults lResults = results.copy();
