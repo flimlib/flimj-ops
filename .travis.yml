@@ -3,9 +3,11 @@ language: java
 matrix:
   include:
     - os: linux
+      jdk: openjdk8
 branches:
   only:
   - master
+  - dev
   - "/.*-[0-9]+\\..*/"
 install: true
 script: ".travis/build.sh"
