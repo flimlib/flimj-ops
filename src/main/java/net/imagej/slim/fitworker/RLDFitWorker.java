@@ -32,7 +32,7 @@ public class RLDFitWorker<I extends RealType<I>> extends AbstractSingleFitWorker
 	@Override
 	protected void doFit() {
 		results.retCode = SLIMCurve.GCI_triple_integral_fitting_engine(
-				params.xInc, transBuffer, 0, nData,
+				params.xInc, transBuffer, adjFitStart, adjFitEnd,
 				params.instr, params.noise, params.sig, z, a, tau,
 				fittedBuffer, residualBuffer, chisqBuffer,
 				params.chisq_target

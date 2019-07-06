@@ -43,7 +43,7 @@ public class MLAFitWorker<I extends RealType<I>> extends AbstractSingleFitWorker
 	@Override
 	public void doFit() {
 		results.retCode = SLIMCurve.GCI_marquardt_fitting_engine(
-				params.xInc, transBuffer, 0, nData,
+				params.xInc, transBuffer, adjFitStart, adjFitEnd,
 				params.instr, params.noise, params.sig, paramBuffer,
 				params.paramFree,
 				params.restrain,

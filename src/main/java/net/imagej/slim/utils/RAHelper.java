@@ -10,14 +10,9 @@ import net.imglib2.type.numeric.real.FloatType;
 public class RAHelper<I extends RealType<I>> {
 
 	final RandomAccess<I> transRA;
-	final RandomAccess<FloatType> intensityRA;
-	final RandomAccess<FloatType> initialParamRA;
-	final RandomAccess<FloatType> fittedParamRA;
-	final RandomAccess<FloatType> fittedRA;
-	final RandomAccess<FloatType> residualsRA;
-	final RandomAccess<FloatType> chisqRA;
+	final RandomAccess<FloatType> intensityRA, initialParamRA, fittedParamRA, fittedRA, residualsRA, chisqRA;
 	final RandomAccess<IntType> retcodeRA;
-	final int lifetimeAxis;
+	final int lifetimeAxis, raOffset, bufDataStart, bufDataEnd;
 
 	public RAHelper(FitParams<I> params, FitResults rslts) {
 		this.lifetimeAxis = params.ltAxis;
@@ -30,8 +25,25 @@ public class RAHelper<I extends RealType<I>> {
 		residualsRA =    params.getResidualsMap ?  rslts.residualsMap.randomAccess() : null;
 		chisqRA =        params.getChisqMap ?      rslts.chisqMap.randomAccess()     : null;
 		retcodeRA =      params.getReturnCodeMap ? rslts.retCodeMap.randomAccess()   : null;
+
+		int prefixLen = Math.min(params.instr == null ? 0 : params.instr.length, params.fitStart);
+		
+		// where does copy start in transRA
+		raOffset = params.fitStart - prefixLen;
+		// the start and end data (excluding instr prefix/suffix) index in buffer
+		bufDataStart = prefixLen;
+		bufDataEnd = bufDataStart + params.fitEnd - params.fitStart;
 	}
 
+	/**
+	 * Fill buffers with data from {@code params}. Starting coordinate specified by {@code xytPos}. Skip and return {@code false} if
+	 * {@code params.intensityMap} is less than intensity threshold.
+	 * @param transBuffer the transient buffer
+	 * @param paramBuffer the parameter buffer
+	 * @param params the fitting parameters
+	 * @param xytPos the starting position of data
+	 * @return {@code false} if the transient is skipped, {@code true} otherwise
+	 */
 	public boolean loadData(float[] transBuffer, float[] paramBuffer, FitParams<I> params, int[] xytPos) {
 		// intensity thresholding
 		intensityRA.setPosition(xytPos);
@@ -42,7 +54,8 @@ public class RAHelper<I extends RealType<I>> {
 
 		// load transient
 		transRA.setPosition(xytPos);
-		transRA.setPosition(params.fitStart, lifetimeAxis);
+		// to take the trans before start when convolving
+		transRA.setPosition(raOffset, lifetimeAxis);
 		for (int t = 0; t < transBuffer.length; t++, transRA.fwd(lifetimeAxis)) {
 			transBuffer[t] = transRA.get().getRealFloat();
 		}
@@ -69,6 +82,13 @@ public class RAHelper<I extends RealType<I>> {
 		return true;
 	}
 	
+	/**
+	 * Put results back into the proper position in {@code rslts}. An RA in {@code rslts} will be skipped if
+	 * {@code params.getXxMap} is {@code true}.
+	 * @param params the fitting parameters 
+	 * @param rslts the result to fill in
+	 * @param xytPos the coordinate of the single-pixel result in maps.
+	 */
 	public void commitRslts(FitParams<I> params, FitResults rslts, int[] xytPos) {
 		// don't write to results if chisq is too big
 		if (params.dropBad) {
@@ -79,13 +99,13 @@ public class RAHelper<I extends RealType<I>> {
 		}
 		// fill in maps on demand
 		if (params.getParamMap) {
-			fillRA(fittedParamRA, xytPos, rslts.param);
+			fillRA(fittedParamRA, xytPos, rslts.param, 0, rslts.param.length);
 		}
 		if (params.getFittedMap) {
-			fillRA(fittedRA, xytPos, rslts.fitted);
+			fillRA(fittedRA, xytPos, rslts.fitted, bufDataStart, bufDataEnd);
 		}
 		if (params.getResidualsMap) {
-			fillRA(residualsRA, xytPos, rslts.residuals);
+			fillRA(residualsRA, xytPos, rslts.residuals, bufDataStart, bufDataEnd);
 		}
 		if (params.getChisqMap) {
 			chisqRA.setPosition(xytPos);
@@ -97,11 +117,11 @@ public class RAHelper<I extends RealType<I>> {
 		}
 	}
 
-	private void fillRA(RandomAccess<FloatType> ra, int[] xytPos, float[] arr) {
+	private void fillRA(RandomAccess<FloatType> ra, int[] xytPos, float[] arr, int start, int end) {
 		xytPos[lifetimeAxis] = 0;
 		ra.setPosition(xytPos);
-		for (float f : arr) {
-			ra.get().set(f);
+		for (int i = start; i < end; i++) {
+			ra.get().set(arr[i]);
 			ra.fwd(lifetimeAxis);
 		}
 	}
