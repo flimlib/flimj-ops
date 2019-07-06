@@ -44,7 +44,7 @@ public class PhasorFitWorker<I extends RealType<I>> extends AbstractSingleFitWor
 	@Override
 	protected void doFit() {
 		results.retCode = SLIMCurve.GCI_Phasor(
-				params.xInc, transBuffer, 0, nData,
+				params.xInc, transBuffer, adjFitStart, adjFitEnd,
 				z, u, v, tauPhi, tauMod, tau,
 				fittedBuffer, residualBuffer, chisqBuffer
 		);

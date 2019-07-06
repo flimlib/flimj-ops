@@ -182,26 +182,18 @@ public class FitTest extends AbstractOpTest {
 		FitResults out = (FitResults) ops.run("slim.fitRLD", param);
 		System.out.println("RLD finished in " + (System.currentTimeMillis() - ms) + " ms");
 
-		// 3 parameter layers
-		vMin[0] = 0;
-		vMax[0] = 2;
-		float[] act = getRandPos(Views.interval(out.paramMap, vMin, vMax), NSAMPLE);
 		float[] exp = { 2.5887516f, 1.3008053f, 0.1802666f, 4.498526f, 0.20362994f };
-		Assert.assertArrayEquals(exp, act, TOLERANCE);
+		assertSampleEquals(out.paramMap, exp);
 	}
 	
 	@Test
 	public void testBinning() {
 		long ms = System.currentTimeMillis();
 		FitResults out = (FitResults) ops.run("slim.fitRLD", param, roi, SlimOps.SQUARE_KERNEL_3);
-		System.out.println("RLD binning finished in " + (System.currentTimeMillis() - ms) + " ms");
+		System.out.println("RLD with binning finished in " + (System.currentTimeMillis() - ms) + " ms");
 		
-		// 3 parameter layers
-		vMin[0] = 0;
-		vMax[0] = 2;
-		float[] act = getRandPos(Views.interval(out.paramMap, vMin, vMax), NSAMPLE);
 		float[] exp = { 15.917448f, 34.33285f, 0.17224349f, 53.912094f, 0.19115955f };
-		Assert.assertArrayEquals(exp, act, TOLERANCE);
+		assertSampleEquals(out.paramMap, exp);
 	}
 	
 	@Test
@@ -213,12 +205,25 @@ public class FitTest extends AbstractOpTest {
 		FitResults out = (FitResults) ops.run("slim.fitMLA", param, roi);
 		System.out.println("MLA finished in " + (System.currentTimeMillis() - ms) + " ms");
 		
-		// 3 parameter layers
-		vMin[0] = 0;
-		vMax[0] = 2;
-		float[] act = getRandPos(Views.interval(out.paramMap, vMin, vMax), NSAMPLE);
 		float[] exp = { 2.963042f, 2.1738043f, 0.15078613f, 5.6381326f, 0.18440692f };
-		Assert.assertArrayEquals(exp, act, TOLERANCE);
+		assertSampleEquals(out.paramMap, exp);
+	}
+
+	@Test
+	public void testInstr() {
+		// estimation using RLD
+		param.paramMap = param.paramMap = ((FitResults) ops.run("slim.fitRLD", param, roi)).paramMap;
+
+		// a trivial IRF
+		param.instr = new float[12];
+		param.instr[0] = 1;
+		
+		long ms = System.currentTimeMillis();
+		FitResults out = (FitResults) ops.run("slim.fitMLA", param, roi);
+		System.out.println("MLA with instr finished in " + (System.currentTimeMillis() - ms) + " ms");
+		
+		float[] exp = { 2.963042f, 2.1738043f, 0.15078613f, 5.6381326f, 0.18440692f };
+		assertSampleEquals(out.paramMap, exp);
 	}
 
 	@Test
@@ -227,12 +232,8 @@ public class FitTest extends AbstractOpTest {
 		FitResults out = (FitResults) ops.run("slim.fitPhasor", param, roi);
 		System.out.println("Phasor finished in " + (System.currentTimeMillis() - ms) + " ms");
 
-		// 6 parameter layers
-		vMin[0] = 0;
-		vMax[0] = 5;
-		float[] act = getRandPos(Views.interval(out.paramMap, vMin, vMax), NSAMPLE);
 		float[] exp = { 0, 0.17804292f, 0.41997245f, 0.18927118f, 0.39349627f };
-		Assert.assertArrayEquals(exp, act, TOLERANCE);
+		assertSampleEquals(out.paramMap, exp);
 	}
 
 	@Test
@@ -241,12 +242,8 @@ public class FitTest extends AbstractOpTest {
 		FitResults out = (FitResults) ops.run("slim.fitGlobal", param, roi);
 		System.out.println("Global fit finished in " + (System.currentTimeMillis() - ms) + " ms");
 
-		// 3 parameter layers
-		vMin[0] = 0;
-		vMax[0] = 2;
-		float[] act = getRandPos(Views.interval(out.paramMap, vMin, vMax), NSAMPLE);
 		float[] exp = { 1.2399514f, 1.3008053f, 0.16449152f, 4.498526f, 0.16449152f };
-		Assert.assertArrayEquals(exp, act, TOLERANCE);
+		assertSampleEquals(out.paramMap, exp);
 	}
 
 	@Test
@@ -257,12 +254,8 @@ public class FitTest extends AbstractOpTest {
 		FitResults out = (FitResults) ops.run("slim.fitGlobal", param, roi);
 		System.out.println("Global fit (Multi) finished in " + (System.currentTimeMillis() - ms) + " ms");
 
-		// 5 parameter layers
-		vMin[0] = 0;
-		vMax[0] = 4;
-		float[] act = getRandPos(Views.interval(out.paramMap, vMin, vMax), NSAMPLE);
 		float[] exp = { 301.6971f, 0.1503315f, 430.5284f, 0.17790353f, 0.1503315f };
-		Assert.assertArrayEquals(exp, act, TOLERANCE);
+		assertSampleEquals(out.paramMap, exp);
 	}
 
 	private static <T extends RealType<T>> float[] getRandPos(IterableInterval<T> ii, int n, long...seed) {
@@ -278,5 +271,11 @@ public class FitTest extends AbstractOpTest {
 			arr[i] = cursor.get().getRealFloat();
 		}
 		return arr;
+	}
+	
+	private static <T extends RealType<T>> void assertSampleEquals(RandomAccessibleInterval<T> map, float[] exp) {
+		vMax[0] = map.max(param_master.ltAxis);
+		float[] act = getRandPos(Views.interval(map, vMin, vMax), NSAMPLE);
+		Assert.assertArrayEquals(exp, act, TOLERANCE);
 	}
 }
