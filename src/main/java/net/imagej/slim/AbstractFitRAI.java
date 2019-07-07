@@ -27,9 +27,15 @@ public abstract class AbstractFitRAI<I extends RealType<I>> extends FitRAI<I> im
 
 	private FitWorker<I> fitWorker;
 
-	private FitResults rslts;
-
 	private int lifetimeAxis;
+
+	private ParamEstimator<I> est;
+
+	private List<int[]> roiPos;
+
+	private FitParams<I> params;
+
+	private FitResults rslts;
 
 	@Override
 	public boolean conforms() {
@@ -59,35 +65,27 @@ public abstract class AbstractFitRAI<I extends RealType<I>> extends FitRAI<I> im
 	public void initialize() {
 		super.initialize();
 		lifetimeAxis = in().ltAxis;
-		rslts = new FitResults();
-		fitWorker = createWorker(in().copy(), rslts);
-		initRslt();
-
+		
 		// dimension doesn't really matter
 		if (roi == null) {
 			roi = Masks.allRealMask(0);
 		}
-
+		
 		// So that we bin the correct axis
 		if (kernel != null) {
 			kernel = Views.permute(kernel, 2, lifetimeAxis);
 		}
+
+		params = in().copy();
+		initParam();
+		rslts = new FitResults();
+		fitWorker = createWorker(params, rslts);
+		initRslt();
 	}
 
 	@Override
 	public FitResults calculate(FitParams<I> params) {
-		params = params.copy();
-		// convolve the image if necessary
-		params.transMap = kernel == null ? params.transMap
-				: (RandomAccessibleInterval<I>) ops().filter().convolve(params.transMap, kernel);
-
-		final List<int[]> roiPos = getRoiPositions(params.transMap);
-
-		ParamEstimator<I> est = new ParamEstimator<I>(params, roiPos);
-		est.estimateStartEnd();
-		est.estimateIThreshold();
-
-		fitWorker.fitBatch(params, rslts, roiPos);
+		fitWorker.fitBatch(roiPos);
 
 		return rslts;
 	}
@@ -99,8 +97,20 @@ public abstract class AbstractFitRAI<I extends RealType<I>> extends FitRAI<I> im
 	 */
 	public abstract FitWorker<I> createWorker(FitParams<I> params, FitResults results);
 
+	@SuppressWarnings("unchecked")
+	private void initParam() {
+		// convolve the image if necessary
+		params.transMap = kernel == null ? params.transMap
+				: (RandomAccessibleInterval<I>) ops().filter().convolve(params.transMap, kernel);
+
+		roiPos = getRoiPositions(params.transMap);
+
+		est = new ParamEstimator<I>(params, roiPos);
+		est.estimateStartEnd();
+		est.estimateIThreshold();
+	}
+
 	private void initRslt() {
-		FitParams<I> params = in();
 		// get dimensions and replace time axis with decay parameters
 		long[] dimFit = new long[params.transMap.numDimensions()];
 		params.transMap.dimensions(dimFit);
@@ -109,11 +119,11 @@ public abstract class AbstractFitRAI<I extends RealType<I>> extends FitRAI<I> im
 			rslts.paramMap = ArrayImgs.floats(dimFit);
 		}
 		if (params.getFittedMap) {
-			dimFit[lifetimeAxis] = params.trans.length;
+			dimFit[lifetimeAxis] = fitWorker.nDataOut();
 			rslts.fittedMap = ArrayImgs.floats(dimFit);
 		}
 		if (params.getResidualsMap) {
-			dimFit[lifetimeAxis] = params.trans.length;
+			dimFit[lifetimeAxis] = fitWorker.nDataOut();
 			rslts.residualsMap = ArrayImgs.floats(dimFit);
 		}
 		if (params.getReturnCodeMap) {
@@ -125,6 +135,8 @@ public abstract class AbstractFitRAI<I extends RealType<I>> extends FitRAI<I> im
 			rslts.chisqMap = ArrayImgs.floats(dimFit);
 		}
 		rslts.ltAxis = lifetimeAxis;
+
+		rslts.intensityMap = est.getIntensityMap();
 	}
 
 	private List<int[]> getRoiPositions(RandomAccessibleInterval<I> trans) {

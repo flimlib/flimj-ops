@@ -8,7 +8,6 @@ import net.imagej.slim.FitResults;
 import net.imagej.slim.fitworker.*;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
-import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.type.numeric.ARGBType;
@@ -21,12 +20,12 @@ public class SlimOps {
 	public static final Img<DoubleType> SQUARE_KERNEL_3 = makeSquareKernel(3);
 	public static final Img<DoubleType> SQUARE_KERNEL_5 = makeSquareKernel(5);
 
-	private static Img<DoubleType> makeSquareKernel(int size) {
+	public static Img<DoubleType> makeSquareKernel(int size) {
 		Img<DoubleType> out = ArrayImgs.doubles(new long[] { size , size, 1 });
 		Cursor<DoubleType> cursor = out.cursor();
 		while (cursor.hasNext()) {
 			cursor.fwd();
-			cursor.get().set(1.0 / (size * size));
+			cursor.get().set(1.0);
 		}
 		return out;
 	}
@@ -86,7 +85,7 @@ public class SlimOps {
 	}
 
 	static abstract class DispRslt
-		extends AbstractUnaryFunctionOp<FitResults, RandomAccessibleInterval<ARGBType>> {
+		extends AbstractUnaryFunctionOp<FitResults, Img<ARGBType>> {
 	
 	}
 }

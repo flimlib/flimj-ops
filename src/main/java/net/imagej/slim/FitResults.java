@@ -21,6 +21,12 @@ public class FitResults {
 	/** The image representation of return codes of the fit over the dataset */
 	public RandomAccessibleInterval<IntType> retCodeMap;
 
+	/**
+	 * The image representation of the intensity distribution obtained by
+	 * summing up photon counts.
+	 */
+	public RandomAccessibleInterval<FloatType> intensityMap;
+
 	/** The fitted parameters of the fit */
 	public float[] param;
 

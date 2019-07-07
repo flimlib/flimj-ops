@@ -1,6 +1,5 @@
 package net.imagej.slim.fitworker;
 
-import java.util.Arrays;
 import java.util.List;
 
 import net.imagej.ops.OpEnvironment;
@@ -8,67 +7,37 @@ import net.imagej.ops.thread.chunker.ChunkerOp;
 import net.imagej.ops.thread.chunker.CursorBasedChunk;
 import net.imagej.slim.FitParams;
 import net.imagej.slim.FitResults;
-import net.imagej.slim.ParamEstimator;
 import net.imagej.slim.utils.RAHelper;
 import net.imglib2.type.numeric.RealType;
 
-public abstract class AbstractSingleFitWorker<I extends RealType<I>> implements FitWorker<I> {
+public abstract class AbstractSingleFitWorker<I extends RealType<I>> extends AbstractFitWorker<I> {
 
-	protected final OpEnvironment ops;
-
-	protected final FitParams<I> params;
-	protected final FitResults results;
-
-	protected final int nData, nParam;
-
-	protected final float[] paramBuffer;
-	protected final float[] transBuffer;
-	protected final float[] chisqBuffer;
-	protected final float[] fittedBuffer;
-	protected final float[] residualBuffer;
+	/** Data buffers, all except for {@code transBuffer} are writable */
+	protected final float[] paramBuffer, transBuffer, chisqBuffer, fittedBuffer, residualBuffer;
 
 	public AbstractSingleFitWorker(FitParams<I> params, FitResults results, OpEnvironment ops) {
-		this.params = params;
-		this.results = results;
-		this.ops = ops;
-
-		// [start, end)
-		nData = params.fitEnd - params.fitStart;
-		nParam = nParamOut();
+		super(params, results, ops);
 
 		// setup input buffers
-		paramBuffer = results.param = new float[nParam];
-		transBuffer = params.trans = new float[nData];
-
-		// assume free if not specified
-		int fillStart = 0;
-		if (params.paramFree == null) {
-			params.paramFree = new boolean[nParamOut()];
+		if (results.param == null) {
+			results.param = new float[nParam];
 		}
-		else if (params.paramFree.length < nParamOut()) {
-			fillStart = params.paramFree.length;
-			params.paramFree = Arrays.copyOf(params.paramFree, nParamOut());
+		if (params.trans == null) {
+			params.trans = new float[nDataTotal];
 		}
-		for (int i = fillStart; i < params.paramFree.length; i++) {
-			params.paramFree[i] = true;
-		}
+		paramBuffer = results.param;
+		transBuffer = params.trans;
 
 		// setup output buffers
 		chisqBuffer = new float[1];
-		fittedBuffer = results.fitted = new float[nData];
-		residualBuffer = results.residuals = new float[nData];
-
-		results.ltAxis = params.ltAxis;
-	}
-
-	/**
-	 * How many parameters should there be in {@code results.param}?
-	 * E.g. 3 for {@link MLAFitWorker} and 5 for
-	 * {@link PhasorFitWorker}.
-	 * @return The number of output parameters in the parameter array.
-	 */
-	public int nParamOut() {
-		return params.nComp * 2 + 1;
+		if (results.fitted == null) {
+			results.fitted = new float[nDataTotal];
+		}
+		if (results.residuals == null) {
+			results.residuals = new float[nDataTotal];
+		}
+		fittedBuffer = results.fitted;
+		residualBuffer = results.residuals;
 	}
 
 	/**
@@ -88,47 +57,62 @@ public abstract class AbstractSingleFitWorker<I extends RealType<I>> implements 
 	 * A routine called after {@link #doFit()}. Can be used to copy back
 	 * results from buffers.
 	 */
-	protected void postFit() {
-		results.chisq = chisqBuffer[0];
+	protected void afterFit() {
+		// reduced by degree of freedom
+		results.chisq = chisqBuffer[0] / (nData - nParam);
 	}
 
-	public void fitSingle(FitParams<I> params, FitResults results) {
+	/**
+	 * Fit the data in the buffer.
+	 */
+	protected void fitSingle() {
 		beforeFit();
 
 		doFit();
 
-		postFit();
+		afterFit();
 	}
 
+	/**
+	 * Make a worker of the same kind but does not share any writable buffers (thread safe) if that buffer is null.
+	 * @param params the parameters
+	 * @param rslts the results
+	 * @return a worker of the same kind.
+	 */
 	protected abstract AbstractSingleFitWorker<I> duplicate(FitParams<I> params, FitResults rslts);
 
 	@Override
-	public void fitBatch(FitParams<I> params, FitResults rslts, List<int[]> pos) {
+	public void fitBatch(List<int[]> pos) {
 		ops.run(ChunkerOp.class, new CursorBasedChunk() {
 
 			@Override
 			public void execute(int startIndex, int stepSize, int numSteps) {
+				if (!params.multithread) {
+					// let the first fitting thread do all the work
+					if (startIndex != 0) {
+						return;
+					}
+					numSteps = pos.size();
+				}
+
 				// thread-local reusable read/write buffers
 				final FitParams<I> lParams = params.copy();
 				final FitResults lResults = results.copy();
+				// grab your own buffer
+				lParams.param = lParams.trans =
+				lResults.param = lResults.fitted = lResults.residuals = null;
 				final AbstractSingleFitWorker<I> fitWorker = duplicate(lParams, lResults);
-				final RAHelper<I> helper = new RAHelper<>(params, rslts);
+				final RAHelper<I> helper = new RAHelper<>(params, results);
 
 				for (int i = startIndex; i < startIndex + numSteps; i += stepSize) {
 					final int[] xytPos = pos.get(i);
 
-					helper.loadData(fitWorker.transBuffer, fitWorker.paramBuffer, params, xytPos);
-
-
-					fitWorker.fitSingle(lParams, lResults);
-
-					// don't write to results if chisq is too big
-					if (lParams.dropBad) {
-						float chisq = fitWorker.chisqBuffer[0];
-						if (chisq < 0 || chisq > 1E5 || Float.isNaN(chisq)) {
-							continue;
-						}
+					if (!helper.loadData(fitWorker.transBuffer, fitWorker.paramBuffer, params, xytPos)) {
+						continue;
 					}
+
+					fitWorker.fitSingle();
+
 
 					helper.commitRslts(lParams, lResults, xytPos);
 				}
