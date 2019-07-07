@@ -13,7 +13,7 @@
 
 	<groupId>net.imagej</groupId>
 	<artifactId>slim-curve-ops</artifactId>
-	<version>0.1.0-SNAPSHOT-TEST</version>
+	<version>0.1.0-SNAPSHOT</version>
 
 	<name>slim-curve-ops</name>
 	<description>A slim-curve plugin of ImageJ.</description>
