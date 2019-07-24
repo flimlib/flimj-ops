@@ -3,6 +3,7 @@ package flimlib.flimj;
 import java.util.Arrays;
 
 import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.roi.RealMask;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.FloatType;
 import flimlib.*;
@@ -25,10 +26,14 @@ public class FitParams<I extends RealType<I>> {
 	/** The transient data to fit */
 	public float[] trans;
 
+	/** The index of lifetime axis */
 	public int ltAxis = UNINIT;
 
 	/** The image representation of the dataset */
 	public RandomAccessibleInterval<I> transMap;
+
+	/** The ROI mask (test() returns true on interested regions) */
+	public RealMask roiMask;
 
 	/** The start of the decay interval */
 	public int fitStart = UNINIT;
@@ -43,8 +48,8 @@ public class FitParams<I extends RealType<I>> {
 	public NoiseType noise = NoiseType.NOISE_POISSON_FIT;
 
 	/**
-	 * The standard deviation (sigma) of the data, used for calculating
-	 * chi-squared if {@link #noise} is {@link NoiseType#NOISE_CONST} or
+	 * The standard deviation (sigma) of the data, used for calculating chi-squared
+	 * if {@link #noise} is {@link NoiseType#NOISE_CONST} or
 	 * {@link NoiseType#NOISE_GIVEN}.
 	 */
 	public float[] sig;
@@ -59,8 +64,8 @@ public class FitParams<I extends RealType<I>> {
 	public float[] param;
 
 	/**
-	 * The image representation of the estimated parameters the fit (per-pixel setting,
-	 * overides {@link #param})
+	 * The image representation of the estimated parameters the fit (per-pixel
+	 * setting, overides {@link #param})
 	 */
 	public RandomAccessibleInterval<FloatType> paramMap;
 
@@ -70,14 +75,15 @@ public class FitParams<I extends RealType<I>> {
 	/** The fit restraint ({@link RestrainType#ECF_RESTRAIN_DEFAULT} by default) */
 	public RestrainType restrain = RestrainType.ECF_RESTRAIN_DEFAULT;
 
-	/** The fitting model to use (Z + A_1e^(-t/tau_1) + A_2e^(-t/tau_2) + ... 
-	 * by default)
+	/**
+	 * The fitting model to use (Z + A_1e^(-t/tau_1) + A_2e^(-t/tau_2) + ... by
+	 * default)
 	 */
 	public FitFunc fitFunc = FitFunc.GCI_MULTIEXP_TAU;
 
 	/**
-	 * Stopping condition 1: stop if chi-squared is less than {@link #chisq_target}
-	 * (1 by default)
+	 * Stopping condition 1: stop if reduced chi-squared is less than
+	 * {@link #chisq_target} (1 by default)
 	 */
 	public float chisq_target = 1;
 
@@ -94,7 +100,7 @@ public class FitParams<I extends RealType<I>> {
 	public float iThresh = UNINIT;
 
 	/** Intensity threshold percentage */
-	public float iThreshPercent = UNINIT;
+	public float iThreshPercent = 0;
 
 	/** Enable multithread fitting ({@code true} by default) */
 	public boolean multithread = true;
@@ -120,22 +126,22 @@ public class FitParams<I extends RealType<I>> {
 	 * ({@code false} by default)
 	 */
 	public boolean getFittedMap = false;
-	
+
 	/**
-	 * Whether to generate an image representation for residuals
-	 * ({@code false} by default)
+	 * Whether to generate an image representation for residuals ({@code false} by
+	 * default)
 	 */
 	public boolean getResidualsMap = false;
 
 	/**
-	 * Whether to generate an image representation for chi-squred
-	 * ({@code false} by default)
+	 * Whether to generate an image representation for chi-squred ({@code false} by
+	 * default)
 	 */
 	public boolean getChisqMap = false;
 
 	/**
-	 * Create a new instance of {@link FitParams} with shallow copy (maps are
-	 * not duplicated).
+	 * Create a new instance of {@link FitParams} with shallow copy (maps are not
+	 * duplicated).
 	 * 
 	 * @return A clone of the current instance.
 	 */
@@ -145,6 +151,7 @@ public class FitParams<I extends RealType<I>> {
 		newParams.trans = trans;
 		newParams.ltAxis = ltAxis;
 		newParams.transMap = transMap;
+		newParams.roiMask = roiMask;
 		newParams.fitStart = fitStart;
 		newParams.fitEnd = fitEnd;
 		newParams.instr = instr;
@@ -173,7 +180,11 @@ public class FitParams<I extends RealType<I>> {
 
 	@Override
 	public String toString() {
-		String str = String.format("xInc: %f, interval: [%d, %d], intensity threshold: %f, instr: %s, noise: %s, sig: %s, param: %s, paramFree: %s, restrain: %s, fitFunc: %s, chisq_target: %f, chisq_delta: %f, chisq_percent: %d", xInc, fitStart, fitEnd, iThresh, Arrays.toString(instr), noise.name(), Arrays.toString(sig), Arrays.toString(param), Arrays.toString(paramFree), restrain.name(), fitFunc, chisq_target, chisq_delta, chisq_percent);
+		String str = String.format(
+				"xInc: %f, interval: [%d, %d), intensity threshold: %f, instr: %s, noise: %s, sig: %s, param: %s, paramFree: %s, restrain: %s, fitFunc: %s, chisq_target: %f, chisq_delta: %f, chisq_percent: %d",
+				xInc, fitStart, fitEnd, iThresh, Arrays.toString(instr), noise.name(), Arrays.toString(sig),
+				Arrays.toString(param), Arrays.toString(paramFree), restrain.name(), fitFunc, chisq_target, chisq_delta,
+				chisq_percent);
 		return str;
 	}
 }

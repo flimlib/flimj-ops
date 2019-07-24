@@ -1,13 +1,20 @@
 package flimlib.flimj;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgs;
+import net.imglib2.roi.Masks;
+import net.imglib2.roi.RealMask;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.view.IntervalView;
+import net.imglib2.view.Views;
 
 /**
  * ParamEstimator
@@ -40,12 +47,19 @@ public class ParamEstimator<I extends RealType<I>> {
 		nTrans = pos.size();
 		// don't bother sampling if nothing to estimate
 		// if only percentage is set, calculate the value
-		iSmpls = params.iThresh < 0 && params.iThreshPercent > 0 ? new float[(int) (nTrans * SAMPLE_RATE)] : null;
-		
+		iSmpls = params.iThresh < 0 && params.iThreshPercent < 0
+				? new float[(int) (nTrans * SAMPLE_RATE)]
+				: null;
+
 		// create intensity image
 		sumAcrossTrans = new float[nData];
-		
+
 		iMap = calcIMap();
+	}
+
+	public ParamEstimator(FitParams<I> params) {
+		this(params, getRoiPositions(params.transMap,
+				params.roiMask == null ? Masks.allRealMask(0) : params.roiMask, params.ltAxis));
 	}
 
 	public void estimateStartEnd() {
@@ -102,5 +116,30 @@ public class ParamEstimator<I extends RealType<I>> {
 			iMapRA.get().set(intensity);
 		}
 		return iMap;
+	}
+
+	private static <I> List<int[]> getRoiPositions(
+		RandomAccessibleInterval<I> trans, RealMask mask, int lifetimeAxis)
+	{
+		final List<int[]> interested = new ArrayList<>();
+		final IntervalView<I> xyPlane = Views.hyperSlice(trans, lifetimeAxis, 0);
+		final Cursor<I> xyCursor = xyPlane.localizingCursor();
+		// work to do
+			while (xyCursor.hasNext()) {
+				xyCursor.fwd();
+				if (mask.test(xyCursor)) {
+					int[] pos = new int[3];
+					xyCursor.localize(pos);
+					// swap in lifetime axis
+					for (int i = 2; i > lifetimeAxis; i--) {
+						int tmp = pos[i];
+						pos[i] = pos[i - 1];
+						pos[i - 1] = tmp;
+					}
+					pos[lifetimeAxis] = 0;
+					interested.add(pos);
+				}
+			}
+			return interested;
 	}
 }

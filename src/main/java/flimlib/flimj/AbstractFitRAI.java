@@ -86,7 +86,6 @@ public abstract class AbstractFitRAI<I extends RealType<I>> extends FitRAI<I> im
 	@Override
 	public FitResults calculate(FitParams<I> params) {
 		fitWorker.fitBatch(roiPos);
-
 		return rslts;
 	}
 
@@ -97,11 +96,10 @@ public abstract class AbstractFitRAI<I extends RealType<I>> extends FitRAI<I> im
 	 */
 	public abstract FitWorker<I> createWorker(FitParams<I> params, FitResults results);
 
-	@SuppressWarnings("unchecked")
 	private void initParam() {
 		// convolve the image if necessary
 		params.transMap = kernel == null ? params.transMap
-				: (RandomAccessibleInterval<I>) ops().filter().convolve(params.transMap, kernel);
+				: ops().filter().<I, I, I>convolve(params.transMap, kernel);
 
 		roiPos = getRoiPositions(params.transMap);
 

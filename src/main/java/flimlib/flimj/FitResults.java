@@ -1,6 +1,7 @@
 package flimlib.flimj;
 
 import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.img.Img;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 
@@ -19,31 +20,31 @@ public class FitResults {
 	public int retCode;
 
 	/** The image representation of return codes of the fit over the dataset */
-	public RandomAccessibleInterval<IntType> retCodeMap;
+	public Img<IntType> retCodeMap;
 
 	/**
 	 * The image representation of the intensity distribution obtained by
 	 * summing up photon counts.
 	 */
-	public RandomAccessibleInterval<FloatType> intensityMap;
+	public Img<FloatType> intensityMap;
 
 	/** The fitted parameters of the fit */
 	public float[] param;
 
 	/** The image representation of fitted parameters of the fit over the the dataset */
-	public RandomAccessibleInterval<FloatType> paramMap;
+	public Img<FloatType> paramMap;
 
 	/** The fitted transients of the fit */
 	public float[] fitted;
 
 	/** The image representation of fitted transients of the fit over the the dataset */
-	public RandomAccessibleInterval<FloatType> fittedMap;
+	public Img<FloatType> fittedMap;
 
 	/** The residuals (y - y_fitted) of the fit */
 	public float[] residuals;
 
 	/** The image representation of residuals of the fit over the the dataset */
-	public RandomAccessibleInterval<FloatType> residualsMap;
+	public Img<FloatType> residualsMap;
 
 	/**
 	 * The reduced chi-squared of the fit. For global analysis, this is the
@@ -52,7 +53,7 @@ public class FitResults {
 	public float chisq;
 
 	/** The image representation of reduced chi-squared of the fit over the the dataset */
-	public RandomAccessibleInterval<FloatType> chisqMap;
+	public Img<FloatType> chisqMap;
 
 	/**
 	 * Create a new instance of {@link FitResults} with shallow copy (maps are

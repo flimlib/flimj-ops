@@ -98,12 +98,14 @@
 	</properties>
 
 	<dependencies>
+		<!-- FLIMLib dependencies -->
 		<dependency>
 			<groupId>flimlib</groupId>
 			<artifactId>flimlib</artifactId>
 			<version>${flimlib.version}</version>
 		</dependency>
 
+		<!-- SCIFIO dependencies -->
 		<dependency>
 			<groupId>io.scif</groupId>
 			<artifactId>scifio</artifactId>
@@ -113,39 +115,34 @@
 			<artifactId>scifio-lifesci</artifactId>
 		</dependency>
 
+		<!-- ImageJ dependencies -->
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>imagej-ops</artifactId>
 		</dependency>
 
+		<!-- ImgLib2 dependencies -->
 		<dependency>
 			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>net.imglib2</groupId>
-			<artifactId>imglib2-ij</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2-roi</artifactId>
 		</dependency>
 
+		<!-- SciJava dependencies -->
 		<dependency>
 			<groupId>org.scijava</groupId>
 			<artifactId>scijava-common</artifactId>
 		</dependency>
 
+		<!-- Runtime dependencies -->
 		<dependency>
 			<groupId>flimlib</groupId>
 			<artifactId>flimlib</artifactId>
 			<version>${flimlib.version}</version>
 			<classifier>${scijava.natives.classifier}</classifier>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.scijava</groupId>
-			<artifactId>native-lib-loader</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 
@@ -159,6 +156,16 @@
 			<artifactId>imagej-ops</artifactId>
 			<version>${imagej-ops.version}</version>
 			<classifier>tests</classifier>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-legacy</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.imglib2</groupId>
+			<artifactId>imglib2-ij</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

@@ -2,6 +2,7 @@ package flimlib.flimj;
 
 import org.scijava.plugin.Plugin;
 
+import flimlib.flimj.FlimOps.BayesOp;
 import flimlib.flimj.FlimOps.GlobalOp;
 import flimlib.flimj.FlimOps.MLAOp;
 import flimlib.flimj.FlimOps.PhasorOp;
@@ -38,6 +39,15 @@ public class DefaultFitRAI {
 		@Override
 		public FitWorker<I> createWorker(FitParams<I> params, FitResults results) {
 			return new RLDFitWorker<I>(params, results, ops());
+		}
+	}
+
+	@Plugin(type = BayesOp.class)
+	public static class BayesSingleFitRAI<I extends RealType<I>> extends AbstractFitRAI<I> {
+
+		@Override
+		public FitWorker<I> createWorker(FitParams<I> params, FitResults results) {
+			return new BayesFitWorker<I>(params, results, ops());
 		}
 	}
 

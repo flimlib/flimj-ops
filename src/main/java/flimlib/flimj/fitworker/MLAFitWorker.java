@@ -30,7 +30,6 @@ public class MLAFitWorker<I extends RealType<I>> extends AbstractSingleFitWorker
 			// no estimation (+Inf was set by RAHelper#loadData)
 			if (param == Float.POSITIVE_INFINITY) {
 				estimatorWorker.fitSingle();
-				// System.out.print(Arrays.toString(results.param));
 				break;
 			}
 		}
@@ -49,7 +48,7 @@ public class MLAFitWorker<I extends RealType<I>> extends AbstractSingleFitWorker
 				params.restrain,
 				params.fitFunc,
 				fittedBuffer, residualBuffer, chisqBuffer, covar, alpha, erraxes, 
-				params.chisq_target, params.chisq_delta, params.chisq_percent
+				rawChisq_target, params.chisq_delta, params.chisq_percent
 		);
 	}
 
