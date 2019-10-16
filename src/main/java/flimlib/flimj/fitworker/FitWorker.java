@@ -1,4 +1,4 @@
-package net.imagej.slim.fitworker;
+package flimlib.flimj.fitworker;
 
 import java.util.List;
 

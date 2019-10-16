@@ -27,7 +27,7 @@
  * #L%
  */
 
-package net.imagej.slim;
+package flimlib.flimj;
 
 import java.io.IOException;
 import java.util.Random;
@@ -43,8 +43,8 @@ import io.scif.lifesci.SDTFormat;
 import io.scif.lifesci.SDTFormat.Reader;
 import net.imagej.ops.AbstractOpTest;
 import net.imagej.ops.convert.RealTypeConverter;
-import net.imagej.slim.FitParams;
-import net.imagej.slim.FitResults;
+import flimlib.flimj.FitParams;
+import flimlib.flimj.FitResults;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccessibleInterval;
@@ -147,30 +147,30 @@ public class FitTest extends AbstractOpTest {
 		
 		long ms = System.currentTimeMillis();
 		// param.dropBad = false;
-		Img<DoubleType> knl = SlimOps.SQUARE_KERNEL_3;
+		Img<DoubleType> knl = FlimOps.SQUARE_KERNEL_3;
 		// knl = null;
 		// param.fitStart = 40;
 		// param.param = new float[] { 0f, 25f, 0f };
-		// param.paramMap = ((FitResults) ops.run("slim.fitRLD", param, roi, knl)).paramMap;
+		// param.paramMap = ((FitResults) ops.run("flim.fitRLD", param, roi, knl)).paramMap;
 		// param.fitStart = 41;
 		// param.dropBad = true;
-		FitResults out = (FitResults) ops.run("slim.fitMLA", param, roi, knl);
+		FitResults out = (FitResults) ops.run("flim.fitMLA", param, roi, knl);
 		System.out.println("Finished in " + (System.currentTimeMillis() - ms) + " ms");
 		// System.out.println(ops.stats().min((IterableInterval)out.retCodeMap));
 		// Demo.showResults(out.paramMap);
 		// ImageJFunctions.show(out.residualsMap);
 		
 		// input
-		// ImageJFunctions.show( (RandomAccessibleInterval<ARGBType>)  ops.run("slim.showPseudocolor", out, 0.2f, 2.5f) );
+		// ImageJFunctions.show( (RandomAccessibleInterval<ARGBType>)  ops.run("flim.showPseudocolor", out, 0.2f, 2.5f) );
 		
 		// test2
-		// ImageJFunctions.show( (RandomAccessibleInterval<ARGBType>)  ops.run("slim.showPseudocolor", out, 0.821f, 1.184f) );
-		// ImageJFunctions.show( (RandomAccessibleInterval<ARGBType>)  ops.run("slim.showPseudocolor", out, 0.6f, 1.35f) );
-		// ImageJFunctions.show( (RandomAccessibleInterval<ARGBType>)  ops.run("slim.showPseudocolor", out, 0.6f, 1.5f) );
-		ImageJFunctions.show( (RandomAccessibleInterval<ARGBType>)  ops.run("slim.showPseudocolor", out, 0.0178, 2.695f) );
+		// ImageJFunctions.show( (RandomAccessibleInterval<ARGBType>)  ops.run("flim.showPseudocolor", out, 0.821f, 1.184f) );
+		// ImageJFunctions.show( (RandomAccessibleInterval<ARGBType>)  ops.run("flim.showPseudocolor", out, 0.6f, 1.35f) );
+		// ImageJFunctions.show( (RandomAccessibleInterval<ARGBType>)  ops.run("flim.showPseudocolor", out, 0.6f, 1.5f) );
+		ImageJFunctions.show( (RandomAccessibleInterval<ARGBType>)  ops.run("flim.showPseudocolor", out, 0.0178, 2.695f) );
 		
 		// // test
-		// // ImageJFunctions.show( (RandomAccessibleInterval<ARGBType>)  ops.run("slim.showPseudocolor", out, 0.5f, 2.323f) );
+		// // ImageJFunctions.show( (RandomAccessibleInterval<ARGBType>)  ops.run("flim.showPseudocolor", out, 0.5f, 2.323f) );
 		while (true) {
 			Demo.sleep20s();
 		}
@@ -179,7 +179,7 @@ public class FitTest extends AbstractOpTest {
 	@Test
 	public void testRLDFitImg() {
 		long ms = System.currentTimeMillis();
-		FitResults out = (FitResults) ops.run("slim.fitRLD", param);
+		FitResults out = (FitResults) ops.run("flim.fitRLD", param);
 		System.out.println("RLD finished in " + (System.currentTimeMillis() - ms) + " ms");
 
 		float[] exp = { 2.5887516f, 1.3008053f, 0.1802666f, 4.498526f, 0.20362994f };
@@ -189,7 +189,7 @@ public class FitTest extends AbstractOpTest {
 	@Test
 	public void testBinning() {
 		long ms = System.currentTimeMillis();
-		FitResults out = (FitResults) ops.run("slim.fitRLD", param, roi, SlimOps.SQUARE_KERNEL_3);
+		FitResults out = (FitResults) ops.run("flim.fitRLD", param, roi, FlimOps.SQUARE_KERNEL_3);
 		System.out.println("RLD with binning finished in " + (System.currentTimeMillis() - ms) + " ms");
 		
 		float[] exp = { 15.917448f, 34.33285f, 0.17224349f, 53.912094f, 0.19115955f };
@@ -199,10 +199,10 @@ public class FitTest extends AbstractOpTest {
 	@Test
 	public void testMLAFitImg() {
 		// estimation using RLD
-		param.paramMap = param.paramMap = ((FitResults) ops.run("slim.fitRLD", param, roi)).paramMap;
+		param.paramMap = param.paramMap = ((FitResults) ops.run("flim.fitRLD", param, roi)).paramMap;
 		
 		long ms = System.currentTimeMillis();
-		FitResults out = (FitResults) ops.run("slim.fitMLA", param, roi);
+		FitResults out = (FitResults) ops.run("flim.fitMLA", param, roi);
 		System.out.println("MLA finished in " + (System.currentTimeMillis() - ms) + " ms");
 		
 		float[] exp = { 2.963042f, 2.1738043f, 0.15078613f, 5.6381326f, 0.18440692f };
@@ -212,14 +212,14 @@ public class FitTest extends AbstractOpTest {
 	@Test
 	public void testInstr() {
 		// estimation using RLD
-		param.paramMap = param.paramMap = ((FitResults) ops.run("slim.fitRLD", param, roi)).paramMap;
+		param.paramMap = param.paramMap = ((FitResults) ops.run("flim.fitRLD", param, roi)).paramMap;
 
 		// a trivial IRF
 		param.instr = new float[12];
 		param.instr[0] = 1;
 		
 		long ms = System.currentTimeMillis();
-		FitResults out = (FitResults) ops.run("slim.fitMLA", param, roi);
+		FitResults out = (FitResults) ops.run("flim.fitMLA", param, roi);
 		System.out.println("MLA with instr finished in " + (System.currentTimeMillis() - ms) + " ms");
 		
 		float[] exp = { 2.963042f, 2.1738043f, 0.15078613f, 5.6381326f, 0.18440692f };
@@ -229,7 +229,7 @@ public class FitTest extends AbstractOpTest {
 	@Test
 	public void testPhasorFitImg() {
 		long ms = System.currentTimeMillis();
-		FitResults out = (FitResults) ops.run("slim.fitPhasor", param, roi);
+		FitResults out = (FitResults) ops.run("flim.fitPhasor", param, roi);
 		System.out.println("Phasor finished in " + (System.currentTimeMillis() - ms) + " ms");
 
 		float[] exp = { 0, 0.17804292f, 0.41997245f, 0.18927118f, 0.39349627f };
@@ -239,7 +239,7 @@ public class FitTest extends AbstractOpTest {
 	@Test
 	public void testGlobalFitImg() {
 		long ms = System.currentTimeMillis();
-		FitResults out = (FitResults) ops.run("slim.fitGlobal", param, roi);
+		FitResults out = (FitResults) ops.run("flim.fitGlobal", param, roi);
 		System.out.println("Global fit finished in " + (System.currentTimeMillis() - ms) + " ms");
 
 		float[] exp = { 1.2399514f, 1.3008053f, 0.16449152f, 4.498526f, 0.16449152f };
@@ -251,7 +251,7 @@ public class FitTest extends AbstractOpTest {
 		param.nComp = 2;
 		param.paramFree = new boolean[] { true, true, true, true, true };
 		long ms = System.currentTimeMillis();
-		FitResults out = (FitResults) ops.run("slim.fitGlobal", param, roi);
+		FitResults out = (FitResults) ops.run("flim.fitGlobal", param, roi);
 		System.out.println("Global fit (Multi) finished in " + (System.currentTimeMillis() - ms) + " ms");
 
 		float[] exp = { 301.6971f, 0.1503315f, 430.5284f, 0.17790353f, 0.1503315f };

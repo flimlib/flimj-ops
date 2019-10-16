@@ -1,13 +1,13 @@
-package net.imagej.slim.fitworker;
+package flimlib.flimj.fitworker;
 
 import java.util.List;
 
 import net.imagej.ops.OpEnvironment;
 import net.imagej.ops.thread.chunker.ChunkerOp;
 import net.imagej.ops.thread.chunker.CursorBasedChunk;
-import net.imagej.slim.FitParams;
-import net.imagej.slim.FitResults;
-import net.imagej.slim.utils.RAHelper;
+import flimlib.flimj.FitParams;
+import flimlib.flimj.FitResults;
+import flimlib.flimj.utils.RAHelper;
 import net.imglib2.type.numeric.RealType;
 
 public abstract class AbstractSingleFitWorker<I extends RealType<I>> extends AbstractFitWorker<I> {

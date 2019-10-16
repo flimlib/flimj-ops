@@ -1,10 +1,10 @@
-package net.imagej.slim.fitworker;
+package flimlib.flimj.fitworker;
 
 import net.imagej.ops.OpEnvironment;
-import net.imagej.slim.FitParams;
-import net.imagej.slim.FitResults;
+import flimlib.flimj.FitParams;
+import flimlib.flimj.FitResults;
 import net.imglib2.type.numeric.RealType;
-import slim.SLIMCurve;
+import flimlib.FLIMLib;
 
 public class PhasorFitWorker<I extends RealType<I>> extends AbstractSingleFitWorker<I> {
 
@@ -43,7 +43,7 @@ public class PhasorFitWorker<I extends RealType<I>> extends AbstractSingleFitWor
 
 	@Override
 	protected void doFit() {
-		results.retCode = SLIMCurve.GCI_Phasor(
+		results.retCode = FLIMLib.GCI_Phasor(
 				params.xInc, transBuffer, adjFitStart, adjFitEnd,
 				z, u, v, tauPhi, tauMod, tau,
 				fittedBuffer, residualBuffer, chisqBuffer

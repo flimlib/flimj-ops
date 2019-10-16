@@ -1,4 +1,4 @@
-package net.imagej.slim;
+package flimlib.flimj;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,8 +6,8 @@ import java.util.List;
 import org.scijava.plugin.Parameter;
 
 import net.imagej.ops.Contingent;
-import net.imagej.slim.SlimOps.FitRAI;
-import net.imagej.slim.fitworker.FitWorker;
+import flimlib.flimj.FlimOps.FitRAI;
+import flimlib.flimj.fitworker.FitWorker;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.array.ArrayImgs;

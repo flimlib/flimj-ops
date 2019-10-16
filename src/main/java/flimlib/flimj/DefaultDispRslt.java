@@ -1,4 +1,4 @@
-package net.imagej.slim;
+package flimlib.flimj;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -7,8 +7,8 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.ColorRGB;
 
-import net.imagej.slim.SlimOps.DispRslt;
-import net.imagej.slim.SlimOps.PseudocolorOp;
+import flimlib.flimj.FlimOps.DispRslt;
+import flimlib.flimj.FlimOps.PseudocolorOp;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccess;

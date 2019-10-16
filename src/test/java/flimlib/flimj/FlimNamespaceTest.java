@@ -26,21 +26,23 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
- package net.imagej.slim;
+
+ package flimlib.flimj;
+
  import net.imagej.ops.AbstractNamespaceTest;
  import org.junit.Test;
  /**
- * Tests {@link SlimNamespace}.
+ * Tests {@link FlimNamespace}.
  *
  * @author Curtis Rueden
  */
-public class SlimNamespaceTest extends AbstractNamespaceTest {
+public class FlimNamespaceTest extends AbstractNamespaceTest {
  	/**
-	 * Tests that the ops of the slim namespace have corresponding type-safe
-	 * Java method signatures declared in the {@link SlimNamespace} class.
+	 * Tests that the ops of the flim namespace have corresponding type-safe
+	 * Java method signatures declared in the {@link FlimNamespace} class.
 	 */
 	@Test
 	public void testCompleteness() {
-		assertComplete("slim", SlimNamespace.class);
+		assertComplete("flim", FlimNamespace.class);
 	}
 }

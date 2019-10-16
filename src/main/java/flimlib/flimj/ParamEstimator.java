@@ -1,4 +1,4 @@
-package net.imagej.slim;
+package flimlib.flimj;
 
 import java.util.Arrays;
 import java.util.List;

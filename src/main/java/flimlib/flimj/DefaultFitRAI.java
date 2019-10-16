@@ -1,18 +1,18 @@
-package net.imagej.slim;
+package flimlib.flimj;
 
 import org.scijava.plugin.Plugin;
 
-import net.imagej.slim.SlimOps.GlobalOp;
-import net.imagej.slim.SlimOps.MLAOp;
-import net.imagej.slim.SlimOps.PhasorOp;
-import net.imagej.slim.SlimOps.RLDOp;
-import net.imagej.slim.fitworker.*;
-import net.imagej.slim.FitParams;
-import net.imagej.slim.FitResults;
+import flimlib.flimj.FlimOps.GlobalOp;
+import flimlib.flimj.FlimOps.MLAOp;
+import flimlib.flimj.FlimOps.PhasorOp;
+import flimlib.flimj.FlimOps.RLDOp;
+import flimlib.flimj.fitworker.*;
+import flimlib.flimj.FitParams;
+import flimlib.flimj.FitResults;
 import net.imglib2.type.numeric.RealType;
 
 /**
- * SLIM Curve fitters on a {@link net.imglib2.RandomAccessibleInterval} of
+ * FLIMLib fitters on a {@link net.imglib2.RandomAccessibleInterval} of
  * time-resolved FLIM data.
  *
  * @author Dasong Gao

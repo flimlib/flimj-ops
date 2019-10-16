@@ -27,7 +27,7 @@
  * #L%
  */
 
-package net.imagej.slim;
+package flimlib.flimj;
 
 import org.junit.Test;
 
@@ -40,7 +40,7 @@ import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
 /**
- * Demonstrates the uses of {@link SlimOps} ops.
+ * Demonstrates the uses of {@link FlimOps} ops.
  * 
  * @author Dasong Gao
  */
@@ -49,7 +49,7 @@ public class Demo extends FitTest {
 	// @Test
 	@SuppressWarnings("unchecked")
 	public void RLDFitImgDemo() {
-		Img<FloatType> out = (Img<FloatType>) ops.run("slim.fitRLD", null, in, param, roi);
+		Img<FloatType> out = (Img<FloatType>) ops.run("flim.fitRLD", null, in, param, roi);
 		showResults(out);
 		sleep20s();
 	}
@@ -57,7 +57,7 @@ public class Demo extends FitTest {
 	// @Test
 	@SuppressWarnings("unchecked")
 	public void MLAFitImgDemo() {
-		Img<FloatType> out = (Img<FloatType>) ops.run("slim.fitMLA", null, in, param, roi);
+		Img<FloatType> out = (Img<FloatType>) ops.run("flim.fitMLA", null, in, param, roi);
 		showResults(out);
 		sleep20s();
 	}
@@ -65,7 +65,7 @@ public class Demo extends FitTest {
 	// @Test
 	@SuppressWarnings("unchecked")
 	public void PhasorFitImgDemo() {
-		Img<FloatType> out = (Img<FloatType>) ops.run("slim.fitPhasor", null, in, param, roi);
+		Img<FloatType> out = (Img<FloatType>) ops.run("flim.fitPhasor", null, in, param, roi);
 		showResults(out);
 		sleep20s();
 	}

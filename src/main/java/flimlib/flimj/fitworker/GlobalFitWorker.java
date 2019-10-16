@@ -1,15 +1,15 @@
-package net.imagej.slim.fitworker;
+package flimlib.flimj.fitworker;
 
 import java.util.List;
 
 import net.imagej.ops.OpEnvironment;
-import net.imagej.slim.FitParams;
-import net.imagej.slim.FitResults;
-import net.imagej.slim.utils.RAHelper;
+import flimlib.flimj.FitParams;
+import flimlib.flimj.FitResults;
+import flimlib.flimj.utils.RAHelper;
 import net.imglib2.type.numeric.RealType;
-import slim.FitType;
-import slim.Float2DMatrix;
-import slim.SLIMCurve;
+import flimlib.FitType;
+import flimlib.Float2DMatrix;
+import flimlib.FLIMLib;
 
 public class GlobalFitWorker<I extends RealType<I>> extends AbstractFitWorker<I> {
 
@@ -46,7 +46,7 @@ public class GlobalFitWorker<I extends RealType<I>> extends AbstractFitWorker<I>
 		// degrees of freedom (used to reduce $\chi^2$)
 		int[] df = new int[1];
 
-		SLIMCurve.GCI_marquardt_global_exps_instr(params.xInc, transMat, adjFitStart, adjFitEnd,
+		FLIMLib.GCI_marquardt_global_exps_instr(params.xInc, transMat, adjFitStart, adjFitEnd,
 			params.instr, params.noise, params.sig, FitType.FIT_GLOBAL_MULTIEXP,
 			paramMat, params.paramFree, params.restrain, params.chisq_delta,
 			fittedMat, residualMat, chisq, chisqGlobal, df, params.dropBad ? 1 : 0);

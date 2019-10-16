@@ -1,4 +1,4 @@
-package net.imagej.slim;
+package flimlib.flimj;
 
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.integer.IntType;

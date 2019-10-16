@@ -5,10 +5,10 @@
 //@ Integer(label="Binning radius", min=0) rKnl
 //@ Float(label="Time bin resolution", min=0) xInc
 //@ File(label="Instrument response", style="open", required=false) irfFile
-// output net.imagej.slim.FitResults out
+// output flimlib.flimj.FitResults out
 
-import net.imagej.slim.FitParams
-import net.imagej.slim.SlimOps
+import flimlib.flimj.FitParams
+import flimlib.flimj.FlimOps
 import ij.gui.GenericDialog
 
 // setup
@@ -53,7 +53,7 @@ if (irfFile != null) {
     params.instr = pts.subList(iStart, iEnd).collect { it / sum }
 }
 
-knl = rKnl > 0 ? SlimOps.makeSquareKernel(2 * rKnl + 1) : null
+knl = rKnl > 0 ? FlimOps.makeSquareKernel(2 * rKnl + 1) : null
 
 // cup of tea
 def thread = Thread.start {
@@ -64,7 +64,7 @@ def thread = Thread.start {
 	gui.dispose()
 }
 
-out = ops.run("slim.fit" + fitType, params, null, knl)
+out = ops.run("flim.fit" + fitType, params, null, knl)
 
 // done
 thread.interrupt()

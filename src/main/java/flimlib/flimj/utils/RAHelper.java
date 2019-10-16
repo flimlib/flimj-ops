@@ -1,7 +1,7 @@
-package net.imagej.slim.utils;
+package flimlib.flimj.utils;
 
-import net.imagej.slim.FitParams;
-import net.imagej.slim.FitResults;
+import flimlib.flimj.FitParams;
+import flimlib.flimj.FitResults;
 import net.imglib2.RandomAccess;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.IntType;

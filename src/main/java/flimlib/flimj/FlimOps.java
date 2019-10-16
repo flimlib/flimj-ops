@@ -1,11 +1,11 @@
-package net.imagej.slim;
+package flimlib.flimj;
 
 import net.imagej.ops.Op;
 import net.imagej.ops.special.function.AbstractUnaryFunctionOp;
 import net.imagej.ops.special.hybrid.AbstractUnaryHybridCF;
-import net.imagej.slim.FitParams;
-import net.imagej.slim.FitResults;
-import net.imagej.slim.fitworker.*;
+import flimlib.flimj.FitParams;
+import flimlib.flimj.FitResults;
+import flimlib.flimj.fitworker.*;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.img.Img;
@@ -14,7 +14,7 @@ import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
-public class SlimOps {
+public class FlimOps {
 
 	// grab & go kernels
 	public static final Img<DoubleType> SQUARE_KERNEL_3 = makeSquareKernel(3);
@@ -30,34 +30,34 @@ public class SlimOps {
 		return out;
 	}
 
-	private SlimOps() {
+	private FlimOps() {
 		// NB: Prevent instantiation of utility class.
 	}
 
 	// the exposed interfaces
 	public interface RLDOp extends Op {
-		String NAME = "slim.fitRLD";
+		String NAME = "flim.fitRLD";
 	}
 
 	public interface MLAOp extends Op {
-		String NAME = "slim.fitMLA";
+		String NAME = "flim.fitMLA";
 	}
 
 	public interface GlobalOp extends Op {
-		String NAME = "slim.fitGlobal";
+		String NAME = "flim.fitGlobal";
 	}
 
 	public interface PhasorOp extends Op {
-		String NAME = "slim.fitPhasor";
+		String NAME = "flim.fitPhasor";
 	}
 
 	// TODO
 	// public interface SPAOp extends Op {
-	// 	String NAME = "slim.spa";
+	// 	String NAME = "flim.spa";
 	// }
 
 	public interface PseudocolorOp extends Op {
-		String NAME = "slim.showPseudocolor";
+		String NAME = "flim.showPseudocolor";
 	}
 
 	interface FitOps<I extends RealType<I>> {

@@ -1,11 +1,11 @@
-package net.imagej.slim;
+package flimlib.flimj;
 
 import java.util.Arrays;
 
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.FloatType;
-import slim.*;
+import flimlib.*;
 
 /**
  * The collection of all fit parameters required to perform a single fit of an

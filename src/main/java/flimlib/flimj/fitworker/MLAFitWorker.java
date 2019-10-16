@@ -1,11 +1,11 @@
-package net.imagej.slim.fitworker;
+package flimlib.flimj.fitworker;
 
 import net.imagej.ops.OpEnvironment;
-import net.imagej.slim.FitParams;
-import net.imagej.slim.FitResults;
+import flimlib.flimj.FitParams;
+import flimlib.flimj.FitResults;
 import net.imglib2.type.numeric.RealType;
-import slim.Float2DMatrix;
-import slim.SLIMCurve;
+import flimlib.Float2DMatrix;
+import flimlib.FLIMLib;
 
 public class MLAFitWorker<I extends RealType<I>> extends AbstractSingleFitWorker<I> {
 
@@ -42,7 +42,7 @@ public class MLAFitWorker<I extends RealType<I>> extends AbstractSingleFitWorker
 	 */
 	@Override
 	public void doFit() {
-		results.retCode = SLIMCurve.GCI_marquardt_fitting_engine(
+		results.retCode = FLIMLib.GCI_marquardt_fitting_engine(
 				params.xInc, transBuffer, adjFitStart, adjFitEnd,
 				params.instr, params.noise, params.sig, paramBuffer,
 				params.paramFree,

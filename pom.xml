@@ -11,17 +11,17 @@
 		<version>27.0.1</version>
 	</parent>
 
-	<groupId>net.imagej</groupId>
-	<artifactId>slim-curve-ops</artifactId>
+	<groupId>flimlib</groupId>
+	<artifactId>flimj-ops</artifactId>
 	<version>0.1.0-SNAPSHOT</version>
 
-	<name>slim-curve-ops</name>
-	<description>A slim-curve plugin of ImageJ.</description>
-	<url>https://slim-curve.github.io/</url>
+	<name>flimj-ops</name>
+	<description>Fluorescence lifetime analysis in ImageJ.</description>
+	<url>https://flimlib.github.io/</url>
 	<inceptionYear>2017</inceptionYear>
 	<organization>
-		<name>SLIM Curve</name>
-		<url>https://github.com/slim-curve</url>
+		<name>FLIMLib</name>
+		<url>https://github.com/flimlib</url>
 	</organization>
 	<licenses>
 		<license>
@@ -37,6 +37,7 @@
 			<name>Curtis Rueden</name>
 			<url>https://imagej.net/User:Rueden</url>
 			<roles>
+				<role>founder</role>
 				<role>lead</role>
 				<role>reviewer</role>
 				<role>support</role>
@@ -68,72 +69,58 @@
 	<mailingLists>
 		<mailingList>
 			<name>Image.sc Forum</name>
-			<archive>https://forum.image.sc/tags/slim-curve</archive>
+			<archive>https://forum.image.sc/tags/flimlib</archive>
 		</mailingList>
 	</mailingLists>
 
 	<scm>
-		<connection>scm:git:https://github.com/slim-curve/slim-curve-ops</connection>
-		<developerConnection>scm:git:git@github.com:slim-curve/slim-curve-ops</developerConnection>
+		<connection>scm:git:https://github.com/flimlib/flimj-ops</connection>
+		<developerConnection>scm:git:git@github.com:flimlib/flimj-ops</developerConnection>
 		<tag>HEAD</tag>
-		<url>https://github.com/slim-curve/slim-curve-ops</url>
+		<url>https://github.com/flimlib/flimj-ops</url>
 	</scm>
 	<issueManagement>
 		<system>GitHub Issues</system>
-		<url>https://github.com/imagej/slim-curve/slim-curve-ops/issues</url>
+		<url>https://github.com/imagej/flimlib/flimj-ops/issues</url>
 	</issueManagement>
 	<ciManagement>
 		<system>Travis CI</system>
-		<url>https://travis-ci.org/slim-curve/slim-curve-ops</url>
+		<url>https://travis-ci.com/flimlib/flimj-ops</url>
 	</ciManagement>
 
 	<properties>
-		<package-name>net.imagej.slim</package-name>
-		<main-class>net.imagej.slim.Slim</main-class>
+		<package-name>flimlib.flimj</package-name>
+		<main-class>flimlib.flimj.Main</main-class>
 		<license.licenseName>gpl_v3</license.licenseName>
 		<license.copyrightOwners>Board of Regents of the University of Wisconsin-Madison.</license.copyrightOwners>
+
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>deploy-to-scijava</releaseProfiles>
 
-		<slim-curve.version>1.1.1</slim-curve.version>
+		<flimlib.version>2.0.0</flimlib.version>
 	</properties>
+
 	<repositories>
 		<repository>
 			<id>scijava.public</id>
 			<url>https://maven.scijava.org/content/groups/public</url>
 		</repository>
 	</repositories>
+
 	<dependencies>
 		<dependency>
-		    <groupId>net.imagej</groupId>
-		    <artifactId>imagej-ops</artifactId>
+			<groupId>flimlib</groupId>
+			<artifactId>flimlib</artifactId>
+			<version>${flimlib.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-ops</artifactId>
 		</dependency>
 		<dependency>
-            <groupId>net.imagej</groupId>
-            <artifactId>imagej-ops</artifactId>
-            <version>${imagej-ops.version}</version>
-            <classifier>tests</classifier>
-            <scope>test</scope>
-        </dependency>
-		<dependency>
-		    <groupId>net.imglib2</groupId>
-		    <artifactId>imglib2-ij</artifactId>
-		</dependency>
-		<dependency>
-		    <groupId>net.imagej</groupId>
-		    <artifactId>ij</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>slim-curve</groupId>
-			<artifactId>slim-curve</artifactId>
-			<version>${slim-curve.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>slim-curve</groupId>
-			<artifactId>slim-curve</artifactId>
-			<version>${slim-curve.version}</version>
-			<classifier>${scijava.natives.classifier}</classifier>
-			<scope>runtime</scope>
+			<groupId>net.imglib2</groupId>
+			<artifactId>imglib2-ij</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.scif</groupId>
@@ -143,10 +130,26 @@
 			<groupId>io.scif</groupId>
 			<artifactId>scifio-lifesci</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>flimlib</groupId>
+			<artifactId>flimlib</artifactId>
+			<version>${flimlib.version}</version>
+			<classifier>${scijava.natives.classifier}</classifier>
+			<scope>runtime</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.scijava</groupId>
 			<artifactId>native-lib-loader</artifactId>
 			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-ops</artifactId>
+			<version>${imagej-ops.version}</version>
+			<classifier>tests</classifier>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

@@ -1,10 +1,10 @@
-package net.imagej.slim.fitworker;
+package flimlib.flimj.fitworker;
 
 import net.imagej.ops.OpEnvironment;
-import net.imagej.slim.FitParams;
-import net.imagej.slim.FitResults;
+import flimlib.flimj.FitParams;
+import flimlib.flimj.FitResults;
 import net.imglib2.type.numeric.RealType;
-import slim.SLIMCurve;
+import flimlib.FLIMLib;
 
 public class RLDFitWorker<I extends RealType<I>> extends AbstractSingleFitWorker<I> {
 	// RLD's own buffers
@@ -31,7 +31,7 @@ public class RLDFitWorker<I extends RealType<I>> extends AbstractSingleFitWorker
 	 */
 	@Override
 	protected void doFit() {
-		results.retCode = SLIMCurve.GCI_triple_integral_fitting_engine(
+		results.retCode = FLIMLib.GCI_triple_integral_fitting_engine(
 				params.xInc, transBuffer, adjFitStart, adjFitEnd,
 				params.instr, params.noise, params.sig, z, a, tau,
 				fittedBuffer, residualBuffer, chisqBuffer,
@@ -61,7 +61,7 @@ public class RLDFitWorker<I extends RealType<I>> extends AbstractSingleFitWorker
 		}
 		if (params.nComp >= 4) {
 			// doesn't really matter, used estimation for global
-			// see slim-curve:slim-curve/src/main/c/EcfGlobal.c
+			// see flimlib:flimlib/src/main/c/EcfGlobal.c
 			for (int i = 7; i < nParam; i += 2) {
 				paramBuffer[i] = a[0]   / i;
 				paramBuffer[i] = tau[0] / i;

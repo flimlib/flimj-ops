@@ -1,10 +1,10 @@
-package net.imagej.slim.fitworker;
+package flimlib.flimj.fitworker;
 
 import java.util.Arrays;
 
 import net.imagej.ops.OpEnvironment;
-import net.imagej.slim.FitParams;
-import net.imagej.slim.FitResults;
+import flimlib.flimj.FitParams;
+import flimlib.flimj.FitResults;
 import net.imglib2.type.numeric.RealType;
 
 /**
