@@ -87,7 +87,7 @@ public class FitTest extends AbstractOpTest {
 	public static void init() throws IOException {
 		Reader r = new SDTFormat.Reader();
 		r.setContext(new Context());
-		r.setSource("src/test/resources/input.sdt");
+		r.setSource("test_files/input.sdt");
 		in = (Img<UnsignedShortType>) new ImgOpener().openImgs(r).get(0).getImg();
 
 		// input and output boundaries
@@ -125,8 +125,8 @@ public class FitTest extends AbstractOpTest {
 		Reader r = new SDTFormat.Reader();
 		// io.scif.formats.ICSFormat.Reader r = new io.scif.formats.ICSFormat.Reader();
 		r.setContext(new Context());
-		r.setSource("src/test/resources/test2.sdt");
-		// r.setSource("src/test/resources/Csarseven.ics");
+		r.setSource("test_files/test2.sdt");
+		// r.setSource(".../Csarseven.ics");
 		param = new FitParams<UnsignedShortType>();
 		param.ltAxis = 0;
 		param.xInc = 10.006715f / 256;
