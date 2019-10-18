@@ -10,7 +10,7 @@
 
 	<groupId>flimlib</groupId>
 	<artifactId>flimj-ops</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0</version>
 
 	<name>flimj-ops</name>
 	<description>Fluorescence lifetime analysis in ImageJ.</description>
@@ -73,7 +73,7 @@
 	<scm>
 		<connection>scm:git:https://github.com/flimlib/flimj-ops</connection>
 		<developerConnection>scm:git:git@github.com:flimlib/flimj-ops</developerConnection>
-		<tag>HEAD</tag>
+		<tag>flimj-ops-1.0.0</tag>
 		<url>https://github.com/flimlib/flimj-ops</url>
 	</scm>
 	<issueManagement>
