@@ -32,36 +32,24 @@ package flimlib.flimj;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Random;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.scijava.Context;
-
 import io.scif.img.ImgOpener;
 import io.scif.lifesci.SDTFormat;
 import io.scif.lifesci.SDTFormat.Reader;
-import net.imagej.display.ColorTables;
 import net.imagej.ops.AbstractOpTest;
 import net.imagej.ops.convert.RealTypeConverter;
-import flimlib.flimj.FitParams;
-import flimlib.flimj.FitResults;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.converter.Converters;
-import net.imglib2.converter.RealLUTConverter;
 import net.imglib2.img.Img;
-import net.imglib2.img.array.ArrayImgs;
-import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.roi.RealMask;
 import net.imglib2.roi.geom.real.OpenWritableBox;
-import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
-import net.imglib2.type.numeric.real.DoubleType;
-import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 
 /**
@@ -121,75 +109,6 @@ public class FitTest extends AbstractOpTest {
 	@Before
 	public void initParam() {
 		param = param_master.copy();
-	}
-
-	// @Test
-	public void test() {
-		RandomAccessibleInterval<FloatType> floatImg = ArrayImgs.floats(128, 128);
-		RandomAccessibleInterval<ARGBType>  argbRAI = Converters.convert(floatImg, new RealLUTConverter<FloatType>(0, 1, ColorTables.GRAYS), new ARGBType());
-		Img<ARGBType> argbImg = ArrayImgs.argbs(128, 128);
-		ops.copy().rai(argbImg, argbRAI);
-		// net.imagej.ops.map.MapUnaryComputers
-		// net.imagej.ops.copy.CopyRAI.compute
-	}
-
-	// @Test
-	public void testVisual() throws IOException {
-		RealMask roi = new OpenWritableBox(new double[] { 49 - 1, 18 - 1 }, new double[] { 57 + 1, 24 + 1 });
-		roi = new OpenWritableBox(new double[] { 55 - 1, 24 - 1 }, new double[] { 57 + 1, 24 + 1 });
-		roi = null;
-		Reader r = new SDTFormat.Reader();
-		// io.scif.formats.ICSFormat.Reader r = new io.scif.formats.ICSFormat.Reader();
-		r.setContext(new Context());
-		r.setSource("test_files/test2.sdt");
-		// r.setSource(".../Csarseven.ics");
-		param = new FitParams<UnsignedShortType>();
-		param.ltAxis = 0;
-		param.xInc = 10.006715f / 256;
-		param.transMap = (Img<UnsignedShortType>) new ImgOpener().openImgs(r).get(0).getImg();
-		// param.xInc = 12.5f / 64;
-		// param.transMap = in;
-		// param.getChisqMap = true;
-		// param.getResidualsMap = true;
-		// param.paramFree = new boolean[] { false };
-		// param.param = new float[] { 1.450f, 9.233f, 1.054f, 3.078f, 0.7027f };
-		// param.dropBad = true;
-		// param.iThresh = 90f;
-		param.iThreshPercent = 10;
-		param.nComp = 2;
-		param.chisq_target = 0;
-
-
-		
-		long ms = System.currentTimeMillis();
-		// param.dropBad = false;
-		Img<DoubleType> knl = FlimOps.SQUARE_KERNEL_3;
-		// knl = null;
-		// param.fitStart = 40;
-		// param.param = new float[] { 0f, 25f, 0f };
-		// param.paramMap = ((FitResults) ops.run("flim.fitRLD", param, roi, knl)).paramMap;
-		// param.fitStart = 41;
-		// param.dropBad = true;
-		FitResults out = (FitResults) ops.run("flim.fitMLA", param, roi, knl);
-		System.out.println("Finished in " + (System.currentTimeMillis() - ms) + " ms");
-		// System.out.println(ops.stats().min((IterableInterval)out.retCodeMap));
-		// Demo.showResults(out.paramMap);
-		// ImageJFunctions.show(out.residualsMap);
-		
-		// input
-		// ImageJFunctions.show( (RandomAccessibleInterval<ARGBType>)  ops.run("flim.showPseudocolor", out, 0.2f, 2.5f) );
-		
-		// test2
-		// ImageJFunctions.show( (RandomAccessibleInterval<ARGBType>)  ops.run("flim.showPseudocolor", out, 0.821f, 1.184f) );
-		// ImageJFunctions.show( (RandomAccessibleInterval<ARGBType>)  ops.run("flim.showPseudocolor", out, 0.6f, 1.35f) );
-		// ImageJFunctions.show( (RandomAccessibleInterval<ARGBType>)  ops.run("flim.showPseudocolor", out, 0.6f, 1.5f) );
-		ImageJFunctions.show( (RandomAccessibleInterval<ARGBType>)  ops.run("flim.showPseudocolor", out, 0.0178, 2.695f) );
-		
-		// // test
-		// // ImageJFunctions.show( (RandomAccessibleInterval<ARGBType>)  ops.run("flim.showPseudocolor", out, 0.5f, 2.323f) );
-		while (true) {
-			Demo.sleep20s();
-		}
 	}
 
 	@Test
