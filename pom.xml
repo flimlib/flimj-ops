@@ -87,7 +87,6 @@
 
 	<properties>
 		<package-name>flimlib.flimj</package-name>
-		<main-class>flimlib.flimj.Main</main-class>
 		<license.licenseName>gpl_v3</license.licenseName>
 		<license.copyrightOwners>Board of Regents of the University of Wisconsin-Madison.</license.copyrightOwners>
 
