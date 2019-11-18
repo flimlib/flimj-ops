@@ -7,14 +7,14 @@ import net.imglib2.type.numeric.RealType;
 import flimlib.Float2DMatrix;
 import flimlib.FLIMLib;
 
-public class MLAFitWorker<I extends RealType<I>> extends AbstractSingleFitWorker<I> {
+public class LMAFitWorker<I extends RealType<I>> extends AbstractSingleFitWorker<I> {
 
 	// reusable buffers
 	private final Float2DMatrix covar, alpha, erraxes;
 
 	private final RLDFitWorker<I> estimatorWorker;
 
-	public MLAFitWorker(FitParams<I> params, FitResults results, OpEnvironment ops) {
+	public LMAFitWorker(FitParams<I> params, FitResults results, OpEnvironment ops) {
 		super(params, results, ops);
 		covar = new Float2DMatrix(nParam, nParam);
 		alpha = new Float2DMatrix(nParam, nParam);
@@ -37,7 +37,7 @@ public class MLAFitWorker<I extends RealType<I>> extends AbstractSingleFitWorker
 	}
 
 	/**
-	 * Performs an MLA fit.
+	 * Performs an LMA fit.
 	 */
 	@Override
 	public void doFit() {
@@ -54,6 +54,6 @@ public class MLAFitWorker<I extends RealType<I>> extends AbstractSingleFitWorker
 
 	@Override
 	protected AbstractSingleFitWorker<I> duplicate(FitParams<I> params, FitResults rslts) {
-		return new MLAFitWorker<>(params, rslts, ops);
+		return new LMAFitWorker<>(params, rslts, ops);
 	}
 }

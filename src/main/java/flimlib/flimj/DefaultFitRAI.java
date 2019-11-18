@@ -4,7 +4,7 @@ import org.scijava.plugin.Plugin;
 
 import flimlib.flimj.FlimOps.BayesOp;
 import flimlib.flimj.FlimOps.GlobalOp;
-import flimlib.flimj.FlimOps.MLAOp;
+import flimlib.flimj.FlimOps.LMAOp;
 import flimlib.flimj.FlimOps.PhasorOp;
 import flimlib.flimj.FlimOps.RLDOp;
 import flimlib.flimj.fitworker.*;
@@ -24,12 +24,12 @@ public class DefaultFitRAI {
 		// NB: Prevent instantiation of utility class.
 	}
 
-	@Plugin(type = MLAOp.class)
-	public static class MLASingleFitRAI<I extends RealType<I>> extends AbstractFitRAI<I> {
+	@Plugin(type = LMAOp.class)
+	public static class LMASingleFitRAI<I extends RealType<I>> extends AbstractFitRAI<I> {
 
 		@Override
 		public FitWorker<I> createWorker(FitParams<I> params, FitResults results) {
-			return new MLAFitWorker<I>(params, results, ops());
+			return new LMAFitWorker<I>(params, results, ops());
 		}
 	}
 
@@ -61,7 +61,7 @@ public class DefaultFitRAI {
 	}
 
 	@Plugin(type = GlobalOp.class)
-	public static class MLAGlobalFitRAI<I extends RealType<I>> extends AbstractFitRAI<I> {
+	public static class LMAGlobalFitRAI<I extends RealType<I>> extends AbstractFitRAI<I> {
 
 		@Override
 		public FitWorker<I> createWorker(FitParams<I> params, FitResults results) {

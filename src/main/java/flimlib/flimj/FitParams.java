@@ -56,7 +56,7 @@ public class FitParams<I extends RealType<I>> {
 
 	/**
 	 * The number of exponential components of the fit (1 by default). This
-	 * parameter is only used by MLA and Global ops, ignored otherwise.
+	 * parameter is only used by LMA and Global ops, ignored otherwise.
 	 */
 	public int nComp = 1;
 

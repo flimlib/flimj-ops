@@ -8,7 +8,7 @@ public interface FitWorker<I extends RealType<I>> {
 
 	/**
 	 * How many parameters should there be in {@code results.param}?
-	 * E.g. 3 for one-component {@link MLAFitWorker} and 5 for
+	 * E.g. 3 for one-component {@link LMAFitWorker} and 5 for
 	 * {@link PhasorFitWorker}.
 	 * @return The number of output parameters in the parameter array.
 	 */

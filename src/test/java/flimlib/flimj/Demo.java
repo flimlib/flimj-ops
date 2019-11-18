@@ -104,7 +104,7 @@ public class Demo {
 		// FitTest.param.FitTest.paramMap = ((FitResults) ops.run("flim.fitRLD", FitTest.param, roi, knl)).FitTest.paramMap;
 		// FitTest.param.fitStart = 41;
 		// FitTest.param.dropBad = true;
-		FitResults out = (FitResults) ops.run("flim.fitMLA", FitTest.param, roi, knl);
+		FitResults out = (FitResults) ops.run("flim.fitLMA", FitTest.param, roi, knl);
 		System.out.println("Finished in " + (System.currentTimeMillis() - ms) + " ms");
 		// System.out.println(ops.stats().min((IterableInterval)out.retCodeMap));
 		// Demo.showResults(out.FitTest.paramMap);

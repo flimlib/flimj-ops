@@ -132,13 +132,13 @@ public class FitTest extends AbstractOpTest {
 	}
 	
 	@Test
-	public void testMLAFitImg() {
+	public void testLMAFitImg() {
 		// estimation using RLD
 		param.paramMap = param.paramMap = ((FitResults) ops.run("flim.fitRLD", param, roi)).paramMap;
 		
 		long ms = System.currentTimeMillis();
-		FitResults out = (FitResults) ops.run("flim.fitMLA", param, roi);
-		System.out.println("MLA finished in " + (System.currentTimeMillis() - ms) + " ms");
+		FitResults out = (FitResults) ops.run("flim.fitLMA", param, roi);
+		System.out.println("LMA finished in " + (System.currentTimeMillis() - ms) + " ms");
 		
 		float[] exp = { 2.8199558f, 2.1738043f, 0.15078613f, 5.6381326f, 0.18440692f };
 		assertSampleEquals(out.paramMap, exp);
@@ -154,8 +154,8 @@ public class FitTest extends AbstractOpTest {
 		param.instr[0] = 1;
 		
 		long ms = System.currentTimeMillis();
-		FitResults out = (FitResults) ops.run("flim.fitMLA", param, roi);
-		System.out.println("MLA with instr finished in " + (System.currentTimeMillis() - ms) + " ms");
+		FitResults out = (FitResults) ops.run("flim.fitLMA", param, roi);
+		System.out.println("LMA with instr finished in " + (System.currentTimeMillis() - ms) + " ms");
 		
 		float[] exp = { 2.8199558f, 2.1738043f, 0.15078613f, 5.6381326f, 0.18440692f };
 		assertSampleEquals(out.paramMap, exp);

@@ -40,8 +40,8 @@ public class FlimOps {
 		String NAME = "flim.fitRLD";
 	}
 
-	public interface MLAOp extends Op {
-		String NAME = "flim.fitMLA";
+	public interface LMAOp extends Op {
+		String NAME = "flim.fitLMA";
 	}
 
 	public interface BayesOp extends Op {
