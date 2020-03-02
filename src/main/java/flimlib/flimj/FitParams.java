@@ -76,6 +76,17 @@ public class FitParams<I extends RealType<I>> {
 	public RestrainType restrain = RestrainType.ECF_RESTRAIN_DEFAULT;
 
 	/**
+	 * The fit restraints (min or max) for each parameter. A parameter at index
+	 * {@code i} will be restrained during the fit in the range
+	 * {@code (restraintMin[i], restraintMax[i])}. If any of the two bounds are
+	 * not present (due to the array being {@code null} or {@code [i] == NaN}),
+	 * then {@code -/+Inf} is used instead and that parameter will not be
+	 * bounded from below/above. The bounds only take effect if
+	 * {@link #restrain} is set to {@link RestrainType#ECF_RESTRAIN_USER}.
+	 */
+	public float[] restraintMin, restraintMax;
+
+	/**
 	 * The fitting model to use (Z + A_1e^(-t/tau_1) + A_2e^(-t/tau_2) + ... by
 	 * default)
 	 */

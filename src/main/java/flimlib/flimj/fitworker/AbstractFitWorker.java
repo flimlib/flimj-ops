@@ -3,6 +3,8 @@ package flimlib.flimj.fitworker;
 import java.util.Arrays;
 
 import net.imagej.ops.OpEnvironment;
+import flimlib.FLIMLib;
+import flimlib.RestrainType;
 import flimlib.flimj.FitParams;
 import flimlib.flimj.FitResults;
 import net.imglib2.type.numeric.RealType;
@@ -85,6 +87,36 @@ public abstract class AbstractFitWorker<I extends RealType<I>> implements FitWor
 		rawChisq_target = params.chisq_target * (nData - nParam);
 
 		results.ltAxis = params.ltAxis;
+
+		if (params.restrain.equals(RestrainType.ECF_RESTRAIN_USER)
+				&& (params.restraintMin != null || params.restraintMax != null)) {
+			boolean[] restrain = new boolean[this.nParam];
+			float[] rMinOrig = params.restraintMin;
+			float[] rMaxOrig = params.restraintMax;
+			float[] rMin = new float[this.nParam];
+			float[] rMax = new float[this.nParam];
+
+			for (int i = 0; i < restrain.length; i++) {
+				// only restrain the parameter if at least one of the restraints are valid (finite
+				// or inf)
+				boolean restrainCurrent = false;
+				if (rMinOrig != null && i < rMinOrig.length && !Float.isNaN(rMinOrig[i])) {
+					rMin[i] = rMinOrig[i];
+					restrainCurrent = true;
+				} else
+					rMin[i] = Float.NEGATIVE_INFINITY;
+
+				if (rMaxOrig != null && i < rMaxOrig.length && !Float.isNaN(rMaxOrig[i])) {
+					rMax[i] = rMaxOrig[i];
+					restrainCurrent = true;
+				} else
+					rMax[i] = Float.POSITIVE_INFINITY;
+
+				restrain[i] = restrainCurrent;
+			}
+
+			FLIMLib.GCI_set_restrain_limits(restrain, rMin, rMax);
+		}
 	}
 
 	@Override
