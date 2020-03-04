@@ -90,6 +90,10 @@ public class RAHelper<I extends RealType<I>> {
 	 * @param xytPos the coordinate of the single-pixel result in maps.
 	 */
 	public void commitRslts(FitParams<I> params, FitResults rslts, int[] xytPos) {
+		if (params.getChisqMap) {
+			chisqRA.setPosition(xytPos);
+			chisqRA.get().set(rslts.chisq);
+		}
 		// don't write to results if chisq is too big
 		if (params.dropBad) {
 			float chisq = rslts.chisq;
@@ -106,10 +110,6 @@ public class RAHelper<I extends RealType<I>> {
 		}
 		if (params.getResidualsMap) {
 			fillRA(residualsRA, xytPos, rslts.residuals, bufDataStart, bufDataEnd);
-		}
-		if (params.getChisqMap) {
-			chisqRA.setPosition(xytPos);
-			chisqRA.get().set(rslts.chisq);
 		}
 		if (params.getReturnCodeMap) {
 			retcodeRA.setPosition(xytPos);
