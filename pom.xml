@@ -93,7 +93,7 @@
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>deploy-to-scijava</releaseProfiles>
 
-		<flimlib.version>2.0.0</flimlib.version>
+		<flimlib.version>2.0.1-SNAPSHOT</flimlib.version>
 	</properties>
 
 	<dependencies>
