@@ -145,6 +145,19 @@ public class FitTest extends AbstractOpTest {
 	}
 
 	@Test
+	public void testBayesFitImg() {
+		// estimation using RLD
+		param.getChisqMap = true;
+		// param.multithread = false;
+		long ms = System.currentTimeMillis();
+		FitResults out = (FitResults) ops.run("flim.fitBayes", param, roi);
+		System.out.println("Bayes finished in " + (System.currentTimeMillis() - ms) + " ms");
+
+		float[] exp = { 0.0f, 0.0f, 0.20058449f, 0.0f, 0.26743606f };
+		assertSampleEquals(out.paramMap, exp);
+	}
+
+	@Test
 	public void testInstr() {
 		// estimation using RLD
 		param.paramMap = param.paramMap = ((FitResults) ops.run("flim.fitRLD", param, roi)).paramMap;
@@ -177,7 +190,7 @@ public class FitTest extends AbstractOpTest {
 		FitResults out = (FitResults) ops.run("flim.fitGlobal", param, roi);
 		System.out.println("Global fit finished in " + (System.currentTimeMillis() - ms) + " ms");
 
-		float[] exp = { 1.2399514f, 1.3008053f, 0.16449152f, 4.498526f, 0.16449152f };
+		float[] exp = { 2.5887516f, 1.3008053f, 0.16449152f, 4.498526f, 0.16449152f };
 		assertSampleEquals(out.paramMap, exp);
 	}
 
