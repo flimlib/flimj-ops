@@ -88,7 +88,7 @@ public abstract class AbstractSingleFitWorker<I extends RealType<I>> extends Abs
 		ops.run(ChunkerOp.class, new CursorBasedChunk() {
 
 			@Override
-			public void execute(int startIndex, int stepSize, int numSteps) {
+			public void execute(long startIndex, long stepSize, long numSteps) {
 				if (!params.multithread) {
 					// let the first fitting thread do all the work
 					if (startIndex != 0) {
@@ -116,7 +116,7 @@ public abstract class AbstractSingleFitWorker<I extends RealType<I>> extends Abs
 				}
 				final RAHelper<I> helper = new RAHelper<>(params, results);
 
-				for (int i = startIndex; i < startIndex + numSteps; i += stepSize) {
+				for (int i = (int) startIndex; i < startIndex + numSteps; i += stepSize) {
 					final int[] xytPos = pos.get(i);
 
 					if (!helper.loadData(fitWorker.transBuffer, fitWorker.paramBuffer, params,

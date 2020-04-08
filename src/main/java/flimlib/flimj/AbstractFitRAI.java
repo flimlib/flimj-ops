@@ -99,7 +99,7 @@ public abstract class AbstractFitRAI<I extends RealType<I>> extends FitRAI<I> im
 	private void initParam() {
 		// convolve the image if necessary
 		params.transMap = kernel == null ? params.transMap
-				: ops().filter().<I, I, I>convolve(params.transMap, kernel);
+				: ops().filter().<I, I, I, I>convolve(params.transMap, kernel);
 
 		roiPos = getRoiPositions(params.transMap);
 
