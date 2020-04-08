@@ -65,6 +65,10 @@ public class FlimOps {
 		String NAME = "flim.calcTauMean";
 	}
 
+	public interface CalcAPercentOp extends Op {
+		String NAME = "flim.calcAPercent";
+	}
+
 	public interface PseudocolorOp extends Op {
 		String NAME = "flim.showPseudocolor";
 	}

@@ -37,11 +37,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.scijava.Context;
+import flimlib.flimj.FlimOps.FitRAI;
 import io.scif.img.ImgOpener;
 import io.scif.lifesci.SDTFormat;
 import io.scif.lifesci.SDTFormat.Reader;
 import net.imagej.ops.AbstractOpTest;
-import net.imagej.ops.convert.RealTypeConverter;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccessibleInterval;
@@ -53,7 +53,7 @@ import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.view.Views;
 
 /**
- * Regression tests for {@link RealTypeConverter} ops.
+ * Regression tests for {@link FitRAI} ops.
  * 
  * @author Dasong Gao
  */
