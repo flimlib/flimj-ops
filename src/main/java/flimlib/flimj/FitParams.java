@@ -108,7 +108,7 @@ public class FitParams<I extends RealType<I>> {
 	public int chisq_percent = 95;
 
 	/** Intensity threshold value (overrides {@link #iThreshPercent}) */
-	public float iThresh = UNINIT;
+	public float iThresh = 0;
 
 	/** Intensity threshold percentage */
 	public float iThreshPercent = 0;

@@ -45,10 +45,10 @@ public class ParamEstimator<I extends RealType<I>> {
 		this.lifetimeAxis = params.ltAxis;
 		nData = (int) params.transMap.dimension(lifetimeAxis);
 		nTrans = pos.size();
-		// don't bother sampling if nothing to estimate
+
 		// if only percentage is set, calculate the value
-		iSmpls = params.iThresh < 0 && params.iThreshPercent < 0
-				? new float[(int) (nTrans * SAMPLE_RATE)]
+		iSmpls = params.iThreshPercent > 0 && params.iThresh == 0
+				? new float[(int) (Math.max(nTrans * SAMPLE_RATE, 1))]
 				: null;
 
 		// create intensity image

@@ -1,6 +1,5 @@
 package flimlib.flimj;
 
-import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
@@ -66,6 +65,7 @@ public class FitResults {
 		newResults.ltAxis = ltAxis;
 		newResults.retCode = retCode;
 		newResults.retCodeMap = retCodeMap;
+		newResults.intensityMap = intensityMap;
 		newResults.param = param;
 		newResults.paramMap = paramMap;
 		newResults.fitted = fitted;
