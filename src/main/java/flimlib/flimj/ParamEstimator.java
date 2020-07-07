@@ -47,7 +47,7 @@ public class ParamEstimator<I extends RealType<I>> {
 		nTrans = pos.size();
 
 		// if only percentage is set, calculate the value
-		iSmpls = params.iThreshPercent > 0 && params.iThresh == 0
+		iSmpls = params.iThreshPercent > 0 && params.iThresh <= 0
 				? new float[(int) (Math.max(nTrans * SAMPLE_RATE, 1))]
 				: null;
 
