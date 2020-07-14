@@ -2,7 +2,7 @@
 
 ## Example of a minimal code to run fit in ImageJ-Groovy kernel after loading an img file XYT dimensions
 
-"""code groovy
+"""groovy
 # @ImageJ ij
 # @ImgPlus img
 
