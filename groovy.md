@@ -28,6 +28,8 @@ rldRslt = op.run("flim.fitGlobal", param)
 - flim.fitPhasor
 - flim.fitRLD
 
+## Other useful snippets for FLIM Analysis
+
 ### Using an rectangle ROI [10:25,10:25,T]
 ```groovy
 import net.imglib2.roi.geom.real.OpenWritableBox
