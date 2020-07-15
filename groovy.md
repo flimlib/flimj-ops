@@ -53,7 +53,7 @@ est = new ParamEstimator(param)
 est.estimateStartEnd()
 ```
 
-## Using user fit range 
+### Using user defined fit range 
 
 This range start/stop is sensitive to the peak of decay curve especially without an IRF
 
@@ -74,4 +74,36 @@ rldRslt = op.run("flim.fitLMA", param,roi,FlimOps.SQUARE_KERNEL_3)
 println("Estimated start, end: " + param.fitStart + ", " + param.fitEnd)
 println("time-resolution: " + param.xInc)
 ```
+## Fitting single curve 
 
+```groovy
+# @ImageJ ij
+# @ImgPlus img
+op = ij.op()
+
+import net.imglib2.img.array.ArrayImgs 
+// this is the equivalence of ArrayList in Java
+arraylist = [1, 1, 1, 64, 32, 16, 8, 4, 2, 1] 
+array = arraylist as float[]
+img = ArrayImgs.floats(array, 1, 1, array.length)
+
+import flimlib.flimj.FitParams
+param = new FitParams()
+param.transMap = img;
+param.xInc = 1
+param.ltAxis = 2
+param.nComp = 1
+
+import flimlib.flimj.ParamEstimator
+est = new ParamEstimator(param)
+est.estimateStartEnd()
+println("Estimated start, end: " + param.fitStart + ", " + param.fitEnd)
+
+paramMap = op.run("flim.fitLMA", param).paramMap
+
+println(paramMap)
+println("z: " + paramMap[0])
+println("A: " + paramMap[1])
+println("tau: " + paramMap[2])
+
+```
