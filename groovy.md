@@ -46,9 +46,32 @@ import flimlib.RestrainType
 param.restrain = RestrainType.ECF_RESTRAIN_USER
 
 ```
-### Adding binsizes
+### Using parameter estimator
+```groovy
+import flimlib.flimj.ParamEstimator
+est = new ParamEstimator(param)
+est.estimateStartEnd()
+```
+
+## Using user fit range 
+
+This range start/stop is sensitive to the peak of decay curve especially without an IRF
+
+```groovy
+param.fitStart = 55
+param.fitEnd = 255
+```
+
+### Adding bin sizes
 
 ```groovy
 import flimlib.flimj.FlimOps
 rldRslt = op.run("flim.fitLMA", param,roi,FlimOps.SQUARE_KERNEL_3)
 ```
+### Console print for debugging
+
+```groovy
+println("Estimated start, end: " + param.fitStart + ", " + param.fitEnd)
+println("time-resolution: " + param.xInc)
+```
+
