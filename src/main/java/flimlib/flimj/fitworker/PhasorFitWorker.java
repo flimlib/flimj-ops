@@ -43,11 +43,22 @@ public class PhasorFitWorker<I extends RealType<I>> extends AbstractSingleFitWor
 
 	@Override
 	protected void doFit() {
-		results.retCode = FLIMLib.GCI_Phasor(
+		final int retCode = FLIMLib.GCI_Phasor(
 				params.xInc, transBuffer, adjFitStart, adjFitEnd,
 				z, u, v, tauPhi, tauMod, tau,
 				fittedBuffer, residualBuffer, chisqBuffer
 		);
+
+		switch (retCode) {
+			case -1: // PHASOR_ERR_INVALID_DATA (data == null)
+			case -2: // PHASOR_ERR_INVALID_WINDOW (nbins < 0)
+				results.retCode = FitResults.RET_BAD_SETTING;
+				break;
+
+			default: // non-negative: iteration count
+				results.retCode = retCode >= 0 ? FitResults.RET_OK : FitResults.RET_UNKNOWN;
+				break;
+		}
 	}
 
 	@Override

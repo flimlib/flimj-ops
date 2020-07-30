@@ -31,12 +31,20 @@ public class RLDFitWorker<I extends RealType<I>> extends AbstractSingleFitWorker
 	 */
 	@Override
 	protected void doFit() {
-		results.retCode = FLIMLib.GCI_triple_integral_fitting_engine(
+		final int retCode = FLIMLib.GCI_triple_integral_fitting_engine(
 				params.xInc, transBuffer, adjFitStart, adjFitEnd,
 				params.instr, params.noise, params.sig, z, a, tau,
 				fittedBuffer, residualBuffer, chisqBuffer,
 				rawChisq_target
 		);
+
+		// -1: malloc failed
+		if (retCode < 0)
+			results.retCode =
+					retCode == -1 ? FitResults.RET_INTERNAL_ERROR : FitResults.RET_UNKNOWN;
+		else
+			// non-negative: iteration count
+			results.retCode = FitResults.RET_OK;
 	}
 
 	@Override

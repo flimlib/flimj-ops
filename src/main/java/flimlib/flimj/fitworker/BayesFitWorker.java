@@ -56,7 +56,7 @@ public class BayesFitWorker<I extends RealType<I>> extends AbstractSingleFitWork
 			double mean = 0;
 			double std = 0;
 			double count = 0;
-			
+
 			IntervalView<FloatType> paramPlane = Views.hyperSlice(paramMap, params.ltAxis, i);
 			Cursor<FloatType> ppCursor = paramPlane.cursor();
 			Cursor<FloatType> xmCursor = chisqMap.cursor();
@@ -96,9 +96,36 @@ public class BayesFitWorker<I extends RealType<I>> extends AbstractSingleFitWork
 	 */
 	@Override
 	public void doFit() {
-		results.retCode = FLIMLib.Bayes_fitting_engine(params.xInc, transBuffer, adjFitStart,
+		final int retCode = FLIMLib.Bayes_fitting_engine(params.xInc, transBuffer, adjFitStart,
 				adjFitEnd, laserPeriod, params.instr, paramBuffer, params.paramFree, fittedBuffer,
 				residualBuffer, error, minusLogProb, nPhotons, chisqBuffer);
+
+		switch (retCode) {
+			case -1: // Bayes: Invalid data
+			case -2: // Bayes: Invalid data window
+			case -3: // Bayes: Invalid model
+			case -4: // Bayes: Functionality not supported
+			case -5: // Bayes: Invalid fixed parameter value
+			case -6: // Bayes: All parameter values are fixed
+			case -8: // Bayes: No rapid grid for parameter estimation
+			case -14: // Bayes: Insufficient gridimation failure
+			results.retCode = FitResults.RET_BAD_SETTING;
+			break;
+			
+			case -7: // Bayes: Parameter estError in Ave & Errs
+			case -9: // Bayes: Model selection parameter estimation failure
+			case -10: // Bayes: Model selection Hessian error
+			case -11: // Bayes: w max not found, pdf too sharp, too many counts?
+			case -12: // Bayes: Error in Ave & Errs (MP Vals only)
+			case -13: // Bayes: Error in Ave & Errs
+			case -99: // BAYES__RESULT_USER_CANCEL
+				results.retCode = FitResults.RET_BAD_FIT_DIVERGED;
+				break;
+
+			default:
+				results.retCode = retCode >= 0 ? FitResults.RET_OK : FitResults.RET_UNKNOWN;
+				break;
+		}
 	}
 
 	@Override

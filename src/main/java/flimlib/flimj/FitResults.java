@@ -13,6 +13,29 @@ import net.imglib2.type.numeric.real.FloatType;
  * @author Dasong Gao
  */
 public class FitResults {
+
+	/** The return code for a good fit */
+	public static final int RET_OK = 0;
+
+	/** The return code for a fit that failed by flimlib */
+	public static final int RET_BAD_FIT_DIVERGED = -1;
+
+	/** The return code for a fit that succeeded but has chisq > 1e5 */
+	public static final int RET_BAD_FIT_CHISQ_OUT_OF_RANGE = -2;
+
+	/** The return code for a fit that failed because of improper arguments */
+	public static final int RET_BAD_SETTING = -3;
+
+	/** The return code for a fit that was not performed because the intensity is below threshold */
+	public static final int RET_INTENSITY_BELOW_THRESH = -4;
+
+	/** The return code for a fit that failed because of error in native code (e.g. malloc) */
+	public static final int RET_INTERNAL_ERROR = -5;
+
+	/** The return code for unknown fit status */
+	public static final int RET_UNKNOWN = -6;
+
+	/** The index of lifetime and parameter axis */
 	public int ltAxis;
 
 	/** The return code of the fit */

@@ -41,7 +41,7 @@ public class LMAFitWorker<I extends RealType<I>> extends AbstractSingleFitWorker
 	 */
 	@Override
 	public void doFit() {
-		results.retCode = FLIMLib.GCI_marquardt_fitting_engine(
+		final int retCode = FLIMLib.GCI_marquardt_fitting_engine(
 				params.xInc, transBuffer, adjFitStart, adjFitEnd,
 				params.instr, params.noise, params.sig, paramBuffer,
 				params.paramFree,
@@ -50,6 +50,20 @@ public class LMAFitWorker<I extends RealType<I>> extends AbstractSingleFitWorker
 				fittedBuffer, residualBuffer, chisqBuffer, covar, alpha, erraxes, 
 				rawChisq_target, params.chisq_delta, params.chisq_percent
 		);
+
+		switch (retCode) {
+			case -1: // initial estimation failed
+			case -2: // max iteration reached before converge
+			case -3: // iteration failed
+			case -4: // final iteration failed
+			case -5: // error estimation failed
+				results.retCode = FitResults.RET_BAD_FIT_DIVERGED;
+				break;
+
+			default: // non-negative: iteration count
+				results.retCode = retCode >= 0 ? FitResults.RET_OK : FitResults.RET_UNKNOWN;
+				break;
+		}
 	}
 
 	@Override

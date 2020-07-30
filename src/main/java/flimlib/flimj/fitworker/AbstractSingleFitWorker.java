@@ -119,13 +119,17 @@ public abstract class AbstractSingleFitWorker<I extends RealType<I>> extends Abs
 				for (int i = (int) startIndex; i < startIndex + numSteps; i += stepSize) {
 					final int[] xytPos = pos.get(i);
 
-					if (!helper.loadData(fitWorker.transBuffer, fitWorker.paramBuffer, params,
-							xytPos)) {
-						continue;
+					if (!helper.loadData(fitWorker.transBuffer, fitWorker.paramBuffer, params, xytPos))
+						lResults.retCode = FitResults.RET_INTENSITY_BELOW_THRESH;
+					else {
+						fitWorker.fitSingle();
+
+						// invalidate fit if chisq is insane
+						final float chisq = lResults.chisq;
+						if (params.dropBad && lResults.retCode == FitResults.RET_OK
+								&& (chisq < 0 || chisq > 1E5 || Float.isNaN(chisq)))
+							lResults.retCode = FitResults.RET_BAD_FIT_CHISQ_OUT_OF_RANGE;
 					}
-
-					fitWorker.fitSingle();
-
 
 					helper.commitRslts(lParams, lResults, xytPos);
 				}
