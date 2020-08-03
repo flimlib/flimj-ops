@@ -20,7 +20,7 @@ public class FitResults {
 	/** The return code for a fit that failed by flimlib */
 	public static final int RET_BAD_FIT_DIVERGED = -1;
 
-	/** The return code for a fit that succeeded but has chisq > 1e5 */
+	/** The return code for a fit that succeeded but has chisq &gt; 1e5 */
 	public static final int RET_BAD_FIT_CHISQ_OUT_OF_RANGE = -2;
 
 	/** The return code for a fit that failed because of improper arguments */
