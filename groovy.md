@@ -37,15 +37,13 @@ min = [ 10, 10 ]
 max = [ 25, 25 ]
 roi = new OpenWritableBox([ min[0] - 1, min[1] - 1 ] as double[], [ max[0] + 1, max[1] + 1 ] as double[])
 ```
-### Adding restrain parameter
+### Adding restrain to parameter (z: [0, 1e2], A: [0, 1e4], tau: [0, 6])
 ```groovy
-
 import flimlib.FLIMLib
 import flimlib.RestrainType
 
-\\deprecated\\FLIMLib.GCI_set_restrain_limits(3, [1, 1, 1] as int[], [0, 0, 0] as float[], [1e4f,  1e4f, 6f] as float[])
-FLIMLib.GCI_set_restrain_limits([true, true, true] as boolean[],  [0, 0, 0] as float[], [0,  1e4f, 1e4f] as float[])
 param.restrain = RestrainType.ECF_RESTRAIN_USER
+FLIMLib.GCI_set_restrain_limits([true, true, true] as boolean[], [0, 0, 0] as float[], [1e2f,  1e4f, 6f] as float[])
 
 ```
 ### Using parameter estimator
@@ -84,9 +82,8 @@ println("time-resolution: " + param.xInc)
 op = ij.op()
 
 import net.imglib2.img.array.ArrayImgs 
-// this is the equivalence of ArrayList in Java
-arraylist = [1, 1, 1, 64, 32, 16, 8, 4, 2, 1] 
-array = arraylist as float[]
+
+array = [1, 1, 1, 64, 32, 16, 8, 4, 2, 1] as float[]
 img = ArrayImgs.floats(array, 1, 1, array.length)
 
 import flimlib.flimj.FitParams
