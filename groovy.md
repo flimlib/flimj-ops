@@ -39,10 +39,12 @@ roi = new OpenWritableBox([ min[0] - 1, min[1] - 1 ] as double[], [ max[0] + 1, 
 ```
 ### Adding restrain parameter
 ```groovy
-import flimlib.FLIMLib
-FLIMLib.GCI_set_restrain_limits(3, [1, 1, 1] as int[], [0, 0, 0] as float[], [1e4f,  1e4f, 6f] as float[])
 
+import flimlib.FLIMLib
 import flimlib.RestrainType
+
+\\deprecated\\FLIMLib.GCI_set_restrain_limits(3, [1, 1, 1] as int[], [0, 0, 0] as float[], [1e4f,  1e4f, 6f] as float[])
+FLIMLib.GCI_set_restrain_limits([true, true, true] as boolean[],  [0, 0, 0] as float[], [0,  1e4f, 1e4f] as float[])
 param.restrain = RestrainType.ECF_RESTRAIN_USER
 
 ```
