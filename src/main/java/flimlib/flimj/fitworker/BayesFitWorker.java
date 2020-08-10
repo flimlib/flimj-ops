@@ -24,9 +24,9 @@ public class BayesFitWorker<I extends RealType<I>> extends AbstractSingleFitWork
 	public BayesFitWorker(FitParams<I> params, FitResults results, OpEnvironment ops) {
 		super(params, results, ops);
 
-		if (nParam != 3 && nParam != 5)
+		if (nParam != 3)
 			throw new IllegalArgumentException(
-					"Bayesian analysis only takes 3 (single) or 5 (double) parameters");
+					"Bayesian analysis is currently single-component (3 parameters) only");
 
 		error = new float[nParam];
 		minusLogProb = new float[1];
