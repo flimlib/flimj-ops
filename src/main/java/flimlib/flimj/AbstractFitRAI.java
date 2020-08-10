@@ -17,13 +17,14 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
-public abstract class AbstractFitRAI<I extends RealType<I>> extends FitRAI<I> implements Contingent {
-
-	@Parameter(required = false)
-	private RealMask roi;
+public abstract class AbstractFitRAI<I extends RealType<I>> extends FitRAI<I>
+		implements Contingent {
 
 	@Parameter(required = false)
 	private RandomAccessibleInterval<I> kernel;
+
+	@Parameter(required = false)
+	private RealMask roi;
 
 	private FitWorker<I> fitWorker;
 
@@ -47,8 +48,8 @@ public abstract class AbstractFitRAI<I extends RealType<I>> extends FitRAI<I> im
 		// lifetime axis must be valid
 		if (lifetimeAxis < 0 || lifetimeAxis >= in.transMap.numDimensions()) {
 			return false;
-		}	
-		
+		}
+
 		// and pissibly a 2D mask
 		if (roi != null && roi.numDimensions() != 2) {
 			return false;
@@ -65,12 +66,12 @@ public abstract class AbstractFitRAI<I extends RealType<I>> extends FitRAI<I> im
 	public void initialize() {
 		super.initialize();
 		lifetimeAxis = in().ltAxis;
-		
+
 		// dimension doesn't really matter
 		if (roi == null) {
 			roi = Masks.allRealMask(0);
 		}
-		
+
 		// So that we bin the correct axis
 		if (kernel != null) {
 			kernel = Views.permute(kernel, 2, lifetimeAxis);
