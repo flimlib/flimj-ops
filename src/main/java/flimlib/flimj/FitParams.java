@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
+import com.google.gson.annotations.Expose;
 import com.google.gson.reflect.TypeToken;
 import flimlib.FitFunc;
 import flimlib.NoiseType;
@@ -25,15 +26,18 @@ import net.imglib2.type.numeric.real.FloatType;
  */
 public class FitParams<I extends RealType<I>> {
 	/** Fields with this value are uninitialized */
+	@Expose
 	public static final int UNINIT = -1;
 
 	/** The time increment between two consecutive data points */
+	@Expose
 	public float xInc = UNINIT;
 
 	/** The transient data to fit */
 	public float[] trans;
 
 	/** The index of lifetime axis */
+	@Expose
 	public int ltAxis = UNINIT;
 
 	/** The image representation of the dataset */
@@ -43,15 +47,19 @@ public class FitParams<I extends RealType<I>> {
 	public RealMask roiMask;
 
 	/** The start of the decay interval */
+	@Expose
 	public int fitStart = UNINIT;
 
 	/** The end of the decay interval */
+	@Expose
 	public int fitEnd = UNINIT;
 
 	/** The array of instrument response (optional) */
+	@Expose
 	public float[] instr;
 
 	/** The assumed noise model of the fit (Poisson by default) @see NoiseType */
+	@Expose
 	public NoiseType noise = NoiseType.NOISE_POISSON_FIT;
 
 	/**
@@ -59,15 +67,18 @@ public class FitParams<I extends RealType<I>> {
 	 * if {@link #noise} is {@link NoiseType#NOISE_CONST} or
 	 * {@link NoiseType#NOISE_GIVEN}.
 	 */
+	@Expose
 	public float[] sig;
 
 	/**
 	 * The number of exponential components of the fit (1 by default). This
 	 * parameter is only used by LMA and Global ops, ignored otherwise.
 	 */
+	@Expose
 	public int nComp = 1;
 
 	/** The estimated parameters of the fit (global setting) */
+	@Expose
 	public float[] param;
 
 	/**
@@ -77,9 +88,11 @@ public class FitParams<I extends RealType<I>> {
 	public RandomAccessibleInterval<FloatType> paramMap;
 
 	/** The indicators of which of the parameters can be changed */
+	@Expose
 	public boolean[] paramFree;
 
 	/** The fit restraint ({@link RestrainType#ECF_RESTRAIN_DEFAULT} by default) */
+	@Expose
 	public RestrainType restrain = RestrainType.ECF_RESTRAIN_DEFAULT;
 
 	/**
@@ -91,70 +104,90 @@ public class FitParams<I extends RealType<I>> {
 	 * bounded from below/above. The bounds only take effect if
 	 * {@link #restrain} is set to {@link RestrainType#ECF_RESTRAIN_USER}.
 	 */
+	@Expose
 	public float[] restraintMin, restraintMax;
 
 	/**
 	 * The fitting model to use (Z + A_1e^(-t/tau_1) + A_2e^(-t/tau_2) + ... by
 	 * default)
 	 */
+	@Expose
 	public FitFunc fitFunc = FitFunc.GCI_MULTIEXP_TAU;
 
 	/**
 	 * Stopping condition 1: stop if reduced chi-squared is less than
 	 * {@link #chisq_target} (1 by default)
 	 */
+	@Expose
 	public float chisq_target = 1;
 
 	/**
 	 * Stopping condition 2: stop if change in chi-squared is less than
 	 * {@link #chisq_target} (1E-4 by default)
 	 */
+	@Expose
 	public float chisq_delta = 0.0001f;
 
 	/** Confidence interval when calculating the error axes (95% by default) */
+	@Expose
 	public int chisq_percent = 95;
 
 	/** Intensity threshold value (overrides {@link #iThreshPercent}) */
+	@Expose
 	public float iThresh = 0;
 
 	/** Intensity threshold percentage */
+	@Expose
 	public float iThreshPercent = 0;
 
 	/** Enable multithread fitting ({@code true} by default) */
+	@Expose
 	public boolean multithread = true;
 
 	// FitResults Settings
 
+	/**
+	 * Whether to declare {@link FitResults#retCode} as
+	 * {@link FitResults#RET_BAD_FIT_CHISQ_OUT_OF_RANGE} or
+	 * {@link FitResults#RET_BAD_FIT_DIVERGED} if {@link FitResults#chisq} is larger
+	 * than 1e5 or less than 0.
+	 */
+	@Expose
 	public boolean dropBad = true;
 
 	/**
 	 * Whether to generate an image representation for the return codes
 	 * ({@code false} by default)
 	 */
+	@Expose
 	public boolean getReturnCodeMap = false;
 
 	/**
 	 * Whether to generate an image representation for fitted parameters
 	 * ({@code true} by default)
 	 */
+	@Expose
 	public boolean getParamMap = true;
 
 	/**
 	 * Whether to generate an image representation for fitted transients
 	 * ({@code false} by default)
 	 */
+	@Expose
 	public boolean getFittedMap = false;
 
 	/**
 	 * Whether to generate an image representation for residuals ({@code false} by
 	 * default)
 	 */
+	@Expose
 	public boolean getResidualsMap = false;
 
 	/**
 	 * Whether to generate an image representation for chi-squred ({@code false} by
 	 * default)
 	 */
+	@Expose
 	public boolean getChisqMap = false;
 
 	/**
@@ -199,8 +232,8 @@ public class FitParams<I extends RealType<I>> {
 	}
 
 	/**
-	 * Serialize this FitParams into a JSON string. {@link #transMap}, {@link #roiMask}, and
-	 * {@link #paramMap} are skipped.
+	 * Serialize this FitParams into a JSON string. {@link #trans},
+	 * {@link #transMap}, {@link #roiMask}, and {@link #paramMap} are skipped.
 	 * 
 	 * @return the JSON string
 	 */
@@ -218,8 +251,8 @@ public class FitParams<I extends RealType<I>> {
 
 			return new JsonPrimitive(name);
 		};
-		Gson gson = new GsonBuilder().registerTypeAdapter(FitFunc.class, fitFuncSerializer)
-				.setPrettyPrinting().create();
+		Gson gson = new GsonBuilder().serializeSpecialFloatingPointValues().excludeFieldsWithoutExposeAnnotation()
+				.registerTypeAdapter(FitFunc.class, fitFuncSerializer).setPrettyPrinting().create();
 		return gson.toJson(this);
 	}
 

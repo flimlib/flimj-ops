@@ -77,7 +77,7 @@ public class MiscTest extends AbstractOpTest {
 
 		final FitParams<FloatType> actual = FitParams.fromJSON(expected.toJSON());
 		assertEquals(expected.xInc, actual.xInc, TOLERANCE);
-		assertArrayEquals(expected.trans, actual.trans, TOLERANCE);
+		assertEquals(null, actual.trans);
 		assertEquals(expected.ltAxis, actual.ltAxis);
 		assertEquals(expected.fitStart, actual.fitStart);
 		assertEquals(expected.fitEnd, actual.fitEnd);
