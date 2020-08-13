@@ -173,6 +173,8 @@ public class FitParams<I extends RealType<I>> {
 		newParams.paramMap = paramMap;
 		newParams.paramFree = paramFree;
 		newParams.restrain = restrain;
+		newParams.restraintMin = restraintMin;
+		newParams.restraintMax = restraintMax;
 		newParams.fitFunc = fitFunc;
 		newParams.chisq_target = chisq_target;
 		newParams.chisq_delta = chisq_delta;
