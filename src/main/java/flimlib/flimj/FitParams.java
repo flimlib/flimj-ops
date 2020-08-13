@@ -1,12 +1,16 @@
 package flimlib.flimj;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.roi.RealMask;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.FloatType;
 import flimlib.*;
+
+import org.json.simple.*;
 
 /**
  * The collection of all fit parameters required to perform a single fit of an
@@ -150,6 +154,66 @@ public class FitParams<I extends RealType<I>> {
 	 */
 	public boolean getChisqMap = false;
 
+	public FitParams() {
+		this(null);
+	}
+
+	/**
+	 * Creates a FitParams from serialized JSON string.
+	 * 
+	 * @param jsonString the JSON string produced by {@link #toJSON()}
+	 */
+	public FitParams(String jsonString) {
+		if (jsonString == null)
+			return;
+
+		try {
+			JSONObject jsonObj = (JSONObject) JSONValue.parseWithException(jsonString);
+			xInc = (float) (double) jsonObj.get("xInc");
+			trans = asFloatArray((JSONArray) jsonObj.get("trans"));
+			ltAxis = (int) (long) jsonObj.get("ltAxis");
+			fitStart = (int) (long) jsonObj.get("fitStart");
+			fitEnd = (int) (long) jsonObj.get("fitEnd");
+			instr = asFloatArray((JSONArray) jsonObj.get("instr"));
+			noise = NoiseType.valueOf((String) jsonObj.get("noise"));
+			sig = asFloatArray((JSONArray) jsonObj.get("sig"));
+			nComp = (int) (long) jsonObj.get("nComp");
+			param = asFloatArray((JSONArray) jsonObj.get("param"));
+			paramFree = asBooleanArray((JSONArray) jsonObj.get("paramFree"));
+			restrain = RestrainType.valueOf((String) jsonObj.get("restrain"));
+			restraintMin = asFloatArray((JSONArray) jsonObj.get("restraintMin"));
+			restraintMax = asFloatArray((JSONArray) jsonObj.get("restraintMax"));
+			switch ((String) jsonObj.get("fitFunc")) {
+				case "GCI_MULTIEXP_LAMBDA":
+					fitFunc = FitFunc.GCI_MULTIEXP_LAMBDA;
+					break;
+				case "GCI_MULTIEXP_TAU":
+					fitFunc = FitFunc.GCI_MULTIEXP_TAU;
+					break;
+				case "GCI_STRETCHEDEXP":
+					fitFunc = FitFunc.GCI_STRETCHEDEXP;
+					break;
+				default:
+					throw new IllegalArgumentException(
+							"Unrecognized fitFunc: " + jsonObj.get("fitFunc"));
+			}
+			chisq_target = (float) (double) jsonObj.get("chisq_target");
+			chisq_delta = (float) (double) jsonObj.get("chisq_delta");
+			chisq_percent = (int) (long) jsonObj.get("chisq_percent");
+			iThresh = (float) (double) jsonObj.get("iThresh");
+			iThreshPercent = (float) (double) jsonObj.get("iThreshPercent");
+			multithread = (boolean) jsonObj.get("multithread");
+			dropBad = (boolean) jsonObj.get("dropBad");
+			getParamMap = (boolean) jsonObj.get("getParamMap");
+			getFittedMap = (boolean) jsonObj.get("getFittedMap");
+			getResidualsMap = (boolean) jsonObj.get("getResidualsMap");
+			getChisqMap = (boolean) jsonObj.get("getChisqMap");
+			getReturnCodeMap = (boolean) jsonObj.get("getReturnCodeMap");
+		} catch (Exception e) {
+			throw new IllegalArgumentException(e);
+		}
+	}
+
 	/**
 	 * Create a new instance of {@link FitParams} with shallow copy (maps are not
 	 * duplicated).
@@ -191,6 +255,51 @@ public class FitParams<I extends RealType<I>> {
 		return newParams;
 	}
 
+	/**
+	 * Serialize this FitParams into a JSON string. {@link #transMap}, {@link #roiMask}, and
+	 * {@link #paramMap} are skipped.
+	 * 
+	 * @return the JSON string
+	 */
+	public String toJSON() {
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("xInc", xInc);
+		map.put("trans", asList(trans));
+		map.put("ltAxis", ltAxis);
+		map.put("fitStart", fitStart);
+		map.put("fitEnd", fitEnd);
+		map.put("instr", asList(instr));
+		map.put("noise", noise.name());
+		map.put("sig", asList(sig));
+		map.put("nComp", nComp);
+		map.put("param", asList(param));
+		map.put("paramFree", asList(paramFree));
+		map.put("restrain", restrain.name());
+		map.put("restraintMin", asList(restraintMin));
+		map.put("restraintMax", asList(restraintMax));
+		if (fitFunc.equals(FitFunc.GCI_MULTIEXP_LAMBDA))
+			map.put("fitFunc", "GCI_MULTIEXP_LAMBDA");
+		else if (fitFunc.equals(FitFunc.GCI_MULTIEXP_TAU))
+			map.put("fitFunc", "GCI_MULTIEXP_TAU");
+		else if (fitFunc.equals(FitFunc.GCI_STRETCHEDEXP))
+			map.put("fitFunc", "GCI_STRETCHEDEXP");
+		else
+			throw new IllegalArgumentException("Cannot serialize custom fitFunc: " + fitFunc);
+		map.put("chisq_target", chisq_target);
+		map.put("chisq_delta", chisq_delta);
+		map.put("chisq_percent", chisq_percent);
+		map.put("iThresh", iThresh);
+		map.put("iThreshPercent", iThreshPercent);
+		map.put("multithread", multithread);
+		map.put("dropBad", dropBad);
+		map.put("getParamMap", getParamMap);
+		map.put("getFittedMap", getFittedMap);
+		map.put("getResidualsMap", getResidualsMap);
+		map.put("getChisqMap", getChisqMap);
+		map.put("getReturnCodeMap", getReturnCodeMap);
+		return new JSONObject(map).toJSONString();
+	}
+
 	@Override
 	public String toString() {
 		String str = String.format(
@@ -199,5 +308,43 @@ public class FitParams<I extends RealType<I>> {
 				Arrays.toString(param), Arrays.toString(paramFree), restrain.name(), fitFunc, chisq_target, chisq_delta,
 				chisq_percent);
 		return str;
+	}
+
+	private ArrayList<Boolean> asList(boolean[] arr) {
+		if (arr == null)
+			return null;
+		ArrayList<Boolean> list = new ArrayList<>();
+		for (boolean val : arr)
+			list.add(val);
+		return list;
+	}
+
+	private ArrayList<Float> asList(float[] arr) {
+		if (arr == null)
+			return null;
+		ArrayList<Float> list = new ArrayList<>();
+		for (float val : arr)
+			list.add(val);
+		return list;
+	}
+
+	private float[] asFloatArray(JSONArray arr) {
+		if (arr == null)
+			return null;
+		float[] array = new float[arr.size()];
+		for (int i = 0; i < array.length; i++) {
+			array[i] = (float) (double) arr.get(i);
+		}
+		return array;
+	}
+
+	private boolean[] asBooleanArray(JSONArray arr) {
+		if (arr == null)
+			return null;
+		boolean[] array = new boolean[arr.size()];
+		for (int i = 0; i < array.length; i++) {
+			array[i] = (boolean) arr.get(i);
+		}
+		return array;
 	}
 }
