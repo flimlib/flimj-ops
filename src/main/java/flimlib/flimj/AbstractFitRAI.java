@@ -8,6 +8,7 @@ import org.scijava.plugin.Parameter;
 import net.imagej.ops.Contingent;
 import flimlib.flimj.FlimOps.FitRAI;
 import flimlib.flimj.fitworker.FitWorker;
+import flimlib.flimj.fitworker.FitWorker.FitEventHandler;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.array.ArrayImgs;
@@ -25,6 +26,9 @@ public abstract class AbstractFitRAI<I extends RealType<I>> extends FitRAI<I>
 
 	@Parameter(required = false)
 	private RealMask roi;
+
+	@Parameter(required = false)
+	private FitEventHandler<I> handler;
 
 	private FitWorker<I> fitWorker;
 
@@ -86,7 +90,7 @@ public abstract class AbstractFitRAI<I extends RealType<I>> extends FitRAI<I>
 
 	@Override
 	public FitResults calculate(FitParams<I> params) {
-		fitWorker.fitBatch(roiPos);
+		fitWorker.fitBatch(roiPos, handler);
 		return rslts;
 	}
 

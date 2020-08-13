@@ -83,7 +83,7 @@ public abstract class AbstractSingleFitWorker<I extends RealType<I>> extends Abs
 	protected abstract AbstractSingleFitWorker<I> duplicate(FitParams<I> params, FitResults rslts);
 
 	@Override
-	public void fitBatch(List<int[]> pos) {
+	public void fitBatch(List<int[]> pos, FitEventHandler<I> handler) {
 		final AbstractSingleFitWorker<I> thisWorker = this;
 		ops.run(ChunkerOp.class, new CursorBasedChunk() {
 
@@ -132,9 +132,15 @@ public abstract class AbstractSingleFitWorker<I extends RealType<I>> extends Abs
 					}
 
 					helper.commitRslts(lParams, lResults, xytPos);
+
+					if (handler != null)
+						handler.onSingleComplete(xytPos, params, results);
 				}
 			}
 
 		}, pos.size());
+
+		if (handler != null)
+			handler.onComplete(params, results);
 	}
 }

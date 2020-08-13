@@ -18,7 +18,7 @@ public class GlobalFitWorker<I extends RealType<I>> extends AbstractFitWorker<I>
 	}
 
 	@Override
-	public void fitBatch(List<int[]> pos) {
+	public void fitBatch(List<int[]> pos, FitEventHandler<I> handler) {
 		int nTrans = pos.size();
 
 		// trans data and fitted parameters for each trans
@@ -78,6 +78,9 @@ public class GlobalFitWorker<I extends RealType<I>> extends AbstractFitWorker<I>
 			helper.commitRslts(params, results, pos.get(i));
 		}
 		results.chisq = chisqGlobal[0];
+
+		if (handler != null)
+			handler.onComplete(params, results);
 	}
 
 	/**
