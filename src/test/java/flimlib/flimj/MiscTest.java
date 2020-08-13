@@ -75,7 +75,7 @@ public class MiscTest extends AbstractOpTest {
 		expected.getChisqMap = rng.nextBoolean();
 		expected.getReturnCodeMap = rng.nextBoolean();
 
-		final FitParams<FloatType> actual = new FitParams<>(expected.toJSON());
+		final FitParams<FloatType> actual = FitParams.fromJSON(expected.toJSON());
 		assertEquals(expected.xInc, actual.xInc, TOLERANCE);
 		assertArrayEquals(expected.trans, actual.trans, TOLERANCE);
 		assertEquals(expected.ltAxis, actual.ltAxis);
