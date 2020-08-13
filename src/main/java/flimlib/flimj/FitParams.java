@@ -259,7 +259,9 @@ public class FitParams<I extends RealType<I>> {
 	/**
 	 * Creates a FitParams from serialized JSON string.
 	 * 
+	 * @param <I>        data type
 	 * @param jsonString the JSON string produced by {@link #toJSON()}
+	 * @return the serialized parameters
 	 */
 	public static <I extends RealType<I>> FitParams<I> fromJSON(String jsonString) {
 		JsonDeserializer<FitFunc> fitfuncDeserializer = (elem, type, ctx) -> {
