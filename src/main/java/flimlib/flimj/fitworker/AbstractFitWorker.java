@@ -115,6 +115,7 @@ public abstract class AbstractFitWorker<I extends RealType<I>> implements FitWor
 				restrain[i] = restrainCurrent;
 			}
 
+			// restrain limits are not thread-local, onThreadInit() not needed
 			FLIMLib.GCI_set_restrain_limits(restrain, rMin, rMax);
 		}
 	}

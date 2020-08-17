@@ -82,6 +82,14 @@ public abstract class AbstractSingleFitWorker<I extends RealType<I>> extends Abs
 	 */
 	protected abstract AbstractSingleFitWorker<I> duplicate(FitParams<I> params, FitResults rslts);
 
+	/**
+	 * Called on the worker thread after worker duplication. Can be used to initialize thread-local
+	 * globals such as Bayesian search grid parameters.
+	 * 
+	 * @see BayesFitWorker#onThreadInit()
+	 */
+	protected void onThreadInit() {}
+
 	@Override
 	public void fitBatch(List<int[]> pos, FitEventHandler<I> handler) {
 		final AbstractSingleFitWorker<I> thisWorker = this;
@@ -114,6 +122,8 @@ public abstract class AbstractSingleFitWorker<I extends RealType<I>> extends Abs
 							lResults.param = lResults.fitted = lResults.residuals = null;
 					fitWorker = duplicate(lParams, lResults);
 				}
+				fitWorker.onThreadInit();
+
 				final RAHelper<I> helper = new RAHelper<>(params, results);
 
 				for (int i = (int) startIndex; i < startIndex + numSteps; i += stepSize) {

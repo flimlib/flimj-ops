@@ -34,8 +34,6 @@ public class BayesFitWorker<I extends RealType<I>> extends AbstractSingleFitWork
 
 		if (gridMin == null || gridMax == null)
 			estimateGrid();
-
-		FLIMLib.Bayes_set_search_grid(gridMin, gridMax);
 	}
 
 	private void estimateGrid() {
@@ -109,9 +107,9 @@ public class BayesFitWorker<I extends RealType<I>> extends AbstractSingleFitWork
 			case -6: // Bayes: All parameter values are fixed
 			case -8: // Bayes: No rapid grid for parameter estimation
 			case -14: // Bayes: Insufficient gridimation failure
-			results.retCode = FitResults.RET_BAD_SETTING;
-			break;
-			
+				results.retCode = FitResults.RET_BAD_SETTING;
+				break;
+
 			case -7: // Bayes: Parameter estError in Ave & Errs
 			case -9: // Bayes: Model selection parameter estimation failure
 			case -10: // Bayes: Model selection Hessian error
@@ -126,6 +124,11 @@ public class BayesFitWorker<I extends RealType<I>> extends AbstractSingleFitWork
 				results.retCode = retCode >= 0 ? FitResults.RET_OK : FitResults.RET_UNKNOWN;
 				break;
 		}
+	}
+
+	protected void onThreadInit() {
+		// grid settings are thread-local globals, which must be initialized on the worker thread
+		FLIMLib.Bayes_set_search_grid(gridMin, gridMax);
 	}
 
 	@Override
