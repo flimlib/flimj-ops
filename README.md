@@ -50,24 +50,26 @@ See more examples in [Demo.ipynb](notebooks/Demo.ipynb) and [groovy.md](groovy.m
 To depend on FLIMJ Ops, copy the following to your `pom.xml`:
 
 ```xml
-	<properties>
-		<flimj-ops.version>2.1.1</flimj-ops.version>
-	</properties>
+  <properties>
+    <flimj-ops.version>2.1.1</flimj-ops.version>
+  </properties>
 
-	<dependencies>
-		<!-- FLIMJ Ops dependency -->
-		<dependency>
-			<groupId>flimlib</groupId>
-			<artifactId>flimj-ops</artifactId>
-			<version>${flimj-ops.version}</version>
-		</dependency>
-	</dependencies>
+  <dependencies>
+    <!-- FLIMJ Ops dependency -->
+    <dependency>
+      <groupId>flimlib</groupId>
+      <artifactId>flimj-ops</artifactId>
+      <version>${flimj-ops.version}</version>
+    </dependency>
+  </dependencies>
 ```
 
 # See also
 
  - [FLIMLib](https://github.com/flimlib/flimlib): Curve fitting library for FLIM
+   - [Debug tutorial](https://github.com/flimlib/flimlib/wiki/Debugging)
  - [FLIMJ UI](https://github.com/flimlib/flimj-ui): ImageJ plugin built on top of FLIMJ Ops.
 
 # Citation
+
 Comming soon...
