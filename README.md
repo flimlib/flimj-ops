@@ -8,6 +8,8 @@ Besides curve fitting, FLIMJ Ops also provide a variety of pre-processing option
 
 Most of the FLIMJ fitting ops supports multithreading. Fitting a dataset like the one below takes no more than a couple of seconds!
 
+Add https://sites.imagej.net/FLIMJ/  update site on the Update manager
+
 # Example usage
 Open [test2.sdt](test_files/test2.sdt) in [Fiji](https://fiji.github.io/). Execute in [Script Editor](http://imagej.github.io/Using_the_Script_Editor) as Groovy:
 
