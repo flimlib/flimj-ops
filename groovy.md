@@ -17,7 +17,8 @@ param.ltAxis = 2
 param.nComp = 2
 
 import flimlib.flimj.FlimOps
-rldRslt = op.run("flim.fitGlobal", param)
+rldRslt = op.run("flim.fitRLD", param)
+rldRslt.paramMap
 ```
 
 ## Other fitting routines
@@ -36,6 +37,8 @@ import net.imglib2.roi.geom.real.OpenWritableBox
 min = [ 10, 10 ]
 max = [ 25, 25 ]
 roi = new OpenWritableBox([ min[0] - 1, min[1] - 1 ] as double[], [ max[0] + 1, max[1] + 1 ] as double[])
+result = op.run("flim.fitRLD", param,FlimOps.SQUARE_KERNEL_3,roi)
+result.paramMap
 ```
 ### Adding restrain to parameter (z: [0, 1e2], A: [0, 1e4], tau: [0, 6])
 ```groovy
@@ -62,7 +65,7 @@ param.fitStart = 55
 param.fitEnd = 255
 ```
 
-### Adding bin sizes
+### Adding spatial bin sizes
 
 ```groovy
 import flimlib.flimj.FlimOps
