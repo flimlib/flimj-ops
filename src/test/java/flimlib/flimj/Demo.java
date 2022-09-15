@@ -37,6 +37,8 @@ import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
+import org.scijava.io.location.FileLocation;
+
 /**
  * Demonstrates the uses of {@link FlimOps} ops.
  * 
@@ -77,7 +79,7 @@ public class Demo {
 		Reader r = new SDTFormat.Reader();
 		// io.scif.formats.ICSFormat.Reader r = new io.scif.formats.ICSFormat.Reader();
 		r.setContext(new Context());
-		r.setSource("test_files/test2.sdt");
+		r.setSource(new FileLocation("test_files/test2.sdt"));
 		// r.setSource(".../Csarseven.ics");
 		FitTest.param = new FitParams<UnsignedShortType>();
 		FitTest.param.ltAxis = 0;

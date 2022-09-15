@@ -51,6 +51,7 @@ import net.imglib2.roi.geom.real.OpenWritableBox;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.view.Views;
+import org.scijava.io.location.FileLocation;
 
 /**
  * Regression tests for {@link FitRAI} ops.
@@ -81,7 +82,7 @@ public class FitTest extends AbstractOpTest {
 	public static void init() throws IOException {
 		Reader r = new SDTFormat.Reader();
 		r.setContext(new Context());
-		r.setSource("test_files/input.sdt");
+		r.setSource(new FileLocation("test_files/input.sdt"));
 		in = (Img<UnsignedShortType>) new ImgOpener().openImgs(r).get(0).getImg();
 
 		// input and output boundaries
